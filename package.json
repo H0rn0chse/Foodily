@@ -1,0 +1,29 @@
+{
+  "name": "foodverse",
+  "version": "0.0.1",
+  "scripts": {
+    "dev:client": "cd ./src/client && npm run dev",
+    "dev:server": "cd ./src/server && npm run dev",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "lint:client": "cd ./src/client && npm run lint",
+    "lint:server": "cd ./src/server && npm run lint",
+    "lint": "concurrently \"npm run lint:client\" \"npm run lint:server\"",
+    "build:client": "cd ./src/client && npm run build",
+    "build:server": "cd ./src/server && npm run build",
+    "build": "npm run build:server && npm run build:client",
+    "start": "cross-env NODE_ENV=production PUBLIC_ASSETS=./src/client/dist node ./src/server/dist"
+  },
+  "keywords": [],
+  "author": {
+    "name": "H0rn0chse",
+    "email": "h0rn0chse@gmx.de",
+    "url": "https://github.com/H0rn0chse"
+  },
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.5.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.52.0"
+  }
+}

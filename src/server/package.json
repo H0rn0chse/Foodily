@@ -1,0 +1,27 @@
+{
+  "name": "foodverse-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --ext ts --exec \"tsc && node dist/index.js\"",
+    "build": "tsc --build",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "passport": "^0.6.0"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.5.1",
+    "@types/express": "^4.17.20",
+    "@types/node": "^20.8.9",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "eslint": "^8.52.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^0.0.1-alpha.0"
+  }
+}
