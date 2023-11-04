@@ -15,7 +15,7 @@ console.log(`Configuration: NODE_ENV ${NODE_ENV}`);
 
 const port = SERVER_PORT || 3000;
 // todo
-const publicPath = path.join(dirname(fileURLToPath(import.meta.url)), 'public/dist')
+const publicPath = path.join(dirname(fileURLToPath(import.meta.url)), "public/dist");
 
 console.log(`Using: Port ${port}`);
 console.log(`Using: public path ${publicPath}`);
