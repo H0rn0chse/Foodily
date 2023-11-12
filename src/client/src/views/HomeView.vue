@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import TheWelcome from "../components/TheWelcome.vue";
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <va-button color="info" class="mr-6 mb-2">
+      Info
+    </va-button>
   </main>
 </template>

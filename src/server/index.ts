@@ -1,14 +1,23 @@
-import "dotenv/config";
+import env from "./src/env.js";
 import express from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const usedUnusedImports = {
+  env
+};
+
 const app = express();
+
+console.log("foo");
 
 const {
   NODE_ENV,
   SERVER_PORT,
+  SECRET
 } = process.env;
+console.log(SECRET);
 
 console.log(`Configuration: SERVER_PORT ${SERVER_PORT}`);
 console.log(`Configuration: NODE_ENV ${NODE_ENV}`);

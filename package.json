@@ -11,7 +11,8 @@
     "build:client": "cd ./src/client && npm run build",
     "build:server": "cd ./src/server && npm run build",
     "build": "npm run build:server && npm run build:client",
-    "start": "cross-env NODE_ENV=production PUBLIC_ASSETS=./src/client/dist node ./src/server/dist"
+    "start:db": "docker-compose up -d postgres",
+    "docker:build": "docker build -t foodverse ."
   },
   "keywords": [],
   "author": {
