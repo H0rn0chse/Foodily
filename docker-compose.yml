@@ -1,29 +1,31 @@
 version: "3"
 
-env_file: .env
-
 services:
   app:
+
     restart: on-failure
     build: .
     depends_on:
       - postgres
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgres://user:pass@postgres:5432/db
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       NODE_ENV: production
-      PORT: 3000
     ports:
-      - "3000:3000"
-    # command: npm run start
-    # volumes:
-    #   - .:/app/
-    #   - /app/node_modules
+      - ${SERVER_PORT}:${SERVER_PORT}
 
   postgres:
+
     image: postgres:16
-    ports:
-      - "35432:5432"
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: db
+      POSTGRES_USER2: postgres
+      POSTGRES_PASSWORD2: password
+      POSTGRES_DB2: db_name
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"

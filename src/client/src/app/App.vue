@@ -8,7 +8,7 @@ import { RouterLink, RouterView } from "vue-router";
       <va-navbar>
         <template #left>
           <va-navbar-item class="logo">
-            <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
+            <img alt="Vue logo" class="logo" src="@/app/assets/logo.svg" />
           </va-navbar-item>
         </template>
         <template #right>

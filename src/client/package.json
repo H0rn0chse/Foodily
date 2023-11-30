@@ -4,10 +4,14 @@
   "private": true,
   "scripts": {
     "build": "run-p type-check \"build-only {@}\" --",
+    "build-only": "npm run build:public && npm run build:login && npm run build:app && npm run build:notFound",
+    "build:public": "vite build",
+    "build:login": "vite build",
+    "build:app": "vite build",
+    "build:notFound": "vite build",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "build-only": "vite build",
     "dev": "vite",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false"
