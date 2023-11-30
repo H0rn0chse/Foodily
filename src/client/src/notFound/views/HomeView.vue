@@ -1,12 +1,27 @@
-<script setup lang="ts">
-import { useI18n } from "vue-i18n";
-const { t } = useI18n();
-</script>
-
 <template>
-  <main>
-    <va-button color="info" class="mr-6 mb-2">
-      {{ t("test") }}
-    </va-button>
+  <main style="height: 100%;">
+    <div style="display: flex; align-items: center;">
+      <img src="/src/notFound/assets/image.png" style="max-width: 20rem;">
+      <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
+      <h1>Could not find the requested resource</h1>
+    </div>
+    <VaButton>
+      <a href="/">Back to Home</a>
+    </VaButton>
   </main>
 </template>
+
+<style scoped>
+h1 {
+  font-size: xx-large;
+  padding-left: 2rem;
+}
+
+img {
+  padding-bottom: 2rem;
+}
+
+a {
+  color: unset;
+}
+</style>

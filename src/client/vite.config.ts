@@ -9,7 +9,7 @@ import path, { dirname } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const buildScript = process.env.npm_lifecycle_event || "";
+const buildScript = process?.env?.npm_lifecycle_event || "";
 const appName = buildScript.split(":")[1] || "";
 
 // https://vitejs.dev/config/
@@ -17,6 +17,7 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
+  base: `/${appName !== "public" ? appName : "" }`,
   build: {
     rollupOptions: {
       input: {

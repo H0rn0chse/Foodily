@@ -35,11 +35,16 @@ if (NODE_ENV === "production") {
 console.log(`🔵 Using: public path ${publicPath}`);
 
 if (bDistUsage) {
-  router.use("/notFound", express.static(path.join(publicPath, "notFound"), { index: "src/index.html" }));
-  router.use("/app", ensureSession, express.static(path.join(publicPath, "app"), { index: "src/index.html" }));
-  router.use("/login", preventSession, express.static(path.join(publicPath, "login"), { index: "src/index.html" }));
+  router.use("/notFound", express.static(path.join(publicPath, "notFound"), { index: "src/notFound/index.html" }));
+  // router.use("/notFound", express.static(path.join(publicPath, "notFound/assets"), { index: "src/notFound/index.html" }));
+  // router.get("/notFound", express.static(path.join(publicPath, "notFound"), { index: "src/index.html" }));
+  // router.get("/notFound", (req, res) => {
+  //   res.sendFile()
+  // });
+  router.use("/app", ensureSession, express.static(path.join(publicPath, "app"), { index: "src/app/index.html" }));
+  router.use("/login", preventSession, express.static(path.join(publicPath, "login"), { index: "src/login/index.html" }));
   router.get("/", preventSession);
-  router.use("/", express.static(path.join(publicPath, "public"), { index: "src/index.html" }));
+  router.use("/", express.static(path.join(publicPath, "public"), { index: "src/public/index.html" }));
 } else if (publicPath) {
   router.use("/notFound", express.static(path.join(publicPath, "public"), { index: "NotFound.html" }));
   router.use("/app", ensureSession, express.static(path.join(publicPath, "app"), { index: "app.html" }));

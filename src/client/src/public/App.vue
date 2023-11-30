@@ -8,8 +8,9 @@ import { RouterLink, RouterView } from "vue-router";
       <va-navbar>
         <template #left>
           <va-navbar-item class="logo">
-            <img alt="Vue logo" class="logo" src="@/public/assets/logo.svg" />
+            <img alt="Vue logo" class="logo" src="/logo.svg" />
           </va-navbar-item>
+          <h2>Foodily</h2>
         </template>
         <template #right>
           <va-navbar-item>

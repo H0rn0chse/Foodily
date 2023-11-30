@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import HomeView from "./views/HomeView.vue";
+
+// import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
@@ -8,22 +10,24 @@ import { RouterLink, RouterView } from "vue-router";
       <va-navbar>
         <template #left>
           <va-navbar-item class="logo">
-            <img alt="Vue logo" class="logo" src="@/notFound/assets/logo.svg" />
+            <img alt="Vue logo" class="logo" src="/logo.svg" />
           </va-navbar-item>
+          <h2>Foodily</h2>
         </template>
-        <template #right>
+        <!-- <template #right>
           <va-navbar-item>
             <RouterLink to="/" active-class="activeLink">Home</RouterLink>
           </va-navbar-item>
           <va-navbar-item>
             <RouterLink to="/about" active-class="activeLink">About</RouterLink>
           </va-navbar-item>
-        </template>
+        </template> -->
       </va-navbar>
     </header>
 
     <main id="main">
-      <RouterView id="mainContent" />
+      <!-- <RouterView id="mainContent" /> -->
+      <HomeView></HomeView>
     </main>
   </div>
 </template>

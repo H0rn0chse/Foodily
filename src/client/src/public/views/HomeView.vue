@@ -1,12 +1,22 @@
-<script setup lang="ts">
-import { useI18n } from "vue-i18n";
-const { t } = useI18n();
-</script>
-
 <template>
   <main>
-    <va-button color="info" class="mr-6 mb-2">
-      {{ t("test") }}
-    </va-button>
+    <h1>Welcome</h1>
+    <div style="display: flex; align-items: center;">
+      <img src="/src/public/assets/image.png" style="max-width: 20rem;">
+      <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
+      <VaButton>
+        <a href="/login">SignIn</a>
+      </VaButton>
+    </div>
   </main>
 </template>
+
+<style scoped>
+h1 {
+  font-size: xx-large;
+}
+
+a {
+  color: unset;
+}
+</style>

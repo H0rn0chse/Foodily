@@ -8,16 +8,27 @@ import { RouterLink, RouterView } from "vue-router";
       <va-navbar>
         <template #left>
           <va-navbar-item class="logo">
-            <img alt="Vue logo" class="logo" src="@/app/assets/logo.svg" />
+            <img alt="Vue logo" class="logo" src="/logo.svg" />
           </va-navbar-item>
+          <h2>Foodily</h2>
         </template>
         <template #right>
           <va-navbar-item>
             <RouterLink to="/" active-class="activeLink">Home</RouterLink>
           </va-navbar-item>
           <va-navbar-item>
+            <RouterLink to="/profile" active-class="activeLink">Profile</RouterLink>
+          </va-navbar-item>
+          <va-navbar-item>
             <RouterLink to="/about" active-class="activeLink">About</RouterLink>
           </va-navbar-item>
+          <!-- <va-navbar-item> -->
+          <form action="/logout" method="post">
+            <VaButton type="submit">Sign Out</VaButton>
+            <!-- <button class="logout" type="submit">Sign out</button> -->
+            <!-- <input type="hidden" name="_csrf" value="<%= csrfToken %>"> -->
+          </form>
+          <!-- </va-navbar-item> -->
         </template>
       </va-navbar>
     </header>
