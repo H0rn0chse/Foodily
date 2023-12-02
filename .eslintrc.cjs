@@ -16,5 +16,9 @@ module.exports = {
     "eol-last": ["error", "always"],
     quotes: ["error", "double"],
     "linebreak-style": ["error", "windows"],
+    "no-unused-vars": ["error", { "args": "none" }],
+    "object-curly-spacing": ["error", "always"],
+    "key-spacing": ["error", { "beforeColon": false }],
+    "no-warning-comments": "warn"
   },
 };

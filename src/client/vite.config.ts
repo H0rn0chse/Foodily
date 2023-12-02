@@ -9,22 +9,27 @@ import path, { dirname } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const buildScript = process?.env?.npm_lifecycle_event || "";
-const appName = buildScript.split(":")[1] || "";
+const {
+  BUILD_TARGET
+} = process.env;
+
+const buildTarget = BUILD_TARGET || "public";
+const base = buildTarget === "public" ? "/" : `/${buildTarget}`;
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
   ],
-  base: `/${appName !== "public" ? appName : "" }`,
+  base,
   build: {
     rollupOptions: {
       input: {
-        app: path.join(__dirname, "src", appName, "index.html")
+        app: path.join(__dirname, "src", buildTarget, "index.html")
       }
     },
-    outDir: `dist/${appName}`
+    outDir: `dist/${buildTarget}`,
+    chunkSizeWarningLimit: 1000
   },
   resolve: {
     alias: {
