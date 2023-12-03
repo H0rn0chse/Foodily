@@ -4,6 +4,11 @@ import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
 import { default as db, UserRow } from "../db.js";
 
+export const MODES = {
+  Local: "local", // use local resources
+  ApiOnly: "api-only", // skip authentication
+};
+
 const router = express.Router();
 
 passport.use("local", new LocalStrategy(function verify(username, password, callback) {

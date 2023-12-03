@@ -3,18 +3,14 @@ import pg from "pg";
 const { Client } = pg;
 
 const {
-  DB_USER,
-  DB_HOST,
-  DB_PORT,
-  DB_PASSWORD,
-  DB_NAME
+  DB_CONNECTION_STRING
 } = process.env;
 
-const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
-console.log(connectionString);
+// const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+console.log(DB_CONNECTION_STRING);
  
 const client = new Client({
-  connectionString
+  connectionString: DB_CONNECTION_STRING || ""
 });
 await client.connect();
 

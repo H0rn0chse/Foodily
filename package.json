@@ -1,19 +1,23 @@
 {
-  "name": "foodverse",
+  "name": "foodily",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "postinstall": "cd ./src/client && npm install && cd ../server && npm install",
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "cd ./src/client && npm run dev",
-    "dev:server": "cd ./src/server && npm run dev",
-    "lint": "concurrently \"npm run lint:client\" \"npm run lint:server\"",
-    "lint:client": "cd ./src/client && npm run lint",
+    "postinstall": "cd ./src/app && npm install && cd ../app-public && npm install && cd ../server && npm install",
+    "dev": "concurrently \"node server.js\" \"npm run dev:server-api-only\"",
+    "dev:server-client": "npm run build:app && npm run build:app-public && cd ./src/server && npm run dev",
+    "dev:server-local": "cd ./src/server && npm run dev:local",
+    "dev:server-api-only": "cd ./src/server && npm run dev:api-only",
+    "lint": "npm run lint:app && npm run lint:app-public && npm run lint:server",
+    "lint:app": "cd ./src/app && npm run lint",
+    "lint:app-public": "cd ./src/app-public && npm run lint",
     "lint:server": "cd ./src/server && npm run lint",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "cd ./src/client && npm run build",
+    "build": "npm run build:app && npm run build:server",
+    "build:app": "cd ./src/app && npm run build",
+    "build:app-public": "cd ./src/app-public && npm run build",
     "build:server": "cd ./src/server && npm run build",
     "start:db": "docker-compose up -d postgres",
-    "docker:build": "docker build -t foodverse ."
+    "docker:build": "docker build -t foodily ."
   },
   "keywords": [],
   "author": {
@@ -26,6 +30,8 @@
     "@rushstack/eslint-patch": "^1.5.1",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "eslint": "^8.52.0"
+    "eslint": "^8.52.0",
+    "express": "^4.18.2",
+    "vite": "^5.0.4"
   }
 }
