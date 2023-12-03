@@ -7,3 +7,7 @@
     <br>starts the server serving w/ authentication enabled and with local ui resources
  * `npm run dev:server-client`
     <br>starts the server serving w/ authentication enabled and with built ui resources,. but w/o the vite dev server
+
+Docker
+ * `npm run start:db`
+    <br>starts the database

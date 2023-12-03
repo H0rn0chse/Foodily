@@ -12,11 +12,12 @@
     "lint:app": "cd ./src/app && npm run lint",
     "lint:app-public": "cd ./src/app-public && npm run lint",
     "lint:server": "cd ./src/server && npm run lint",
-    "build": "npm run build:app && npm run build:server",
+    "build": "npm run build:app && npm run build:app-public && npm run build:server",
     "build:app": "cd ./src/app && npm run build",
     "build:app-public": "cd ./src/app-public && npm run build",
     "build:server": "cd ./src/server && npm run build",
     "start:db": "docker-compose up -d postgres",
+    "docker:start": "docker-compose up",
     "docker:build": "docker build -t foodily ."
   },
   "keywords": [],

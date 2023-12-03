@@ -22,16 +22,22 @@ function emptyMiddleware (): RequestHandler {
 export const ensureSession = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureLoggedIn();
 export const preventSession = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureLoggedOut({ redirectTo: "/app" });
 
-if (NODE_ENV === "production") { // todo fix
-  // src/server/dist/src/public
-  const publicPath = path.join(__dirname, "../../", "public"); // todo: fix path
+if (NODE_ENV === "production") {
+  /*
+  * app
+  * - public
+  *   - app
+  */
+  // src/server/dist/public
+  const publicPath = path.join(__dirname, "../", "public");
   console.log(`🔵 Using: public path ${publicPath}`);
-  
-  router.use("/notFound", express.static(path.join(publicPath, "public"), { index: "NotFound.html" }));
-  router.use("/app", ensureSession, express.static(path.join(publicPath, "app"), { index: "app.html" }));
-  router.use("/login", preventSession, express.static(path.join(publicPath, "login"), { index: "login.html" }));
+
+  router.use("/notFound", express.static(path.join(publicPath, "notFound"), { index: "index.html" }));
+  router.use("/app", ensureSession, express.static(path.join(publicPath, "app"), { index: "index.html" }));
+  router.use("/login", preventSession, express.static(path.join(publicPath, "login"), { index: "index.html" }));
   router.get("/", preventSession);
-  router.use("/", express.static(path.join(publicPath, "public")));
+  router.use("/", express.static(path.join(publicPath)));
+
 } else if (SERVER_MODE === "local") {
   // local server resources
   const publicPath = path.join(__dirname, "../", "pages");
@@ -42,6 +48,7 @@ if (NODE_ENV === "production") { // todo fix
   router.use("/login", preventSession, express.static(path.join(publicPath, "login"), { index: "login.html" }));
   router.get("/", preventSession);
   router.use("/", express.static(path.join(publicPath, "public")));
+  
 } else {
   // client dist resources
   const publicAppPath = path.join(__dirname, "../../../", "app-public", "dist");

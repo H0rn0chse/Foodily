@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      DB_CONNECTION_STRING: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_HOST_PORT}/${DB_NAME}
+      DB_CONNECTION_STRING: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
       NODE_ENV: production
     ports:
       - ${SERVER_HOST_PORT}:${SERVER_PORT}
