@@ -1,3 +1,6 @@
 {
-    "test": "i18nTest"
+    "test": "i18nTest",
+    "home.signIn": "Sign In",
+    "about.viewOnGitHub": "View on GitHub",
+    "about.version": "Version {0}"
 }

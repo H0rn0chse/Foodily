@@ -1,11 +1,18 @@
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+</script>
+
+
 <template>
   <main>
     <h1>Welcome</h1>
     <div style="display: flex; align-items: center;">
       <img src="@/assets/home.png" style="max-width: 20rem;">
       <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
-      <VaButton>
-        <a href="/login">SignIn</a>
+      <VaButton href="/login">
+        <a href=""></a>
+        {{ t("home.signIn") }}
       </VaButton>
     </div>
   </main>

@@ -108,5 +108,5 @@ app.use((req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`client server listening on http://localhost:${port}`);
+  console.log(`🔊 Client Server listening on http://localhost:${port}`);
 });
