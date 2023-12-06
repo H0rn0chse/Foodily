@@ -7,7 +7,9 @@
       <template #left>
         <va-navbar-item class="logo">
           <a href="/">
-            <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
+            <img alt="Vue logo"
+              class="logo"
+              src="@/assets/logo.svg" />
           </a>
           <h2>Foodily</h2>
           <slot name="left"></slot>

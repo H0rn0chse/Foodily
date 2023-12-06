@@ -17,9 +17,11 @@ const { t } = useI18n();
       <p>{{ t("about.version", ["0.0.1"]) }}</p>
     </header>
     <h2>
-      <a href="https://github.com/H0rn0chse/Foodily" class="reference">
+      <a href="https://github.com/H0rn0chse/Foodily"
+        class="reference">
         <!-- <svg class="icon" v-html="triangle"></svg> -->
-        <svg class="icon" v-html="siGithub.svg"></svg>
+        <svg class="icon"
+          v-html="siGithub.svg"></svg>
         {{ t("about.viewOnGitHub") }}
       </a>
     </h2>

@@ -2,7 +2,8 @@
   <main>
     <h1>Home</h1>
     <div style="display: flex; align-items: center;">
-      <img src="@/assets/image.png" style="max-width: 20rem;">
+      <img src="@/assets/image.png"
+        style="max-width: 20rem;">
       <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
       <!-- <VaForm>
 

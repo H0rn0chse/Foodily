@@ -1,7 +1,8 @@
 <template>
   <main style="height: 100%;">
     <div style="display: flex; align-items: center;">
-      <img src="@/assets/notFound.png" style="max-width: 20rem;">
+      <img src="@/assets/notFound.png"
+        style="max-width: 20rem;">
       <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
       <h1>Could not find the requested resource</h1>
     </div>

@@ -8,10 +8,12 @@ import SharedHeader from "@/components/SharedHeader.vue";
     <SharedHeader id="header">
       <template #right>
         <va-navbar-item>
-          <RouterLink to="/" active-class="activeLink">Home</RouterLink>
+          <RouterLink to="/"
+            active-class="activeLink">Home</RouterLink>
         </va-navbar-item>
         <va-navbar-item>
-          <RouterLink to="/about" active-class="activeLink">About</RouterLink>
+          <RouterLink to="/about"
+            active-class="activeLink">About</RouterLink>
         </va-navbar-item>
       </template>
     </SharedHeader>

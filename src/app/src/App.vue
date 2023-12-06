@@ -8,16 +8,23 @@ import SharedHeader from "@/components/SharedHeader.vue";
     <SharedHeader id="app">
       <template #right>
         <va-navbar-item id="headerItemsRight">
-          <RouterLink to="/" class="headerLink" active-class="activeLink">
+          <RouterLink to="/"
+            class="headerLink"
+            active-class="activeLink">
             Home
           </RouterLink>
-          <RouterLink to="/profile" class="headerLink" active-class="activeLink">
+          <RouterLink to="/profile"
+            class="headerLink"
+            active-class="activeLink">
             Profile
           </RouterLink>
-          <RouterLink to="/about" class="headerLink" active-class="activeLink">
+          <RouterLink to="/about"
+            class="headerLink"
+            active-class="activeLink">
             About
           </RouterLink>
-          <form action="/logout" method="post">
+          <form action="/logout"
+            method="post">
             <VaButton type="submit">Sign Out</VaButton>
             <!-- <button class="logout" type="submit">Sign out</button> -->
             <!-- <input type="hidden" name="_csrf" value="<%= csrfToken %>"> -->
@@ -83,5 +90,4 @@ import SharedHeader from "@/components/SharedHeader.vue";
   .logo {
     margin: 0 2rem 0 0;
   }
-} */
-</style>
+} */</style>

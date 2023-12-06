@@ -8,7 +8,8 @@ const { t } = useI18n();
   <main>
     <h1>Welcome</h1>
     <div style="display: flex; align-items: center;">
-      <img src="@/assets/home.png" style="max-width: 20rem;">
+      <img src="@/assets/home.png"
+        style="max-width: 20rem;">
       <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
       <VaButton href="/login">
         <a href=""></a>
