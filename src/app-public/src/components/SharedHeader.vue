@@ -5,13 +5,14 @@
   <header id="header">
     <va-navbar>
       <template #left>
-        <va-navbar-item class="logo">
-          <a href="/">
+        <va-navbar-item>
+          <a href="/"
+            class="reference">
             <img alt="Vue logo"
               class="logo"
               src="@/assets/logo.svg" />
+            <h2>Foodily</h2>
           </a>
-          <h2>Foodily</h2>
           <slot name="left"></slot>
         </va-navbar-item>
       </template>
@@ -26,9 +27,18 @@
 </template>
 
 <style scoped>
+.reference {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.reference,
+.reference:visited {
+  color: unset;
+}
+
 .logo {
   width: 3rem;
-  display: flex;
-  align-items: center
 }
 </style>
