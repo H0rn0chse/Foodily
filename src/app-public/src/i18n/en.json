@@ -2,5 +2,9 @@
     "test": "i18nTest",
     "home.signIn": "Sign In",
     "about.viewOnGitHub": "View on GitHub",
-    "about.version": "Version {0}"
+    "about.version": "Version {0}",
+    "login.username": "Username",
+    "login.username.empty": "Username is required",
+    "login.password": "Password",
+    "login.password.empty": "Password is required"
 }
