@@ -58,6 +58,7 @@ h2 {
   align-items: center;
 }
 
+.reference,
 .reference:visited {
   color: unset;
 }
