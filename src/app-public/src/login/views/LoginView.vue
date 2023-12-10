@@ -3,61 +3,89 @@ import { useI18n } from "vue-i18n";
 import { reactive } from "vue";
 const { t } = useI18n();
 
-const form = reactive({
-  login: "",
+type ErrorMessage = {
+  id: string,
+  message: string
+}
+
+const formData = reactive({
+  username: "",
   password: "",
+  loading: false
 });
 
-// function handleSubmit() {
-//   alert("hi");
-// }
+const errorMessages: ErrorMessage[] = reactive([]);
+
+function clearErrorMessages() {
+  errorMessages.splice(0, errorMessages.length);
+}
+
+async function submitLogin() {
+  formData.loading = true;
+  clearErrorMessages();
+
+  const body = new URLSearchParams();
+  body.append("username", formData.username);
+  body.append("password", formData.password);
+
+  const headers = new Headers({ "Content-Type": "application/x-www-form-urlencoded" });
+  const response = await fetch("/login/password", {
+    method: "POST",
+    body,
+    headers
+  });
+
+  if (response.ok) {
+    // Redirect to app
+    window.location.href = response.url;
+    return;
+  }
+
+  // Error case
+  errorMessages.push({
+    id: clearErrorMessages.length.toString(),
+    message: t("login.authFailed")
+  });
+  formData.password = "";
+  formData.loading = false;
+}
 </script>
 
 <template>
   <main>
-    <h1>Sign in</h1>
+    <h1>{{ t("login.header") }}</h1>
+    <p v-for="error in errorMessages"
+      class="errorMessage"
+      :key="error.id">
+      {{ error.message }}
+    </p>
     <VaForm id="login"
+      ref="loginForm"
       class="flex flex-col gap-2 mb-2"
       tag="form"
-      action="/login/password"
-      method="post">
-      <VaInput v-model="form.login"
+      @submit.prevent="submitLogin">
+      <VaInput v-model="formData.username"
+        id="username"
+        autocomplete="username"
         :label="t('login.username')"
-        name="username"
         :rules="[
           (v) => Boolean(v) || t('login.username.empty'),
-        ]" />
-      <VaInput v-model="form.password"
-        :label="t('login.password')"
-        name="password"
+        ]"
+        :disabled="formData.loading" />
+      <VaInput v-model="formData.password"
+        id="current-password"
+        autocomplete="current-password"
         type="password"
+        :label="t('login.password')"
         :rules="[
           (v) => Boolean(v) || t('login.password.empty'),
-        ]" />
-      <VaButton type="submit">Sign In </VaButton>
+        ]"
+        :disabled="formData.loading" />
+      <VaButton type="submit"
+        :loading="formData.loading">
+        {{ t("login.submit") }}
+      </VaButton>
     </VaForm>
-    <!-- <form action="/login/password"
-      method="post">
-      <section>
-        <label for="username">Username</label>
-        <input id="username"
-          name="username"
-          type="text"
-          autocomplete="username"
-          required
-          autofocus>
-      </section>
-      <section>
-        <label for="current-password">Password</label>
-        <input id="current-password"
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          required>
-      </section>
-      <VaButton type="submit">Sign In </VaButton> -->
-    <!-- <button type="submit">Sign in</button> -->
-    <!-- </form> -->
   </main>
 </template>
 
@@ -82,5 +110,11 @@ form>* {
 
 form input {
   margin-left: 1rem;
+}
+
+.errorMessage {
+  color: var(--va-danger);
+  font-weight: bold;
+  margin: 0.7rem 0;
 }
 </style>

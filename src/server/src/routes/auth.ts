@@ -50,7 +50,6 @@ passport.deserializeUser(function(user: User, callback) {
 
 router.post("/login/password", passport.authenticate("local", {
   successRedirect: "/app",
-  failureRedirect: "/login",
   failureMessage: true
 }));
 
