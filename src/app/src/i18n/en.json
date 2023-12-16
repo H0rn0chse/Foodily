@@ -1,3 +1,4 @@
 {
-    "test": "i18nTest"
+    "test": "i18nTest",
+    "vuestic": {}
 }

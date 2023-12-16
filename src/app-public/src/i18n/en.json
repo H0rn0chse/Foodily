@@ -9,5 +9,6 @@
     "login.password": "Password",
     "login.password.empty": "Password is required",
     "login.submit": "Sign In",
-    "login.authFailed": "Authentication failed"
+    "login.authFailed": "Authentication failed",
+    "vuestic": {}
 }
