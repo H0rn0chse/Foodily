@@ -2,7 +2,7 @@ import express from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
-import { default as db, UserRow } from "../db.js";
+import { default as db, UserRow } from "@/db";
 
 export const MODES = {
   Local: "local", // use local resources

@@ -1,4 +1,7 @@
 {
-    "test": "i18nTest",
+    "test": "i18n Test",
+    "home.header": "Home",
+    "about.viewOnGitHub": "View on GitHub",
+    "about.version": "Version {0}",
     "vuestic": {}
 }

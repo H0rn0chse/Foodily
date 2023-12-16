@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { siGithub } from "simple-icons";
+import { inject } from "vue";
 // import feather from "feather-icons";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -8,13 +9,15 @@ const { t } = useI18n();
 //   stroke: "red"
 // });
 
+const version = inject("foodilyVersion");
+
 </script>
 
 <template>
   <div class="about">
     <header>
       <h1>Foodily</h1>
-      <p>{{ t("about.version", ["0.0.1"]) }}</p>
+      <p>{{ t("about.version", [version]) }}</p>
     </header>
     <h2>
       <a href="https://github.com/H0rn0chse/Foodily"

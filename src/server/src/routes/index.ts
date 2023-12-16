@@ -2,7 +2,7 @@ import { ensureLoggedIn, ensureLoggedOut } from "connect-ensure-login";
 import express, { RequestHandler } from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { MODES } from "./auth.js";
+import { MODES } from "@/routes/auth";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

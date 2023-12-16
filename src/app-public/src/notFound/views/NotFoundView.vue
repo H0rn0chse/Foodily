@@ -1,14 +1,18 @@
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+</script>
+
 <template>
-  <main style="height: 100%;">
-    <div style="display: flex; align-items: center;">
+  <main>
+    <VaButton>
+      <a href="/">{{ t("notFound.back") }}</a>
+    </VaButton>
+    <div class="messageContainer">
       <img src="@/assets/notFound.png"
         style="max-width: 20rem;">
-      <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
-      <h1>Could not find the requested resource</h1>
+      <h1>{{ t("notFound.message") }}</h1>
     </div>
-    <VaButton>
-      <a href="/">Back to Home</a>
-    </VaButton>
   </main>
 </template>
 
@@ -18,8 +22,10 @@ h1 {
   padding-left: 2rem;
 }
 
-img {
-  padding-bottom: 2rem;
+.messageContainer {
+  display: flex;
+  align-items: center;
+  padding-top: 2rem;
 }
 
 a {

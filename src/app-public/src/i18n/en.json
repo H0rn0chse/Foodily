@@ -1,5 +1,5 @@
 {
-    "test": "i18nTest",
+    "home.header": "Welcome",
     "home.signIn": "Sign In",
     "about.viewOnGitHub": "View on GitHub",
     "about.version": "Version {0}",
@@ -10,5 +10,7 @@
     "login.password.empty": "Password is required",
     "login.submit": "Sign In",
     "login.authFailed": "Authentication failed",
+    "notFound.message": "Could not find the requested resource",
+    "notFound.back": "Back to Home",
     "vuestic": {}
 }

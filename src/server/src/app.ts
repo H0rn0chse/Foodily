@@ -1,5 +1,5 @@
 // first apply env
-import env from "./env.js";
+import env from "@/env";
 
 import express from "express";
 import session from "express-session";
@@ -8,9 +8,9 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
-import indexRouter, { ensureSession } from "./routes/index.js";
-import authRouter, { MODES } from "./routes/auth.js";
-import apiRouter from "./routes/api.js";
+import indexRouter, { ensureSession } from "@/routes/index";
+import authRouter, { MODES } from "@/routes/auth";
+import apiRouter from "@/routes/api";
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const usedUnusedImports = {

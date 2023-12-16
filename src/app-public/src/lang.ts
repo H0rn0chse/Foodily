@@ -2,7 +2,7 @@ import { watch } from "vue";
 import { useI18nConfig } from "vuestic-ui";
 import { createI18n, useI18n } from "vue-i18n";
 // User defined lang
-import enLocale from "./i18n/en.json";
+import enLocale from "@/i18n/en.json";
 
 const messages = {
   en: {

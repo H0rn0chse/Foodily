@@ -3,10 +3,11 @@ import { createPinia } from "pinia";
 import { createVuestic } from "vuestic-ui";
 import "vuestic-ui/css";
 
-import i18nConfig, { registerVuesticConfigToLocale } from "../lang";
+import packageJson from "@project/package.json";
+import i18nConfig, { registerVuesticConfigToLocale } from "@/lang";
 
-import App from "./App.vue";
-import router from "./router";
+import App from "@/public/App.vue";
+import router from "@/public/router";
 
 const app = createApp(App);
 
@@ -16,5 +17,6 @@ app.use(createVuestic());
 app.use(i18nConfig);
 
 app.provide("registerVuesticConfigToLocale", registerVuesticConfigToLocale);
+app.provide("foodilyVersion", packageJson.version);
 
 app.mount("body");

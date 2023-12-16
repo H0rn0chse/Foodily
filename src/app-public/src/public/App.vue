@@ -13,10 +13,12 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
       <template #right>
         <va-navbar-item>
           <RouterLink to="/"
+            class="reference"
             active-class="activeLink">Home</RouterLink>
         </va-navbar-item>
         <va-navbar-item>
           <RouterLink to="/about"
+            class="reference"
             active-class="activeLink">About</RouterLink>
         </va-navbar-item>
       </template>
@@ -48,6 +50,17 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
   grid-area: "app";
   overflow: scroll;
   padding: 2rem;
+}
+
+.reference {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.reference,
+.reference:visited {
+  color: unset;
 }
 
 .activeLink {

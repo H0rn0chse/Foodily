@@ -28,6 +28,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@project": fileURLToPath(new URL("../../", import.meta.url)),
     }
   },
   server: {

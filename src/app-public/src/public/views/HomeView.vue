@@ -6,7 +6,7 @@ const { t } = useI18n();
 
 <template>
   <main>
-    <h1>Welcome</h1>
+    <h1>{{ t("home.header") }}</h1>
     <div style="display: flex; align-items: center;">
       <img src="@/assets/home.png"
         style="max-width: 20rem;">

@@ -1,6 +1,13 @@
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+</script>
+
 <template>
   <main>
-    <h1>Home</h1>
+    <h1>
+      <h1>{{ t("home.header") }}</h1>
+    </h1>
     <div style="display: flex; align-items: center;">
       <img src="@/assets/image.png"
         style="max-width: 20rem;">
