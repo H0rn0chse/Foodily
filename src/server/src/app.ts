@@ -7,6 +7,7 @@ import passport from "passport";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 
 import indexRouter, { ensureSession } from "@/routes/index";
 import authRouter, { MODES } from "@/routes/auth";
@@ -28,16 +29,19 @@ const port = SERVER_PORT || 3000;
 
 app.set("view engine", "html");
 
+// sec headers
+app.use(helmet());
+// logger
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("cookieSecret"));
 
 // skip session management for local development
 if (SERVER_MODE !== MODES.ApiOnly) {
   console.log("Session enabled");
   app.use(session({
-    secret: "keyboard cat",
+    secret: "sessionSecret",
     resave: false,
     saveUninitialized: false,
   // store: new SQLiteStore({ db: "sessions.db", dir: "./var/db" })
