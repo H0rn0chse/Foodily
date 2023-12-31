@@ -1,13 +1,38 @@
-import express from "express";
+import { ensureLoggedIn, ensureLoggedOut } from "connect-ensure-login";
+import express, { RequestHandler } from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
 import { default as db, UserRow } from "@/db";
 
+const {
+  SERVER_MODE
+} = process.env;
+
 export const MODES = {
   Local: "local", // use local resources
   ApiOnly: "api-only", // skip authentication
 };
+
+function emptyMiddleware (): RequestHandler {
+  return (req, res, next) => {
+    next();
+  };
+}
+
+function ensureAuthentication (): RequestHandler {
+  return (req, res, next) => {
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      res.sendStatus(401);
+    } else {
+      next();
+    }
+  };
+}
+
+export const ensureSessionAndRedirect = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureLoggedIn();
+export const ensureSession = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureAuthentication();
+export const preventSession = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureLoggedOut({ redirectTo: "/app" });
 
 const router = express.Router();
 
@@ -31,18 +56,18 @@ passport.use("local", new LocalStrategy(function verify(username, password, call
   });
 }));
 
-type User = {
+export type AuthenticatedUser = {
   id: string,
   username: string
 };
 
 passport.serializeUser(function(user: unknown, callback) {
   process.nextTick(function() {
-    callback(null, { id: (user as User).id, username: (user as User).username });
+    callback(null, { id: (user as AuthenticatedUser).id, username: (user as AuthenticatedUser).username });
   });
 });
 
-passport.deserializeUser(function(user: User, callback) {
+passport.deserializeUser(function(user: AuthenticatedUser, callback) {
   process.nextTick(function() {
     return callback(null, user);
   });

@@ -9,8 +9,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
-import indexRouter, { ensureSession } from "@/routes/index";
-import authRouter, { MODES } from "@/routes/auth";
+import indexRouter from "@/routes/index";
+import authRouter, { MODES, ensureSession } from "@/routes/auth";
 import apiRouter from "@/routes/api";
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars

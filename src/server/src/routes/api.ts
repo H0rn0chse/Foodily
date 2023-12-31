@@ -9,9 +9,9 @@ v1Router.use("/preferences", preferenceRouter);
 
 apiRouter.use("/v1", v1Router);
 
-// generic test
-apiRouter.get("/", (req, res) => {
-  res.send("api call-foo!");
+// 404 for APIs
+apiRouter.use((req, res) => {
+  res.sendStatus(404);
 });
 
 export default apiRouter;

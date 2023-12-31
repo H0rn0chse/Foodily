@@ -1,15 +1,15 @@
 import express from "express";
 import db from "@/db";
+import { AuthenticatedUser } from "@/routes/auth";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  // console.log(JSON.stringify(req.session, null, 2));
   try {
     const result = await db.query(
       "SELECT language, user_id FROM userPreferences \
       WHERE user_id=$1",
-      [1]
+      [(req.user as AuthenticatedUser).id]
     );
 
     if (!result.rowCount) {
