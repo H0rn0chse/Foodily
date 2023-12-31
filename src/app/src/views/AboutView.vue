@@ -11,7 +11,7 @@ const version = inject("foodilyVersion");
 <template>
   <div class="about">
     <header>
-      <h1>Foodily</h1>
+      <h1>{{ t("project.name") }}</h1>
       <p>{{ t("about.version", [version]) }}</p>
     </header>
     <h2>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import { useI18n } from "vue-i18n";
 import SharedHeader from "@/components/SharedHeader.vue";
+const { t } = useI18n();
 </script>
 
 <template>
@@ -11,23 +13,21 @@ import SharedHeader from "@/components/SharedHeader.vue";
           <RouterLink to="/"
             class="headerLink"
             active-class="activeLink">
-            Home
+            {{ t("header.homeLink") }}
           </RouterLink>
           <RouterLink to="/profile"
             class="headerLink"
             active-class="activeLink">
-            Profile
+            {{ t("header.settingsLink") }}
           </RouterLink>
           <RouterLink to="/about"
             class="headerLink"
             active-class="activeLink">
-            About
+            {{ t("header.aboutLink") }}
           </RouterLink>
           <form action="/logout"
             method="post">
-            <VaButton type="submit">Sign Out</VaButton>
-            <!-- <button class="logout" type="submit">Sign out</button> -->
-            <!-- <input type="hidden" name="_csrf" value="<%= csrfToken %>"> -->
+            <VaButton type="submit">{{ t("header.signOutBtn") }}</VaButton>
           </form>
         </va-navbar-item>
       </template>
@@ -90,4 +90,5 @@ import SharedHeader from "@/components/SharedHeader.vue";
   .logo {
     margin: 0 2rem 0 0;
   }
-} */</style>
+} */
+</style>

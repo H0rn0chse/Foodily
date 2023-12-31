@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 </script>
 
 <template>
@@ -11,7 +13,7 @@
             <img alt="Vue logo"
               class="logo"
               src="@/assets/logo.svg" />
-            <h2>Foodily</h2>
+            <h2>{{ t("project.name") }}</h2>
           </a>
           <slot name="left"></slot>
         </va-navbar-item>

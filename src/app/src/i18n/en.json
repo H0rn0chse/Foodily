@@ -1,7 +1,12 @@
 {
-    "test": "i18n Test",
-    "home.header": "Home",
+    "project.name": "Foodily",
     "about.viewOnGitHub": "View on GitHub",
     "about.version": "Version {0}",
+    "header.aboutLink": "About",
+    "header.homeLink": "Home",
+    "header.settingsLink": "Settings",
+    "header.signOutBtn": "Sign Out",
+    "home.title": "Home",
+    "test": "i18n Test",
     "vuestic": {}
 }

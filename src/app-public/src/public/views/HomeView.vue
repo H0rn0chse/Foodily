@@ -6,11 +6,10 @@ const { t } = useI18n();
 
 <template>
   <main>
-    <h1>{{ t("home.header") }}</h1>
+    <h1>{{ t("home.title") }}</h1>
     <div style="display: flex; align-items: center;">
       <img src="@/assets/home.png"
         style="max-width: 20rem;">
-      <!-- <VaImage src=" /src/public/assets/image.png"></VaImage> -->
       <VaButton href="/login">
         <a href=""></a>
         {{ t("home.signIn") }}

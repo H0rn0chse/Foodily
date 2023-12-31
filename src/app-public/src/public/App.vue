@@ -2,6 +2,8 @@
 import { RouterLink, RouterView } from "vue-router";
 import SharedHeader from "@/components/SharedHeader.vue";
 import { inject } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 inject<Function>("registerVuesticConfigToLocale", () => { })();
 
@@ -14,12 +16,12 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
         <va-navbar-item>
           <RouterLink to="/"
             class="reference"
-            active-class="activeLink">Home</RouterLink>
+            active-class="activeLink">{{ t("header.homeLink") }}</RouterLink>
         </va-navbar-item>
         <va-navbar-item>
           <RouterLink to="/about"
             class="reference"
-            active-class="activeLink">About</RouterLink>
+            active-class="activeLink">{{ t("header.aboutLink") }}</RouterLink>
         </va-navbar-item>
       </template>
     </SharedHeader>
