@@ -49,6 +49,15 @@ if (SERVER_MODE !== MODES.ApiOnly) {
 
   app.use(passport.authenticate("session"));
   app.use("/", authRouter);
+} else {
+  // set static test user for authentication
+  app.use((req, res, next) => {
+    req.user = {
+      id: "1",
+      username: "admin"
+    };
+    next();
+  });
 }
 
 app.use("/api", ensureSession, apiRouter);

@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "nodemon --ext ts --exec \"npm run build && node dist/app.js\"",
     "dev:local": "cross-env SERVER_MODE=local npm run dev",
-    "dev:api-only": "cross-env SERVER_MODE=api-only npm run dev",
+    "dev:api-only": "cross-env SERVER_MODE=api-only nodemon --ext ts --exec \"npm run build:api-only && node dist/app.js\"",
     "build": "npm run clean && tsc --build && tsc-alias && npm run copy-files",
+    "build:api-only": "tsc --build && tsc-alias",
     "clean": "npx rimraf dist",
     "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css dist/",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path ../../.gitignore"

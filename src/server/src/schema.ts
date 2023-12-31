@@ -1,6 +1,16 @@
 import crypto from "crypto";
 import { Client } from "pg";
 
+/*
+ * User
+ * UserSetting
+ * Dinner
+ *  - Course
+ *  - Rating
+ * FoodPreference
+ * FoodPreferenceForm
+ */
+
 export async function init (client: Client) {
   await dropAllTables(client);
   await createTables(client);
@@ -11,7 +21,7 @@ export async function init (client: Client) {
 async function dropAllTables (client: Client) {
   await [
     "users",
-    "userPreferences"
+    "userSettings"
   ].reduce(async (promise, tableName) => {
     await promise;
     await client.query(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
@@ -26,7 +36,7 @@ async function createTables (client: Client) {
     salt BYTEA \
   )");
 
-  await client.query("CREATE TABLE IF NOT EXISTS userPreferences ( \
+  await client.query("CREATE TABLE IF NOT EXISTS userSettings ( \
     id INT GENERATED ALWAYS AS IDENTITY, \
     user_id INT REFERENCES users(id), \
     language TEXT \
@@ -49,7 +59,7 @@ async function addTestData (client: Client) {
   console.log("✅ Initial User created");
 
   await client.query(
-    "INSERT INTO userPreferences(user_id, language)\
+    "INSERT INTO userSettings(user_id, language)\
     VALUES($1, $2)",
     [
       1,

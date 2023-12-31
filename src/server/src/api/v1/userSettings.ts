@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT language, user_id FROM userPreferences \
+      "SELECT language, user_id FROM userSettings \
       WHERE user_id=$1",
       [(req.user as AuthenticatedUser).id]
     );
