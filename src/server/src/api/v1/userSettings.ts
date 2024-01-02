@@ -6,8 +6,15 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const result = await db.query(
-      "SELECT language, user_id FROM userSettings \
+
+    type UserSettingsRow = {
+      id: number,
+      user_id: number,
+      language: string,
+    };
+
+    const result = await db.query<UserSettingsRow>(
+      "SELECT language, user_id FROM user_settings \
       WHERE user_id=$1",
       [(req.user as AuthenticatedUser).id]
     );

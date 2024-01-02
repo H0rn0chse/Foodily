@@ -3,7 +3,7 @@ import express, { RequestHandler } from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
-import { default as db, UserRow } from "@/db";
+import { default as db } from "@/db";
 
 const {
   SERVER_MODE
@@ -38,12 +38,21 @@ const router = express.Router();
 
 passport.use("local", new LocalStrategy(function verify(username, password, callback) {
   console.log(`🔎 Verifying ${username}`);
+
+  type UserRow = {
+    id: number,
+    username: string,
+    hashed_password: Buffer,
+    salt: Buffer
+  };
+
   db.query<UserRow>("SELECT * FROM users WHERE username = $1", [ username ], (err, result) => {
     const [row] = result.rows;
     if (err) { return callback(err); }
     if (!row) { return callback(null, false, { message: "Incorrect username or password." }); }
 
     console.log(`Found ${username}`);
+    // todo: support virtual users and tokens
 
     crypto.pbkdf2(password, row.salt, 310000, 32, "sha256", function(err, hashedPassword) {
       if (err) { return callback(err); }

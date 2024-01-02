@@ -19,13 +19,6 @@ console.log("✅ Database connected");
 
 await init(client);
 
-export type UserRow = {
-    id: number,
-    username: string,
-    hashed_password: Buffer,
-    salt: Buffer
-};
-
 // await client.end();
 
 export default client;
