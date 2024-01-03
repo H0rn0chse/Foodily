@@ -21,5 +21,26 @@ await init(client);
 
 // await client.end();
 
+export function buildSetStatement (newData: object, indexOffset: number = 1) {
+  const columnsToUpdate = Object.keys(newData).filter((key) => {
+    const value = newData[key as keyof typeof newData];
+    return value !== null && value !== undefined;
+  });
+  const setArguments = columnsToUpdate.map((key, index) => {
+    const escapedValue = `$${index+indexOffset}`;
+    return `${key}=${escapedValue}`;
+  });
+  const setStatement = `SET ${setArguments.join(", ")}`;
+
+  const newValues = columnsToUpdate.map<unknown>((key) => {
+    return newData[key as keyof typeof newData];
+  });
+  return {
+    setArguments,
+    setStatement,
+    newValues,
+  };
+}
+
 export default client;
 

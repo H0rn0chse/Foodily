@@ -29,7 +29,6 @@ router.get("/", async (req, res) => {
       result: result.rows[0]
     });
   } catch (err) {
-    // todo logging
     console.error(err);
     res.sendStatus(500);
   }
