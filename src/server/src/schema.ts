@@ -98,10 +98,12 @@ async function createTables (client: Client) {
     id SERIAL PRIMARY KEY,
     owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    form_id INT REFERENCES food_preference_forms(id) ON DELETE CASCADE,
     preferred_vegetarian BOOLEAN,
     coriander BOOLEAN,
     coffee BOOLEAN,
-    additional_comments TEXT
+    additional_comments TEXT,
+    UNIQUE NULLS NOT DISTINCT (owner_id, user_id, form_id)
   )`);
 
   await client.query(`CREATE TABLE IF NOT EXISTS food_distaste (
@@ -122,7 +124,6 @@ async function createTables (client: Client) {
 
   await client.query(`CREATE TABLE IF NOT EXISTS food_preference_forms (
     id SERIAL PRIMARY KEY,
-    preference_id INT REFERENCES food_preferences(id) ON DELETE CASCADE NOT NULL,
     status TEXT
   )`); // todo 'status' to enum
 }
@@ -242,6 +243,40 @@ async function addTestData (client: Client) {
     [
       1, // dinner_id
       3 // user_id
+    ]
+  );
+
+  await client.query( // foodPreference - admin
+    `INSERT INTO food_preferences(owner_id, user_id, preferred_vegetarian, coriander, coffee, additional_comments)
+    VALUES($1, $2, $3, $4, $5, $6)`,
+    [
+      1, // owner_id
+      1, // user_id
+      false, // preferred_vegetarian
+      true, // coriander
+      true, // coffee
+      "comment", // additional_comments
+    ]
+  );
+
+  await client.query( // foodPreference - admin - allergy1
+    `INSERT INTO food_allergies(preference_id, name, description, exceptions)
+    VALUES($1, $2, $3, $4)`,
+    [
+      1, // preference_id
+      "Laktose", // name
+      "Milch macht Boom", // description
+      "Laktosefreie Milch", // exceptions
+    ]
+  );
+
+  await client.query( // foodPreference - admin - distaste1
+    `INSERT INTO food_distaste(preference_id, type, description)
+    VALUES($1, $2, $3)`,
+    [
+      1, // preference_id
+      "vegetables", // type
+      "Rosenkohl", // description
     ]
   );
 }
