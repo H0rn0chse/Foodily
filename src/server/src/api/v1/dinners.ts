@@ -204,17 +204,23 @@ router.put("/:dinnerId", async (req, res) => {
       newValues,
     } = buildSetStatement(dinnerData, 3);
 
-    await db.query(
+    const result = await db.query(
       `UPDATE dinners
       ${setStatement}
       WHERE id=$1
-        AND owner_id=$2`,
+        AND owner_id=$2
+      RETURNING id`,
       [
         dinnerId,
         (req.user as AuthenticatedUser).id,
         ...newValues
       ]
     );
+
+    if (!result.rowCount) {
+      res.sendStatus(400);
+      return;
+    }
 
     res.sendStatus(200);
   } catch (err) {
@@ -228,15 +234,21 @@ router.delete("/:dinnerId", async (req, res) => {
   try {
     const { dinnerId } = req.params;
 
-    await db.query(
+    const result = await db.query(
       `DELETE FROM dinners
       WHERE id=$1
-        AND owner_id=$2`,
+        AND owner_id=$2
+      RETURNING id`,
       [
         dinnerId,
         (req.user as AuthenticatedUser).id
       ]
     );
+
+    if (!result.rowCount) {
+      res.sendStatus(400);
+      return;
+    }
 
     res.sendStatus(200);
   } catch (err) {

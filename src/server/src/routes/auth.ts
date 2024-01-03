@@ -45,24 +45,32 @@ passport.use("local", new LocalStrategy(function verify(username, password, call
     hashed_password: Buffer,
     salt: Buffer
   };
-
-  db.query<UserRow>("SELECT * FROM users WHERE username = $1", [ username ], (err, result) => {
-    const [row] = result.rows;
-    if (err) { return callback(err); }
-    if (!row) { return callback(null, false, { message: "Incorrect username or password." }); }
-
-    console.log(`Found ${username}`);
-    // todo: support virtual users and tokens
-
-    crypto.pbkdf2(password, row.salt, 310000, 32, "sha256", function(err, hashedPassword) {
+  db.query<UserRow>(
+    `SELECT *
+    FROM users
+    WHERE owner_id IS NULL
+      AND username=$1`,
+    [
+      username
+    ],
+    (err, result) => {
+      const [row] = result.rows;
       if (err) { return callback(err); }
-      if (!crypto.timingSafeEqual(row.hashed_password, hashedPassword)) {
-        return callback(null, false, { message: "Incorrect username or password." });
-      }
-      console.log(`✅ Verified ${username}`);
-      return callback(null, row);
-    });
-  });
+      if (!row) { return callback(null, false, { message: "Incorrect username or password." }); }
+
+      console.log(`Found ${username}`);
+      // todo: support virtual users and tokens
+
+      crypto.pbkdf2(password, row.salt, 310000, 32, "sha256", function(err, hashedPassword) {
+        if (err) { return callback(err); }
+        if (!crypto.timingSafeEqual(row.hashed_password, hashedPassword)) {
+          return callback(null, false, { message: "Incorrect username or password." });
+        }
+        console.log(`✅ Verified ${username}`);
+        return callback(null, row);
+      });
+    }
+  );
 }));
 
 export type AuthenticatedUser = {

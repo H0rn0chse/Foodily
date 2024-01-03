@@ -7,7 +7,7 @@ import { Client } from "pg";
  * Dinner
  *  - Participants
  *  - Courses
- *    + Rating
+ *    + Rating (todo)
  * FoodPreference
  * FoodPreferenceForm
  */
@@ -44,7 +44,7 @@ async function createTables (client: Client) {
     username TEXT NOT NULL,
     hashed_password BYTEA,
     salt BYTEA,
-    UNIQUE (username)
+    UNIQUE NULLS NOT DISTINCT (username, owner_id)
   )`); // todo: check cascade
 
   await client.query(`CREATE TABLE IF NOT EXISTS user_settings (
@@ -131,9 +131,7 @@ async function addTestData (client: Client) {
   const salt = crypto.randomBytes(16);
   await client.query( // initial user
     `INSERT INTO users (username, hashed_password, salt)
-    VALUES ($1, $2, $3)
-    ON CONFLICT (username)
-    DO NOTHING`,
+    VALUES ($1, $2, $3)`,
     [
       "admin", // username
       crypto.pbkdf2Sync("1234", salt, 310000, 32, "sha256"), // hashed_password
@@ -141,7 +139,6 @@ async function addTestData (client: Client) {
     ]
   );
   console.log("✅ Initial User created");
-
 
   await client.query( // guest1
     `INSERT INTO users (username, owner_id)
@@ -152,7 +149,7 @@ async function addTestData (client: Client) {
     ]
   );
 
-  await client.query( // guest1
+  await client.query( // guest2
     `INSERT INTO users (username, owner_id)
     VALUES ($1, $2)`,
     [
