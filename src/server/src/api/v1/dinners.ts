@@ -68,8 +68,8 @@ router.get("/:dinnerId", async (req, res) => {
       FROM dinners
         JOIN users dinner_owner
         ON dinners.owner_id=dinner_owner.id
-      WHERE dinners.owner_id=$2
-        AND dinners.id=$1`,
+      WHERE dinners.id=$1
+        AND dinners.owner_id=$2`,
       [
         dinnerId,
         (req.user as AuthenticatedUser).id
@@ -415,7 +415,7 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
     );
 
     if (!result.rowCount) {
-      res.sendStatus(404);
+      res.sendStatus(400);
       return;
     }
 
@@ -449,7 +449,7 @@ router.delete("/:dinnerId/courses/:courseId", async (req, res) => {
     );
     
     if (!result.rowCount) {
-      res.sendStatus(404);
+      res.sendStatus(400);
       return;
     }
 
@@ -498,7 +498,7 @@ router.post("/:dinnerId/participants", async (req, res) => {
     );
 
     if (!dinnerResult.rowCount) {
-      res.sendStatus(403);
+      res.sendStatus(400);
       return;
     }
 
@@ -547,7 +547,7 @@ router.delete("/:dinnerId/participants/:userId", async (req, res) => {
     );
     
     if (!result.rowCount) {
-      res.sendStatus(404);
+      res.sendStatus(400);
       return;
     }
 
