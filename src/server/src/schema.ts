@@ -94,6 +94,11 @@ async function createTables (client: Client) {
     UNIQUE (course_id, owner_id)
   )`); // todo 'rating' to enum
 
+  await client.query(`CREATE TABLE IF NOT EXISTS food_preference_forms (
+    id SERIAL PRIMARY KEY,
+    status TEXT
+  )`); // todo 'status' to enum
+
   await client.query(`CREATE TABLE IF NOT EXISTS food_preferences (
     id SERIAL PRIMARY KEY,
     owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
@@ -121,11 +126,6 @@ async function createTables (client: Client) {
     description TEXT,
     exceptions TEXT
   )`);
-
-  await client.query(`CREATE TABLE IF NOT EXISTS food_preference_forms (
-    id SERIAL PRIMARY KEY,
-    status TEXT
-  )`); // todo 'status' to enum
 }
 
 async function addTestData (client: Client) {
