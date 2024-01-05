@@ -451,7 +451,7 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
       AND dinner_id IN (
         SELECT id
         FROM dinners
-        WHERE dinner_id=$2
+        WHERE id=$2
           AND owner_id=$3
       )
       RETURNING id`,
@@ -486,7 +486,7 @@ router.delete("/:dinnerId/courses/:courseId", async (req, res) => {
         AND dinner_id IN (
           SELECT id
           FROM dinners
-          WHERE dinner_id=$2
+          WHERE id=$2
             AND owner_id=$3
         )
       RETURNING id`,
@@ -586,7 +586,7 @@ router.delete("/:dinnerId/participants/:userId", async (req, res) => {
         AND dinner_id IN (
           SELECT id
           FROM dinners
-          WHERE dinner_id=$2
+          WHERE id=$2
             AND owner_id=$3
             AND owner_id!=$1
         )
