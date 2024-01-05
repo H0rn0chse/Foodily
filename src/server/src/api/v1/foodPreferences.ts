@@ -1,5 +1,5 @@
 import express from "express";
-import db from "@/db";
+import db, { buildSetStatement } from "@/db";
 import { AuthenticatedUser } from "@/routes/auth";
 
 const router = express.Router();
@@ -167,17 +167,140 @@ router.get("/:prefId", async (req, res) => {
 
 // Create
 router.post("/", async (req, res) => {
-  res.sendStatus(501);
+  try {
+    type RequestBody = {
+      userId?: string,
+      preferredVegetarian?: boolean,
+      coriander?: boolean,
+      coffee?: boolean,
+      additionalComments?: string,
+    };
+    const { body }: { body: RequestBody } = req;
+
+    if (!body.userId) {
+      res.status(400).json({
+        error: "Missing property 'userId'"
+      });
+      return;
+    }
+
+    const prefData = {
+      userId: body.userId,
+      preferredVegetarian: body.preferredVegetarian ?? false,
+      coriander: body.coriander ?? false,
+      coffee: body.coffee ?? false,
+      additionalComments: body.additionalComments ?? "",
+    };
+
+    type PrefRow = {
+      id: number,
+    };
+    const result = await db.query<PrefRow>(
+      `INSERT INTO food_preferences(
+        owner_id,
+        user_id,
+        preferred_vegetarian,
+        coriander,
+        coffee,
+        additional_comments
+      )
+      VALUES($1, $2, $3, $4, $5, $6)
+      RETURNING id`,
+      [
+        (req.user as AuthenticatedUser).id,
+        prefData.userId,
+        prefData.preferredVegetarian,
+        prefData.coriander,
+        prefData.coffee,
+        prefData.additionalComments,
+      ]
+    );
+
+    const prefId = result.rows[0].id;
+
+    res.setHeader("Location", `/api/v1/foodPreference/${prefId}`);
+    res.sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
 
 // Update
 router.put("/:prefId", async (req, res) => {
-  res.sendStatus(501);
+  try {
+    const { prefId } = req.params;
+
+    type RequestBody = {
+      preferredVegetarian?: boolean,
+      coriander?: boolean,
+      coffee?: boolean,
+      additionalComments?: string,
+    };
+    const { body }: { body: RequestBody } = req;
+
+    const dinnerData = {
+      preferredVegetarian: body.preferredVegetarian,
+      coriander: body.coriander,
+      coffee: body.coffee,
+      additionalComments: body.additionalComments,
+    };
+    const {
+      setStatement,
+      newValues,
+    } = buildSetStatement(dinnerData, 3);
+
+    const result = await db.query(
+      `UPDATE food_preferences
+      ${setStatement}
+      WHERE id=$1
+        AND owner_id=$2
+      RETURNING id`,
+      [
+        prefId,
+        (req.user as AuthenticatedUser).id,
+        ...newValues
+      ]
+    );
+
+    if (!result.rowCount) {
+      res.sendStatus(400);
+      return;
+    }
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
 
 // Delete
 router.delete("/:prefId", async (req, res) => {
-  res.sendStatus(501);
+  try {
+    const { prefId } = req.params;
+
+    const result = await db.query(
+      `DELETE FROM food_preferences
+      WHERE id=$1
+        AND owner_id=$2
+      RETURNING id`,
+      [
+        prefId,
+        (req.user as AuthenticatedUser).id
+      ]
+    );
+
+    if (!result.rowCount) {
+      res.sendStatus(400);
+      return;
+    }
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
 });
 
 export default router;
