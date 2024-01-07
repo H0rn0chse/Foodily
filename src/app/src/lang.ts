@@ -71,11 +71,11 @@ export function registerVuesticConfigToLocale () {
   const { locale, messages } = useI18n();
   const { mergeIntoConfig } = useI18nConfig();
 
-  const localeMessages: I18nVuesticMessages = messages.value[locale.value];
-  mergeIntoConfig(localeMessages.vuestic || {});
+  const localeMessages: I18nVuesticMessages = messages.value[locale.value] ;
+  mergeIntoConfig(localeMessages?.vuestic || {});
 
   watch(locale, (newLocale: string) => {
     const localeMessages: I18nVuesticMessages = messages.value[newLocale];
-    mergeIntoConfig(localeMessages.vuestic || {});
+    mergeIntoConfig(localeMessages?.vuestic || {});
   });
 }

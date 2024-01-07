@@ -99,6 +99,7 @@ async function createTables (client: Client) {
     status TEXT
   )`); // todo 'status' to enum
 
+  // todo: check owner_id
   await client.query(`CREATE TABLE IF NOT EXISTS food_preferences (
     id SERIAL PRIMARY KEY,
     owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
