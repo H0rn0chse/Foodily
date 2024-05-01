@@ -1,0 +1,18 @@
+{
+    "project.name": "Foodily",
+    "home.title": "Willkommen",
+    "home.signIn": "Anmelden",
+    "about.viewOnGitHub": "Zu GitHub",
+    "about.version": "Version {0}",
+    "header.aboutLink": "Über",
+    "header.homeLink": "Start",
+    "login.title": "Anmeldung",
+    "login.username": "Benutzer",
+    "login.username.empty": "Benutzer ist erforderlich.",
+    "login.password": "Passwort",
+    "login.password.empty": "Passwort ist erforderlich.",
+    "login.submit": "Anmelden",
+    "login.authFailed": "Authentifizierung is fehlgeschlagen!",
+    "notFound.message": "Die angefragte Resource konnte nicht gefunden werden.",
+    "notFound.back": "Zurück zu Start"
+}

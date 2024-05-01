@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import { RouterView } from "vue-router";
 import SharedHeader from "@/components/SharedHeader.vue";
 import { inject } from "vue";
 import { useI18n } from "vue-i18n";
@@ -14,15 +14,17 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
     <v-layout>
     <SharedHeader>
       <template #navigationList>
-        <v-list-item>
-          <RouterLink to="/"
+        <v-list-item link
+            to="/"
             class="reference"
-            active-class="activeLink">{{ t("header.homeLink") }}</RouterLink>
+            active-class="activeLink">
+            {{ t("header.homeLink") }}
         </v-list-item>
-        <v-list-item>
-          <RouterLink to="/about"
+        <v-list-item link
+            to="/about"
             class="reference"
-            active-class="activeLink">{{ t("header.aboutLink") }}</RouterLink>
+            active-class="activeLink">
+            {{ t("header.aboutLink") }}
         </v-list-item>
       </template>
     </SharedHeader>
