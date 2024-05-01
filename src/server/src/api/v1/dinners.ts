@@ -16,7 +16,11 @@ router.get("/", async (req, res) => {
       date: number,
     };
     const result = await db.query<DinnersRow>(
-      `SELECT dinners.id, dinners.owner_id, dinner_owner.username, date
+      `SELECT
+        dinners.id,
+        dinners.owner_id,
+        dinner_owner.username,
+        date
       FROM dinners
         JOIN users dinner_owner
         ON dinners.owner_id=dinner_owner.id
@@ -54,7 +58,10 @@ router.get("/:dinnerId", async (req, res) => {
       courses: number[]
     };
     const dinnerResult = await db.query<DinnersRow>(
-      `SELECT dinners.id, dinners.owner_id, date,
+      `SELECT
+        dinners.id,
+        dinners.owner_id,
+        date,
         ARRAY(
           SELECT user_id
           FROM dinner_participants
@@ -88,7 +95,9 @@ router.get("/:dinnerId", async (req, res) => {
       username: string,
     };
     const participantResult = await db.query<ParticipantsRow>(
-      `SELECT id, username
+      `SELECT
+        id,
+        username
       FROM users
       WHERE id=ANY($1::int[])`,
       [dinner.participants]
@@ -104,7 +113,14 @@ router.get("/:dinnerId", async (req, res) => {
       vegetarian: boolean,
     };
     const courseResults = await db.query<CoursesRow>(
-      `SELECT id, course_number, main, title, description, type, vegetarian
+      `SELECT
+        id,
+        course_number,
+        main,
+        title,
+        description,
+        type,
+        vegetarian
       FROM dinner_courses
       WHERE id=ANY($1::int[])`,
       [dinner.courses]
@@ -157,7 +173,10 @@ router.post("/", async (req, res) => {
       id: number,
     };
     const result = await db.query<DinnersRow>(
-      `INSERT INTO dinners(owner_id, date)
+      `INSERT INTO dinners(
+        owner_id,
+        date
+      )
       VALUES($1, $2)
       RETURNING id`,
       [
@@ -169,7 +188,10 @@ router.post("/", async (req, res) => {
     const dinnerId = result.rows[0].id;
 
     await db.query(
-      `INSERT INTO dinner_participants(dinner_id, user_id)
+      `INSERT INTO dinner_participants(
+        dinner_id,
+        user_id
+      )
       VALUES($1, $2)
       RETURNING id`,
       [
@@ -272,7 +294,14 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
       vegetarian: boolean,
     };
     const courseResult = await db.query<CoursesRow>(
-      `SELECT course.id, course.course_number, course.main, course.title, course.description, course.type, course.vegetarian
+      `SELECT
+        course.id,
+        course.course_number,
+        course.main,
+        course.title,
+        course.description,
+        course.type,
+        course.vegetarian
       FROM dinner_courses course
         JOIN dinners
         ON dinners.id=course.dinner_id
@@ -357,7 +386,15 @@ router.post("/:dinnerId/courses", async (req, res) => {
       id: number,
     };
     const result = await db.query<CoursesRow>(
-      `INSERT INTO dinner_courses(dinner_id, course_number, main, title, description, type, vegetarian)
+      `INSERT INTO dinner_courses(
+        dinner_id,
+        course_number,
+        main,
+        title,
+        description,
+        type,
+        vegetarian
+      )
       VALUES($1, $2, $3, $4, $5, $6, $7)
       RETURNING id`,
       [
@@ -414,7 +451,7 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
       AND dinner_id IN (
         SELECT id
         FROM dinners
-        WHERE dinner_id=$2
+        WHERE id=$2
           AND owner_id=$3
       )
       RETURNING id`,
@@ -449,7 +486,7 @@ router.delete("/:dinnerId/courses/:courseId", async (req, res) => {
         AND dinner_id IN (
           SELECT id
           FROM dinners
-          WHERE dinner_id=$2
+          WHERE id=$2
             AND owner_id=$3
         )
       RETURNING id`,
@@ -519,7 +556,10 @@ router.post("/:dinnerId/participants", async (req, res) => {
     };
     
     await db.query(
-      `INSERT INTO dinner_participants(dinner_id, user_id)
+      `INSERT INTO dinner_participants(
+        dinner_id,
+        user_id
+      )
       VALUES($1, $2)
       RETURNING id`,
       [
@@ -546,7 +586,7 @@ router.delete("/:dinnerId/participants/:userId", async (req, res) => {
         AND dinner_id IN (
           SELECT id
           FROM dinners
-          WHERE dinner_id=$2
+          WHERE id=$2
             AND owner_id=$3
             AND owner_id!=$1
         )

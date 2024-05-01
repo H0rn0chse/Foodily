@@ -94,6 +94,12 @@ async function createTables (client: Client) {
     UNIQUE (course_id, owner_id)
   )`); // todo 'rating' to enum
 
+  await client.query(`CREATE TABLE IF NOT EXISTS food_preference_forms (
+    id SERIAL PRIMARY KEY,
+    status TEXT
+  )`); // todo 'status' to enum
+
+  // todo: check owner_id
   await client.query(`CREATE TABLE IF NOT EXISTS food_preferences (
     id SERIAL PRIMARY KEY,
     owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
@@ -121,17 +127,16 @@ async function createTables (client: Client) {
     description TEXT,
     exceptions TEXT
   )`);
-
-  await client.query(`CREATE TABLE IF NOT EXISTS food_preference_forms (
-    id SERIAL PRIMARY KEY,
-    status TEXT
-  )`); // todo 'status' to enum
 }
 
 async function addTestData (client: Client) {
   const salt = crypto.randomBytes(16);
   await client.query( // initial user
-    `INSERT INTO users (username, hashed_password, salt)
+    `INSERT INTO users (
+      username,
+      hashed_password,
+      salt
+    )
     VALUES ($1, $2, $3)`,
     [
       "admin", // username
@@ -142,7 +147,10 @@ async function addTestData (client: Client) {
   console.log("✅ Initial User created");
 
   await client.query( // guest1
-    `INSERT INTO users (username, owner_id)
+    `INSERT INTO users (
+      username,
+      owner_id
+    )
     VALUES ($1, $2)`,
     [
       "guest1", // username
@@ -151,7 +159,10 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // guest2
-    `INSERT INTO users (username, owner_id)
+    `INSERT INTO users (
+      username,
+      owner_id
+    )
     VALUES ($1, $2)`,
     [
       "guest2", // username
@@ -160,7 +171,10 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // user_settings - admin
-    `INSERT INTO user_settings(user_id, language)
+    `INSERT INTO user_settings(
+      user_id,
+      language
+    )
     VALUES($1, $2)`,
     [
       1, // user_id
@@ -169,7 +183,10 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1
-    `INSERT INTO dinners(owner_id, date)
+    `INSERT INTO dinners(
+      owner_id,
+      date
+    )
     VALUES($1, $2)`,
     [
       1, // owner_id
@@ -178,7 +195,15 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1 - course1
-    `INSERT INTO dinner_courses(dinner_id, course_number, main, title, description, type, vegetarian)
+    `INSERT INTO dinner_courses(
+      dinner_id,
+      course_number,
+      main,
+      title,
+      description,
+      type,
+      vegetarian
+    )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
       1, // dinner_id
@@ -192,7 +217,15 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1 - course2
-    `INSERT INTO dinner_courses(dinner_id, course_number, main, title, description, type, vegetarian)
+    `INSERT INTO dinner_courses(
+      dinner_id,
+      course_number,
+      main,
+      title,
+      description,
+      type,
+      vegetarian
+    )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
       1, // dinner_id
@@ -206,7 +239,15 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1 - course3
-    `INSERT INTO dinner_courses(dinner_id, course_number, main, title, description, type, vegetarian)
+    `INSERT INTO dinner_courses(
+      dinner_id,
+      course_number,
+      main,
+      title,
+      description,
+      type,
+      vegetarian
+    )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
       1, // dinner_id
@@ -220,7 +261,10 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1 - participant - admin
-    `INSERT INTO dinner_participants(dinner_id, user_id)
+    `INSERT INTO dinner_participants(
+      dinner_id,
+      user_id
+    )
     VALUES($1, $2)`,
     [
       1, // dinner_id
@@ -229,7 +273,10 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1 - participant - guest1
-    `INSERT INTO dinner_participants(dinner_id, user_id)
+    `INSERT INTO dinner_participants(
+      dinner_id,
+      user_id
+    )
     VALUES($1, $2)`,
     [
       1, // dinner_id
@@ -238,7 +285,10 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // dinner1 - participant - guest1
-    `INSERT INTO dinner_participants(dinner_id, user_id)
+    `INSERT INTO dinner_participants(
+      dinner_id,
+      user_id
+    )
     VALUES($1, $2)`,
     [
       1, // dinner_id
@@ -247,7 +297,14 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // foodPreference - admin
-    `INSERT INTO food_preferences(owner_id, user_id, preferred_vegetarian, coriander, coffee, additional_comments)
+    `INSERT INTO food_preferences(
+      owner_id,
+      user_id,
+      preferred_vegetarian,
+      coriander,
+      coffee,
+      additional_comments
+    )
     VALUES($1, $2, $3, $4, $5, $6)`,
     [
       1, // owner_id
@@ -260,7 +317,12 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // foodPreference - admin - allergy1
-    `INSERT INTO food_allergies(preference_id, name, description, exceptions)
+    `INSERT INTO food_allergies(
+      preference_id,
+      name,
+      description,
+      exceptions
+    )
     VALUES($1, $2, $3, $4)`,
     [
       1, // preference_id
@@ -271,7 +333,11 @@ async function addTestData (client: Client) {
   );
 
   await client.query( // foodPreference - admin - distaste1
-    `INSERT INTO food_distaste(preference_id, type, description)
+    `INSERT INTO food_distaste(
+      preference_id,
+      type,
+      description
+      )
     VALUES($1, $2, $3)`,
     [
       1, // preference_id

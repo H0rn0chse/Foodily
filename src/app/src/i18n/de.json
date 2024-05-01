@@ -1,0 +1,13 @@
+{
+    "project.name": "Foodily",
+    "about.viewOnGitHub": "Mehr auf GitHub",
+    "about.version": "Version {0}",
+    "header.aboutLink": "Über",
+    "header.homeLink": "Start",
+    "header.settingsLink": "Einstellungen",
+    "header.signOutBtn": "Abmelden",
+    "home.title": "Start",
+    "settings.title": "Einstellungen",
+    "settings.languageSelect": "Aktuelle Sprache",
+    "vuestic": {}
+}

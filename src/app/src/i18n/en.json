@@ -7,6 +7,7 @@
     "header.settingsLink": "Settings",
     "header.signOutBtn": "Sign Out",
     "home.title": "Home",
-    "test": "i18n Test",
+    "settings.title": "Settings",
+    "settings.languageSelect": "Current Language",
     "vuestic": {}
 }

@@ -49,10 +49,10 @@ export function registerVuesticConfigToLocale () {
   const { mergeIntoConfig } = useI18nConfig();
 
   const localeMessages: I18nVuesticMessages = messages.value[locale.value];
-  mergeIntoConfig(localeMessages.vuestic || {});
+  mergeIntoConfig(localeMessages?.vuestic || {});
 
   watch(locale, (newLocale: string) => {
     const localeMessages: I18nVuesticMessages = messages.value[newLocale];
-    mergeIntoConfig(localeMessages.vuestic || {});
+    mergeIntoConfig(localeMessages?.vuestic || {});
   });
 }
