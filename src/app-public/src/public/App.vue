@@ -10,54 +10,35 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
 </script>
 
 <template>
-  <div id="app">
-    <SharedHeader id="header">
-      <template #right>
-        <va-navbar-item>
+  <v-app id="app" full-height theme="dark">
+    <v-layout>
+    <SharedHeader>
+      <template #navigationList>
+        <v-list-item>
           <RouterLink to="/"
             class="reference"
             active-class="activeLink">{{ t("header.homeLink") }}</RouterLink>
-        </va-navbar-item>
-        <va-navbar-item>
+        </v-list-item>
+        <v-list-item>
           <RouterLink to="/about"
             class="reference"
             active-class="activeLink">{{ t("header.aboutLink") }}</RouterLink>
-        </va-navbar-item>
+        </v-list-item>
       </template>
     </SharedHeader>
-    <main id="main">
-      <RouterView id="mainContent" />
-    </main>
-  </div>
+    <v-main scrollable>
+      <RouterView />
+    </v-main>
+  </v-layout>
+  </v-app>
 </template>
 
 <style scoped>
-#app {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 5rem auto;
-  grid-template-areas:
-    "header"
-    "app";
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-
-#header {
-  grid-area: "header";
-}
-
-#main {
-  grid-area: "app";
-  overflow: scroll;
-  padding: 2rem;
-}
-
 .reference {
   display: flex;
   flex-direction: row;
   align-items: center;
+  text-decoration: none;
 }
 
 .reference,
@@ -66,6 +47,6 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
 }
 
 .activeLink {
-  text-decoration: underline;
+  font-weight: bold;
 }
 </style>

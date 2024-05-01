@@ -8,43 +8,14 @@ inject<Function>("registerVuesticConfigToLocale", () => { })();
 </script>
 
 <template>
-  <div id="app">
-    <SharedHeader id="header" />
+  <v-app id="app" full-height theme="dark">
+    <SharedHeader :show-drawer="false" />
 
-    <main id="main">
+    <v-main scrollable>
       <NotFoundView />
-    </main>
-  </div>
+    </v-main>
+  </v-app>
 </template>
 
 <style scoped>
-#app {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 5rem auto;
-  grid-template-areas:
-    "header"
-    "app";
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-
-#header {
-  grid-area: "header";
-}
-
-#main {
-  grid-area: "app";
-  overflow: scroll;
-  padding: 2rem;
-}
-
-.logo {
-  width: 1.5rem;
-}
-
-.activeLink {
-  text-decoration: underline;
-}
 </style>

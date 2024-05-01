@@ -52,19 +52,18 @@ async function submitLogin() {
 </script>
 
 <template>
-  <main>
-    <h1>{{ t("login.header") }}</h1>
+  <div id="loginContent">
+    <h1>{{ t("login.title") }}</h1>
     <p v-for="error in errorMessages"
       class="errorMessage"
       :key="error.id">
       {{ error.message }}
     </p>
-    <VaForm id="login"
+    <v-form id="loginForm"
       ref="loginForm"
-      class="flex flex-col gap-2 mb-2"
       tag="form"
       @submit.prevent="submitLogin">
-      <VaInput v-model="formData.username"
+      <v-text-field v-model="formData.username"
         id="username"
         autocomplete="username"
         :label="t('login.username')"
@@ -72,7 +71,7 @@ async function submitLogin() {
           (v) => Boolean(v) || t('login.username.empty'),
         ]"
         :disabled="formData.loading" />
-      <VaInput v-model="formData.password"
+      <v-text-field v-model="formData.password"
         id="current-password"
         autocomplete="current-password"
         type="password"
@@ -81,35 +80,36 @@ async function submitLogin() {
           (v) => Boolean(v) || t('login.password.empty'),
         ]"
         :disabled="formData.loading" />
-      <VaButton type="submit"
-        :loading="formData.loading">
+      <v-btn type="submit"
+        :loading="formData.loading"
+        color="primary"
+        class="submitBtn">
         {{ t("login.submit") }}
-      </VaButton>
-    </VaForm>
-  </main>
+      </v-btn>
+    </v-form>
+  </div>
 </template>
 
 <style scoped>
-h1 {
-  font-size: xx-large;
-}
-
-#login {
-  max-width: 20rem;
+#loginContent {
   display: flex;
   flex-direction: column;
+  align-items: center;
+
+  padding: 2rem;
 }
 
-a {
-  color: unset;
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 20rem;
 }
 
-form>* {
-  margin: 0.5rem;
-}
-
-form input {
-  margin-left: 1rem;
+.submitBtn {
+  align-self: center;
 }
 
 .errorMessage {

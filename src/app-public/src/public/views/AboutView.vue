@@ -14,7 +14,7 @@ const version = inject("foodilyVersion");
 </script>
 
 <template>
-  <div class="about">
+  <div id="aboutContent">
     <header>
       <h1>{{ t("project.name") }}</h1>
       <p>{{ t("about.version", [version]) }}</p>
@@ -32,33 +32,23 @@ const version = inject("foodilyVersion");
 </template>
 
 <style scoped>
-.about {
-  width: 100%;
-  height: 100%;
-  padding-top: 3rem;
-
+#aboutContent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
+  
+  padding: 2rem;
 }
 
 header {
   margin-bottom: 3rem;
 }
 
-h1 {
-  font-size: xx-large;
-}
-
-h2 {
-  font-size: large;
-}
-
 .reference {
   display: flex;
   flex-direction: row;
   align-items: center;
+  text-decoration: none;
 }
 
 .reference,
@@ -74,5 +64,6 @@ h2 {
   width: 20pt;
   height: 20pt;
   margin: 0.2rem;
+  margin-right: 0.5rem;
 }
 </style>

@@ -1,6 +1,7 @@
 import { createApp } from "vue";
-import { createVuestic } from "vuestic-ui";
-import "vuestic-ui/css";
+import { createVuetify } from "vuetify";
+import "vuetify/styles";
+import "@mdi/font/css/materialdesignicons.css";
 
 import i18nConfig, { registerVuesticConfigToLocale } from "@/lang";
 
@@ -8,7 +9,7 @@ import App from "@/login/LoginApp.vue";
 
 const app = createApp(App);
 
-app.use(createVuestic());
+app.use(createVuetify());
 app.use(i18nConfig);
 
 app.provide("registerVuesticConfigToLocale", registerVuesticConfigToLocale);

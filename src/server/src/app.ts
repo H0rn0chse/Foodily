@@ -22,7 +22,8 @@ const app = express();
 
 const {
   SERVER_PORT,
-  SERVER_MODE
+  SERVER_MODE,
+  NODE_ENV 
 } = process.env;
 
 const port = SERVER_PORT || 3000;
@@ -30,7 +31,19 @@ const port = SERVER_PORT || 3000;
 app.set("view engine", "html");
 
 // sec headers
-app.use(helmet());
+app.use(helmet({
+  strictTransportSecurity: false,
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      scriptSrc: ["'self' 'unsafe-eval'"],
+    }
+  }
+}));
+if (NODE_ENV === "production") {
+  console.log("hi");
+  app.use(helmet.strictTransportSecurity());
+}
 // logger
 app.use(morgan("dev"));
 app.use(express.json());

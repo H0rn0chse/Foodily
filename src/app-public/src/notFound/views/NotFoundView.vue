@@ -4,31 +4,42 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <main>
-    <VaButton>
-      <a href="/">{{ t("notFound.back") }}</a>
-    </VaButton>
+  <div id="notFoundContent">
+    <v-btn href="/" color="primary">
+      {{ t("notFound.back") }}
+    </v-btn>
     <div class="messageContainer">
       <img src="@/assets/notFound.png"
         style="max-width: 20rem;">
       <h1>{{ t("notFound.message") }}</h1>
     </div>
-  </main>
+  </div>
 </template>
 
 <style scoped>
-h1 {
-  font-size: xx-large;
-  padding-left: 2rem;
+#notFoundContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 2rem;
 }
 
 .messageContainer {
+  width: 100%;
+
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 2rem;
+  
   padding-top: 2rem;
 }
 
-a {
-  color: unset;
+.messageContainer > * {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: min-content;
 }
 </style>

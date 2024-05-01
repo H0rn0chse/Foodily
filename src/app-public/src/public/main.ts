@@ -1,7 +1,8 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { createVuestic } from "vuestic-ui";
-import "vuestic-ui/css";
+import { createVuetify } from "vuetify";
+import "vuetify/styles";
+import "@mdi/font/css/materialdesignicons.css";
 
 import packageJson from "@project/package.json";
 import i18nConfig, { registerVuesticConfigToLocale } from "@/lang";
@@ -13,7 +14,7 @@ const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
-app.use(createVuestic());
+app.use(createVuetify());
 app.use(i18nConfig);
 
 app.provide("registerVuesticConfigToLocale", registerVuesticConfigToLocale);

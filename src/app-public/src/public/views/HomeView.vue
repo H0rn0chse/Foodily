@@ -3,27 +3,27 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 </script>
 
-
 <template>
-  <main>
+  <div id="homeContent">
     <h1>{{ t("home.title") }}</h1>
-    <div style="display: flex; align-items: center;">
-      <img src="@/assets/home.png"
-        style="max-width: 20rem;">
-      <VaButton href="/login">
-        <a href=""></a>
-        {{ t("home.signIn") }}
-      </VaButton>
-    </div>
-  </main>
+    <img src="@/assets/home.png"
+      style="max-width: 20rem;">
+    <v-btn color="primary" href="/login">
+      {{ t("home.signIn") }}
+    </v-btn>
+  </div>
 </template>
 
 <style scoped>
-h1 {
-  font-size: xx-large;
+#homeContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 2rem;
 }
 
-a {
-  color: unset;
+#homeContent > h1 {
+  align-self: flex-start;
 }
 </style>
