@@ -5,16 +5,60 @@ import { createI18n, useI18n } from "vue-i18n";
 import enLocale from "@/i18n/en.json";
 import deLocale from "@/i18n/de.json";
 
-const messages = {
-  en: {
-    ...enLocale
+const locales = [
+  {
+    key: "en",
+    ...enLocale,
   },
-  de: {
-    ...deLocale
+  {
+    key: "de",
+    ...deLocale,
+  }
+];
+
+const messages = locales.reduce((messages, locale) => {
+  messages[locale.key] = locale.messages;
+  return messages;
+}, {} as Record<string, any>);
+
+const defaultDatetimeFormat = {
+  short: {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  },
+  numeric: {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  },
+  long: {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+    hour: "numeric",
+    minute: "numeric"
   }
 };
 
-export const supportedLanguages = Object.keys(messages);
+const datetimeFormats = locales.reduce((datetimeFormats, locale) => {
+  datetimeFormats[locale.key] = {
+    ...defaultDatetimeFormat,
+    ...locale.dateTimeFormat
+  };
+  return datetimeFormats;
+}, {} as Record<string, any>);
+
+const numberFormats = locales.reduce((numberFormats, locale) => {
+  numberFormats[locale.key] = locale.numberFormat;
+  return numberFormats;
+}, {} as Record<string, any>);
+
+export const supportedLanguages = locales.reduce((languages, locale) => {
+  languages[locale.key] = locale.name;
+  return languages;
+}, {} as Record<string, any>);
 
 const getLocale = () => {
   // type UserSettings = {
@@ -54,6 +98,8 @@ const i18n = createI18n({
   legacy: false,
   locale: getLocale(),
   fallbackLocale: "en",
+  datetimeFormats,
+  numberFormats,
   messages
 });
 

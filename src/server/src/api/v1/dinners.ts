@@ -1,6 +1,9 @@
 import express from "express";
 import db, { buildSetStatement } from "@/db";
-import { AuthenticatedUser } from "@/routes/auth";
+import type { AuthenticatedUser } from "@/routes/auth";
+import type { Course, DinnerDetails, DinnerList } from "@t/dinner";
+import type { ApiResponse } from "@t/api";
+
 
 const router = express.Router();
 
@@ -13,9 +16,9 @@ router.get("/", async (req, res) => {
       id: number,
       owner_id: number,
       username: string,
-      date: number,
+      date: string,
     };
-    const result = await db.query<DinnersRow>(
+    const queryResult = await db.query<DinnersRow>(
       `SELECT
         dinners.id,
         dinners.owner_id,
@@ -29,7 +32,7 @@ router.get("/", async (req, res) => {
     );
 
     res.json({
-      result: result.rows.map((row) => {
+      result: queryResult.rows.map((row) => {
         return {
           id: row.id,
           ownerId: row.owner_id,
@@ -37,7 +40,7 @@ router.get("/", async (req, res) => {
           date: row.date,
         };
       })
-    });
+    } as ApiResponse<DinnerList>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -53,7 +56,7 @@ router.get("/:dinnerId", async (req, res) => {
       id: number,
       owner_id: number,
       username: string,
-      date: number,
+      date: string,
       participants: number[],
       courses: number[]
     };
@@ -150,7 +153,7 @@ router.get("/:dinnerId", async (req, res) => {
           };
         })
       }
-    });
+    } as ApiResponse<DinnerDetails>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -332,7 +335,7 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
         type: course.type,
         vegetarian: course.vegetarian,
       }
-    });
+    } as ApiResponse<Course>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);

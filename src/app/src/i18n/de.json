@@ -1,13 +1,18 @@
 {
-    "project.name": "Foodily",
-    "about.viewOnGitHub": "Mehr auf GitHub",
-    "about.version": "Version {0}",
-    "header.aboutLink": "Über",
-    "header.homeLink": "Start",
-    "header.settingsLink": "Einstellungen",
-    "header.signOutBtn": "Abmelden",
-    "home.title": "Start",
-    "settings.title": "Einstellungen",
-    "settings.languageSelect": "Aktuelle Sprache",
-    "vuestic": {}
+    "name": "Deutsch",
+    "messages": {
+        "project.name": "Foodily",
+        "about.linkTitle": "Über",
+        "about.viewOnGitHub": "Mehr auf GitHub",
+        "about.version": "Version {0}",
+        "header.signOutBtn": "Abmelden",
+        "home.linkTitle": "Start",
+        "home.title": "Start",
+        "settings.linkTitle": "Einstellungen",
+        "settings.title": "Einstellungen",
+        "settings.languageSelect": "Aktuelle Sprache",
+        "vuestic": {}
+    },
+    "dateTimeFormat": {},
+    "numberFormat": {}
 }

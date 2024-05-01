@@ -13,17 +13,22 @@ const { t } = useI18n();
           <RouterLink to="/"
             class="headerLink"
             active-class="activeLink">
-            {{ t("header.homeLink") }}
+            {{ t("home.linkTitle") }}
+          </RouterLink>
+          <RouterLink to="/dinner"
+            class="headerLink"
+            active-class="activeLink">
+            {{ t("dinner.linkTitle") }}
           </RouterLink>
           <RouterLink to="/profile"
             class="headerLink"
             active-class="activeLink">
-            {{ t("header.settingsLink") }}
+            {{ t("settings.linkTitle") }}
           </RouterLink>
           <RouterLink to="/about"
             class="headerLink"
             active-class="activeLink">
-            {{ t("header.aboutLink") }}
+            {{ t("about.linkTitle") }}
           </RouterLink>
           <form action="/logout"
             method="post">
@@ -91,4 +96,47 @@ const { t } = useI18n();
     margin: 0 2rem 0 0;
   }
 } */
+</style>
+<style>
+h1 {
+  font-size: xx-large;
+}
+
+h2 {
+  font-size: x-large;
+}
+
+a {
+  color: unset;
+}
+
+.gridTable {
+  width: 30rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  justify-items: center;
+  align-items: center;
+
+  font-size: medium;
+}
+
+.gridTable h1 {
+  font-size: small;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.gridTable .separator {
+  grid-column: 1 / span 3;
+  grid-row: 2;
+  border-bottom: solid black 2px;
+  margin-bottom: 0.1rem;
+  margin-top: 0.1rem;
+  width: 90%;
+}
+
+.gridTable .cell {
+  margin: 0.1rem;
+}
 </style>

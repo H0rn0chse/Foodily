@@ -21,7 +21,7 @@
     "vue-i18n": "^9.1.2",
     "vue-router": "^4.2.5",
     "vue3-feather-icons": "^1.0.6",
-    "vuestic-ui": "^1.5.0"
+    "vuestic-ui": "^1.8.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",

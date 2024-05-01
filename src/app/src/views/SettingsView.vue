@@ -3,16 +3,25 @@ import { useI18n } from "vue-i18n";
 import { supportedLanguages } from "@/lang";
 import { ref } from "vue";
 const { t, locale } = useI18n();
-const langs = ref(supportedLanguages);
+const langs = ref(Object.keys(supportedLanguages).map((key) => {
+  return {
+    value: key,
+    text: supportedLanguages[key],
+  };
+}));
+
+const localeModel = ref(langs.value.find((entry) => entry.value === locale.value));
 
 function storePreferences() {
+  locale.value = localeModel.value?.value || "";
   const preferences = {
-    language: locale.value
+    language: localeModel.value?.value
   };
   // store locally
-  sessionStorage.setItem("language", locale.value);
+  sessionStorage.setItem("language", localeModel.value?.value || "");
   // and on server
   fetch("/api/v1/userSettings", {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
@@ -27,7 +36,7 @@ function storePreferences() {
     <div class="settingsGroup">
       <VaSelect :label="t('settings.languageSelect')"
         :options="langs"
-        v-model="locale"
+        v-model="localeModel"
         @update:modelValue="storePreferences" />
     </div>
   </div>
