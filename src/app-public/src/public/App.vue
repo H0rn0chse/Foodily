@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import SharedHeader from "@/components/SharedHeader.vue";
-import { inject } from "vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
-inject<Function>("registerVuesticConfigToLocale", () => { })();
 
 </script>
 

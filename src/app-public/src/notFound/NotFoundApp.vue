@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import NotFoundView from "@/notFound/views/NotFoundView.vue";
 import SharedHeader from "@/components/SharedHeader.vue";
-import { inject } from "vue";
-
-inject<Function>("registerVuesticConfigToLocale", () => { })();
 
 </script>
 
