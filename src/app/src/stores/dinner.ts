@@ -1,4 +1,4 @@
-import { computed, reactive, type UnwrapNestedRefs } from "vue";
+import { computed, reactive, type ComputedRef } from "vue";
 import { defineStore } from "pinia";
 import type { DinnerDetails, DinnerList } from "@t/dinner";
 import type { ApiResponse } from "@t/api";
@@ -33,24 +33,30 @@ class ApiValue<EntityType extends Record<string, any>> {
     const response = await fetch(this.#endpoint);
     const data: ApiResponse<EntityType> = await response.json();
     Object.keys(data.result).forEach((key) => {
-      this.#ref.value[key] = data.result[key];
+      this.#ref[key] = data.result[key];
     });
 
     this.#loaded = true;
     this.#loading = false;
   }
 
-  getRef (): UnwrapNestedRefs<EntityType> {
-    return this.#computed as unknown as EntityType;
+  getComputedRef (): ComputedRef<EntityType> {
+    return this.#computed as ComputedRef<EntityType>;
   }
 }
 
-class ApiEntitySet<EntityType extends Record<string, any>> {
-  #entities: Record<string|symbol, ApiValue<EntityType>> = {};
-  #entityRefs: Record<string|symbol, EntityType> = {};
+/**
+ * Wraps the EntitySet loads individual Entities only on request
+ */
+class ApiEntitySet<EntityType extends Record<string, unknown>> {
+  #entityApiRequests: Record<string, ApiValue<EntityType>> = {};
+  #entityComputedRefs: Record<string, ComputedRef<EntityType>> = {};
+
   #endpoint = "";
   #defaultValue = {} as EntityType;
-  #proxy = new Proxy(this.#entityRefs , {
+
+  // proxy every access to fetch each entity individually
+  #proxy = new Proxy(this.#entityComputedRefs , {
     get: this.#getProxyRef.bind(this)
   });
 
@@ -59,14 +65,18 @@ class ApiEntitySet<EntityType extends Record<string, any>> {
     this.#defaultValue = defaultValue;
   }
 
-  #getProxyRef (target: Record<string|symbol, EntityType>, entityId: string|symbol) {
+  #getProxyRef (target: Record<string, ComputedRef<EntityType>>, entityId: string) {
+    // is the ref already set?
     if (!target[entityId]) {
-      if (!this.#entities[entityId]) {
+      // is the entityApi already set?
+      if (!this.#entityApiRequests[entityId]) {
+        // configure entityApi and store it
         const entityEndpoint = `${this.#endpoint}${entityId as string}`;
         const defaultValueCopy = JSON.parse(JSON.stringify(this.#defaultValue));
-        this.#entities[entityId] = new ApiValue<EntityType>(entityEndpoint, defaultValueCopy);
+        this.#entityApiRequests[entityId] = new ApiValue<EntityType>(entityEndpoint, defaultValueCopy);
       }
-      target[entityId] = this.#entities[entityId].getRef();
+      // fetch computed ref
+      target[entityId] = this.#entityApiRequests[entityId].getComputedRef() as ComputedRef<EntityType>;
     }
     return target[entityId];
   }
@@ -78,7 +88,7 @@ class ApiEntitySet<EntityType extends Record<string, any>> {
 
 export const useDinnerStore = defineStore("dinner", () => {
   const dinnerListApi = new ApiValue<DinnerList>("/api/v1/dinners", []);
-  const dinnerList = dinnerListApi.getRef();
+  const dinnerList = dinnerListApi.getComputedRef();
   const dinnerDetailsDefaults = {
     id: 0,
     ownerId: 0,

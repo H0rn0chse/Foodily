@@ -8,28 +8,30 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <v-app id="app" full-height theme="dark">
+  <v-app id="app"
+    full-height
+    theme="dark">
     <v-layout>
-    <SharedHeader>
-      <template #navigationList>
-        <v-list-item link
+      <SharedHeader>
+        <template #navigationList>
+          <v-list-item link
             to="/"
             class="reference"
             active-class="activeLink">
             {{ t("header.homeLink") }}
-        </v-list-item>
-        <v-list-item link
+          </v-list-item>
+          <v-list-item link
             to="/about"
             class="reference"
             active-class="activeLink">
             {{ t("header.aboutLink") }}
-        </v-list-item>
-      </template>
-    </SharedHeader>
-    <v-main scrollable>
-      <RouterView />
-    </v-main>
-  </v-layout>
+          </v-list-item>
+        </template>
+      </SharedHeader>
+      <v-main scrollable>
+        <RouterView />
+      </v-main>
+    </v-layout>
   </v-app>
 </template>
 

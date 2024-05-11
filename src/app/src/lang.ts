@@ -1,6 +1,7 @@
-import { watch } from "vue";
-import { useI18nConfig } from "vuestic-ui";
 import { createI18n, useI18n } from "vue-i18n";
+import { createVueI18nAdapter } from "vuetify/locale/adapters/vue-i18n";
+import type { LocaleInstance } from "vuetify";
+import * as vuetifyLocale from "vuetify/locale";
 // User defined lang
 import enLocale from "@/i18n/en.json";
 import deLocale from "@/i18n/de.json";
@@ -9,10 +10,22 @@ const locales = [
   {
     key: "en",
     ...enLocale,
+    messages: {
+      ...enLocale.messages,
+      $vuetify: {
+        ...vuetifyLocale.en
+      }
+    }
   },
   {
     key: "de",
     ...deLocale,
+    messages: {
+      ...deLocale.messages,
+      $vuetify: {
+        ...vuetifyLocale.de
+      }
+    }
   }
 ];
 
@@ -106,22 +119,6 @@ const i18n = createI18n({
 // export default i18n
 export default i18n;
 
-export function registerVuesticConfigToLocale () {
-  // Update vuestic default message with vue-i18n keys
-  type I18nVuesticMessages = {
-    "vuestic"?: {
-      [key: string]: string,
-    }
-  }
-
-  const { locale, messages } = useI18n();
-  const { mergeIntoConfig } = useI18nConfig();
-
-  const localeMessages: I18nVuesticMessages = messages.value[locale.value] ;
-  mergeIntoConfig(localeMessages?.vuestic || {});
-
-  watch(locale, (newLocale: string) => {
-    const localeMessages: I18nVuesticMessages = messages.value[newLocale];
-    mergeIntoConfig(localeMessages?.vuestic || {});
-  });
-}
+export const vuetifyLocaleConfig = {
+  adapter: createVueI18nAdapter({ i18n, useI18n }) as LocaleInstance
+};

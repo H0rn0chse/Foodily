@@ -8,7 +8,8 @@ const { t } = useI18n();
     <h1>{{ t("home.title") }}</h1>
     <img src="@/assets/home.png"
       style="max-width: 20rem;">
-    <v-btn color="primary" href="/login">
+    <v-btn color="primary"
+      href="/login">
       {{ t("home.signIn") }}
     </v-btn>
   </div>
@@ -23,7 +24,7 @@ const { t } = useI18n();
   padding: 2rem;
 }
 
-#homeContent > h1 {
+#homeContent>h1 {
   align-self: flex-start;
 }
 </style>

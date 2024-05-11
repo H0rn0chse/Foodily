@@ -6,7 +6,9 @@ import SharedHeader from "@/components/SharedHeader.vue";
 </script>
 
 <template>
-  <v-app id="app" full-height theme="dark">
+  <v-app id="app"
+    full-height
+    theme="dark">
     <SharedHeader :show-drawer="false" />
 
     <v-main scrollable>
@@ -15,5 +17,4 @@ import SharedHeader from "@/components/SharedHeader.vue";
   </v-app>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

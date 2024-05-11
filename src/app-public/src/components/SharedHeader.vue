@@ -11,15 +11,14 @@ const props = defineProps({
 });
 
 const navigationDrawerVisible = ref(false);
-function toggleDrawer () {
+function toggleDrawer() {
   navigationDrawerVisible.value = !navigationDrawerVisible.value;
 }
 </script>
 
 <template>
-  <v-app-bar
-  scroll-behavior="collapse"
-  :title="t('project.name')">
+  <v-app-bar scroll-behavior="collapse"
+    :title="t('project.name')">
     <template v-slot:prepend>
       <a href="/"
         class="reference">
@@ -29,16 +28,18 @@ function toggleDrawer () {
       </a>
     </template>
     <template v-slot:append>
-      <div @click="toggleDrawer" v-if="props.showDrawer">
+      <div @click="toggleDrawer"
+        v-if="props.showDrawer">
         <v-app-bar-nav-icon />
       </div>
     </template>
   </v-app-bar>
-  <v-navigation-drawer location="right" v-model="navigationDrawerVisible">
-      <v-list>
-        <slot name="navigationList"></slot>
-      </v-list>
-    </v-navigation-drawer>
+  <v-navigation-drawer location="right"
+    v-model="navigationDrawerVisible">
+    <v-list>
+      <slot name="navigationList"></slot>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <style scoped>

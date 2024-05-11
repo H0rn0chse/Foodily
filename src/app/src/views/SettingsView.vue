@@ -10,15 +10,15 @@ const langs = ref(Object.keys(supportedLanguages).map((key) => {
   };
 }));
 
-const localeModel = ref(langs.value.find((entry) => entry.value === locale.value));
+const localeModel = ref(locale.value);
 
 function storePreferences() {
-  locale.value = localeModel.value?.value || "";
+  locale.value = localeModel.value || "";
   const preferences = {
-    language: localeModel.value?.value
+    language: localeModel.value
   };
   // store locally
-  sessionStorage.setItem("language", localeModel.value?.value || "");
+  sessionStorage.setItem("language", localeModel.value || "");
   // and on server
   fetch("/api/v1/userSettings", {
     method: "PUT",
@@ -31,24 +31,32 @@ function storePreferences() {
 </script>
 
 <template>
-  <div class="about">
+  <div id="settingsContent">
     <h1>{{ t("settings.title") }}</h1>
-    <div class="settingsGroup">
-      <VaSelect :label="t('settings.languageSelect')"
-        :options="langs"
-        v-model="localeModel"
-        @update:modelValue="storePreferences" />
-    </div>
+    <v-select :label="t('settings.languageSelect')"
+      :items="langs"
+      item-title="text"
+      item-value="value"
+      v-model="localeModel"
+      class="select"
+      @update:modelValue="storePreferences" />
   </div>
 </template>
 
 <style scoped>
-h1 {
-  font-size: xx-large;
-}
-
-.settingsGroup {
+#settingsContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 1rem;
   padding-left: 1rem;
+}
+
+#settingsContent>h1 {
+  align-self: start;
+}
+
+.select {
+  min-width: 20rem;
 }
 </style>

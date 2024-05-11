@@ -20,13 +20,13 @@ function showDetails(dinnerId: number) {
 </script>
 
 <template>
-  <main>
+  <div id="dinnerContent">
     <h1>{{ t("dinner.title") }}</h1>
-    <VaButton>{{ t("dinner.createDinner") }}</VaButton>
-    <VaSeparator></VaSeparator>
+    <v-btn>{{ t("dinner.createDinner") }}</v-btn>
+    <v-divider />
     <h2>{{ t("dinner.history") }}</h2>
     <div class="toolbar">
-      <VaInput :placeholder="t('dinner.search')"
+      <v-text-field :placeholder="t('dinner.search')"
         :disabled="true" />
     </div>
     <div class="gridTable">
@@ -39,17 +39,17 @@ function showDetails(dinnerId: number) {
         <div class="cell">{{ d(new Date(dinner.date), "numeric") }}</div>
         <div class="cell">{{ dinner.username }}</div>
         <div class="cell">
-          <VaButton size="small"
+          <v-btn size="small"
             preset="secondary"
             hover-behavior="opacity"
             :hover-opacity="0.4"
             @click="showDetails(dinner.id)">
             {{ t("dinner.more") }}
-          </VaButton>
+          </v-btn>
         </div>
       </template>
     </div>
-  </main>
+  </div>
 </template>
 
 <style scoped>
@@ -57,6 +57,15 @@ h1,
 h2 {
   margin-bottom: 0.25rem;
   margin-top: 0.5rem;
+}
+
+#dinnerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-top: 1rem;
+  padding-left: 1rem;
 }
 
 .toolbar {

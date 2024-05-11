@@ -36,7 +36,7 @@ const version = inject("foodilyVersion");
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+
   padding: 2rem;
 }
 

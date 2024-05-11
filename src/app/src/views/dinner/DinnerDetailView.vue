@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useDinnerStore } from "@/stores/dinner";
-import { ref } from "vue";
-import { reactive } from "vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
@@ -17,39 +15,53 @@ if (Array.isArray(dinnerId)) {
 
 const dinnerStore = useDinnerStore();
 const dinnerDetails = dinnerStore.dinnerDetails[dinnerId];
-// setInterval(() => {
-//   dinnerDetails.value.date = "2024-01-03T08:34:33.000Z";
-
-// }, 3000);
-const foo = reactive({
-  bruh: ""
+const dinnerDetailsDate = computed({
+  get: () => {
+    return formatDate(new Date(dinnerDetails.value.date));
+  },
+  set: (newDateString) => {
+    dinnerDetails.value.date = new Date(newDateString).toISOString();
+  }
 });
-foo.bruh;
-console.error(dinnerDetails.value.date);
-// debugger;
-// const dd = ref("");
-// dd.value = new Date(dinnerDetails.date).getTime();
-// dinnerDetails.date = d(new Date(dinnerDetails.date), "numeric");
 
+/**
+ * Formats the date to be compatible with the input
+ */
 function formatDate(date: Date) {
-  console.error("Format");
-  return d(new Date(date), "numeric");
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 </script>
 <template>
-  <main>
-    <VaButton @click="router.back">{{ t("dinnerDetail.back") }}</VaButton>
+  <div id="dinnerDetailContent">
+    <v-btn @click="router.back">{{ t("dinnerDetail.back") }}</v-btn>
     <h1>{{ t("dinnerDetail.title") }}</h1>
     <h2>{{ t("dinnerDetails.metadata") }}</h2>
-    <VaDateInput v-model="dinnerDetails.date"
-      :format-date="formatDate"
-      mode="single">
-    </VaDateInput>
-  </main>
+    <v-text-field v-model="dinnerDetailsDate"
+      type="date">
+    </v-text-field>
+  </div>
 </template>
 
 <style scoped>
+#dinnerDetailContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-top: 1rem;
+  padding-left: 1rem;
+}
+
+#dinnerDetailContent>*:first-child,
+#dinnerDetailContent>h1 {
+  align-self: start;
+}
+
 h1,
 h2 {
   margin-bottom: 0.25rem;

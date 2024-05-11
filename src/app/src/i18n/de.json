@@ -10,8 +10,7 @@
         "home.title": "Start",
         "settings.linkTitle": "Einstellungen",
         "settings.title": "Einstellungen",
-        "settings.languageSelect": "Aktuelle Sprache",
-        "vuestic": {}
+        "settings.languageSelect": "Aktuelle Sprache"
     },
     "dateTimeFormat": {},
     "numberFormat": {}

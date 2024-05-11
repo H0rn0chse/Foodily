@@ -5,7 +5,8 @@ const { t } = useI18n();
 
 <template>
   <div id="notFoundContent">
-    <v-btn href="/" color="primary">
+    <v-btn href="/"
+      color="primary">
       {{ t("notFound.back") }}
     </v-btn>
     <div class="messageContainer">
@@ -33,11 +34,11 @@ const { t } = useI18n();
   flex-wrap: wrap;
   align-items: center;
   gap: 2rem;
-  
+
   padding-top: 2rem;
 }
 
-.messageContainer > * {
+.messageContainer>* {
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: min-content;

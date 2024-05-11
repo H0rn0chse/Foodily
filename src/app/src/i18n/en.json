@@ -20,8 +20,7 @@
         "dinnerDetail.back": "Back",
         "settings.linkTitle": "Settings",
         "settings.title": "Settings",
-        "settings.languageSelect": "Current Language",
-        "vuestic": {}
+        "settings.languageSelect": "Current Language"
     },
     "dateTimeFormat": {},
     "numberFormat": {}
