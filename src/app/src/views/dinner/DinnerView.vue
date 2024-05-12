@@ -2,6 +2,7 @@
 import { useDinnerStore } from "@/stores/dinner";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import LoadingScreen from "@/components/LoadingScreen.vue";
 const { t, d } = useI18n();
 
 const dinnerStore = useDinnerStore();
@@ -29,26 +30,31 @@ function showDetails(dinnerId: number) {
       <v-text-field :placeholder="t('dinner.search')"
         :disabled="true" />
     </div>
-    <div class="gridTable">
-      <h1 class="header">{{ t("dinner.date") }}</h1>
-      <h1 class="header">{{ t("dinner.owner") }}</h1>
-      <h1 class="header"></h1>
-      <div class="separator"></div>
-      <template v-for="dinner in dinnerList"
-        :key="dinner.id">
-        <div class="cell">{{ d(new Date(dinner.date), "numeric") }}</div>
-        <div class="cell">{{ dinner.username }}</div>
-        <div class="cell">
-          <v-btn size="small"
-            preset="secondary"
-            hover-behavior="opacity"
-            :hover-opacity="0.4"
-            @click="showDetails(dinner.id)">
-            {{ t("dinner.more") }}
-          </v-btn>
+    <LoadingScreen :busy="dinnerList.loading"
+      :success="dinnerList.success">
+      <template #success>
+        <div class="gridTable">
+          <h1 class="header">{{ t("dinner.date") }}</h1>
+          <h1 class="header">{{ t("dinner.owner") }}</h1>
+          <h1 class="header"></h1>
+          <div class="separator"></div>
+          <template v-for="dinner in dinnerList.data"
+            :key="dinner.id">
+            <div class="cell">{{ d(new Date(dinner.date), "numeric") }}</div>
+            <div class="cell">{{ dinner.username }}</div>
+            <div class="cell">
+              <v-btn size="small"
+                preset="secondary"
+                hover-behavior="opacity"
+                :hover-opacity="0.4"
+                @click="showDetails(dinner.id)">
+                {{ t("dinner.more") }}
+              </v-btn>
+            </div>
+          </template>
         </div>
       </template>
-    </div>
+    </LoadingScreen>
   </div>
 </template>
 

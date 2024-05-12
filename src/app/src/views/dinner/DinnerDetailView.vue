@@ -3,12 +3,14 @@ import { useDinnerStore } from "@/stores/dinner";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
+import LoadingScreen from "@/components/LoadingScreen.vue";
 const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
 
 let { dinnerId } = route.params;
+
 if (Array.isArray(dinnerId)) {
   [dinnerId] = dinnerId;
 }
@@ -17,10 +19,10 @@ const dinnerStore = useDinnerStore();
 const dinnerDetails = dinnerStore.dinnerDetails[dinnerId];
 const dinnerDetailsDate = computed({
   get: () => {
-    return formatDate(new Date(dinnerDetails.value.date));
+    return formatDate(new Date(dinnerDetails.value.data.date));
   },
   set: (newDateString) => {
-    dinnerDetails.value.date = new Date(newDateString).toISOString();
+    dinnerDetails.value.data.date = new Date(newDateString).toISOString();
   }
 });
 
@@ -38,12 +40,20 @@ function formatDate(date: Date) {
 </script>
 <template>
   <div id="dinnerDetailContent">
-    <v-btn @click="router.back">{{ t("dinnerDetail.back") }}</v-btn>
+    <v-btn @click="router.push('/dinner')">{{ t("dinnerDetail.back") }}</v-btn>
     <h1>{{ t("dinnerDetail.title") }}</h1>
-    <h2>{{ t("dinnerDetails.metadata") }}</h2>
-    <v-text-field v-model="dinnerDetailsDate"
-      type="date">
-    </v-text-field>
+    <LoadingScreen :busy="dinnerDetails.loading"
+      :success="dinnerDetails.success">
+      <template #success>
+        <h2>{{ t("dinnerDetails.metadata") }}</h2>
+        <v-text-field v-model="dinnerDetailsDate"
+          type="date">
+        </v-text-field>
+      </template>
+      <template #error>
+        <h2>{{ t("dinnerDetails.notFound") }}</h2>
+      </template>
+    </LoadingScreen>
   </div>
 </template>
 

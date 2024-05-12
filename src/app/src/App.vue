@@ -53,7 +53,7 @@ function logout() {
         </template>
       </SharedHeader>
       <v-main scrollable>
-        <RouterView />
+        <RouterView :key="$route.path" />
       </v-main>
     </v-layout>
   </v-app>
