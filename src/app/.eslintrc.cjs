@@ -9,4 +9,9 @@ module.exports = {
     "../../.eslintrc.cjs",
   ],
   ignorePatterns: ["dist"],
+  rules: {
+    "vue/valid-v-slot": ["error", {
+      allowModifiers: true,
+    }],
+  },
 };

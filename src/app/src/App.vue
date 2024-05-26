@@ -89,6 +89,12 @@ a {
   color: unset;
 }
 
+.icon {
+  width: 20pt;
+  height: 20pt;
+  margin: 0.2rem;
+}
+
 .gridTable {
   width: 30rem;
   display: grid;

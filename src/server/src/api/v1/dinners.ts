@@ -39,7 +39,8 @@ router.get("/", async (req, res) => {
           username: row.username,
           date: row.date,
         };
-      })
+      }),
+      count: queryResult.rowCount
     } as ApiResponse<DinnerList>);
   } catch (err) {
     console.error(err);

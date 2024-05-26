@@ -2,13 +2,13 @@
 import { useDinnerStore } from "@/stores/dinner";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import LoadingScreen from "@/components/LoadingScreen.vue";
+import feather from "feather-icons";
+import { computed, ref } from "vue";
 const { t, d } = useI18n();
 
-const dinnerStore = useDinnerStore();
-const dinnerList = dinnerStore.dinnerList;
-
 const router = useRouter();
+
+const search = ref("");
 
 function showDetails(dinnerId: number) {
   router.push({
@@ -18,43 +18,73 @@ function showDetails(dinnerId: number) {
     }
   });
 }
+
+const dinnerStore = useDinnerStore();
+const dinnerList = dinnerStore.dinnerList;
+const extendedDinnerListData = computed(() => {
+  return dinnerList.data.map((dinner) => {
+    return {
+      ...dinner,
+      date: d(new Date(dinner.date), "numeric"),
+      navigation: {
+        icon: feather.icons["chevron-right"].toSvg(), // todo: remove
+        text: t("dinner.more"),
+        onClick: () => showDetails(dinner.id)
+      }
+    };
+  });
+});
+
+const headers = [{
+  key: "date",
+  title: t("dinner.date"),
+  sortable: false
+}, {
+  key: "username",
+  title: t("dinner.owner"),
+  sortable: false
+}, {
+  key: "navigation",
+  title: "",
+  sortable: false
+}];
+
+function createNewDinner() {
+
+}
+
 </script>
 
 <template>
   <div id="dinnerContent">
     <h1>{{ t("dinner.title") }}</h1>
-    <v-btn>{{ t("dinner.createDinner") }}</v-btn>
-    <v-divider />
-    <h2>{{ t("dinner.history") }}</h2>
     <div class="toolbar">
-      <v-text-field :placeholder="t('dinner.search')"
-        :disabled="true" />
+      <v-text-field v-model="search"
+        :label="t('dinner.search')"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        hide-details
+        single-line
+        disabled></v-text-field>
     </div>
-    <LoadingScreen :busy="dinnerList.loading"
-      :success="dinnerList.success">
-      <template #success>
-        <div class="gridTable">
-          <h1 class="header">{{ t("dinner.date") }}</h1>
-          <h1 class="header">{{ t("dinner.owner") }}</h1>
-          <h1 class="header"></h1>
-          <div class="separator"></div>
-          <template v-for="dinner in dinnerList.data"
-            :key="dinner.id">
-            <div class="cell">{{ d(new Date(dinner.date), "numeric") }}</div>
-            <div class="cell">{{ dinner.username }}</div>
-            <div class="cell">
-              <v-btn size="small"
-                preset="secondary"
-                hover-behavior="opacity"
-                :hover-opacity="0.4"
-                @click="showDetails(dinner.id)">
-                {{ t("dinner.more") }}
-              </v-btn>
-            </div>
-          </template>
-        </div>
+    <v-data-table-server :items="extendedDinnerListData"
+      :items-length="dinnerList.count"
+      :headers="headers"
+      :loading="dinnerList.loading"
+      hover>
+      <template #item.navigation="{ item }">
+        <v-btn density="comfortable"
+          :title="t('dinner.more')"
+          @click="item.navigation.onClick"
+          icon="mdi-chevron-right"></v-btn>
       </template>
-    </LoadingScreen>
+    </v-data-table-server>
+    <footer>
+      <v-btn size="large"
+        :title="t('dinner.createDinner')"
+        @click="createNewDinner"
+        icon="mdi-plus"></v-btn>
+    </footer>
   </div>
 </template>
 
@@ -72,9 +102,24 @@ h2 {
 
   margin-top: 1rem;
   padding-left: 1rem;
+  padding-right: 1rem;
+  gap: 0.5rem;
+}
+
+#dinnerContent>*:first-child,
+#dinnerContent>h1 {
+  align-self: start;
+}
+
+#dinnerContent>footer {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
 }
 
 .toolbar {
+  width: 100%;
+  max-width: 30rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }

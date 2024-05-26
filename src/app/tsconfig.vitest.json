@@ -2,8 +2,9 @@
   "extends": "./tsconfig.app.json",
   "exclude": [],
   "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
     "composite": true,
-    "lib": [],
     "types": [
       "node",
       "jsdom",

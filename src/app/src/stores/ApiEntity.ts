@@ -12,20 +12,31 @@ function sleep (seconds: number) {
  */
 export class ApiEntity<EntityType extends Record<string, unknown> | Array<unknown>> {
   #endpoint = "";
-  #reactiveEntityState = reactive({
-    loaded: false,
-    loading: false,
-    success: true,
-    data: {} as EntityType
-  });
+  #reactiveEntityState = null as unknown as ApiEntityState<EntityType>;
   #computedProxy = computed<ApiEntityState<EntityType>>({
     get: this.#handleComputedGet.bind(this),
     set: this.#handleComputedSet.bind(this)
   });
 
-  constructor (endpoint:string , emptyValue: EntityType) {
-    Object.assign(this.#reactiveEntityState.data, emptyValue);
+  constructor (endpoint: string , emptyValue: EntityType) {
     this.#endpoint = endpoint;
+
+    if (Array.isArray(emptyValue)) {
+      this.#reactiveEntityState = reactive({
+        loaded: false,
+        loading: false,
+        success: true,
+        data: emptyValue,
+        count: 0,
+      }) as unknown as ApiEntityState<EntityType>;
+    } else {
+      this.#reactiveEntityState = reactive({
+        loaded: false,
+        loading: false,
+        success: true,
+        data: emptyValue,
+      }) as unknown as ApiEntityState<EntityType>;
+    }
   }
 
   #handleComputedGet () {
@@ -33,7 +44,7 @@ export class ApiEntity<EntityType extends Record<string, unknown> | Array<unknow
       this.#loadData();
     }
 
-    return this.#reactiveEntityState as ApiEntityState<EntityType>;
+    return this.#reactiveEntityState;
   }
 
   #handleComputedSet () {
@@ -55,7 +66,12 @@ export class ApiEntity<EntityType extends Record<string, unknown> | Array<unknow
     if (response.ok) {
       const data: ApiResponse<EntityType> = await response.json();
 
-      Object.assign(this.#reactiveEntityState.data, data.result);
+      if ("count" in this.#reactiveEntityState && "count" in data) {
+        this.#reactiveEntityState.data.splice(0, this.#reactiveEntityState.data.length, ...data.result);
+        this.#reactiveEntityState.count = data.count;
+      } else {
+        Object.assign(this.#reactiveEntityState.data, data.result);
+      }
     }
     this.#reactiveEntityState.loaded = true;
     this.#reactiveEntityState.loading = false;

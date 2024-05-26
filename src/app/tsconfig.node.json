@@ -9,8 +9,10 @@
     "tools"
   ],
   "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
     "composite": true,
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "Bundler",
     "types": [
       "node",
