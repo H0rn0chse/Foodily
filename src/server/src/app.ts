@@ -11,7 +11,8 @@ import helmet from "helmet";
 
 import indexRouter from "@/routes/index";
 import authRouter, { MODES, ensureSession } from "@/routes/auth";
-import apiRouter from "@/routes/api";
+import apiRouter, { apiDoc } from "@/routes/api";
+import { serve as swaggerServe, setup as swaggerSetup, type SwaggerUiOptions } from "swagger-ui-express";
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const usedUnusedImports = {
@@ -74,6 +75,21 @@ if (SERVER_MODE !== MODES.ApiOnly) {
 }
 
 app.use("/api", ensureSession, apiRouter);
+
+// docs
+const swaggerUiOptions: SwaggerUiOptions = {
+  swaggerOptions: {
+    tryItOutEnabled: true,
+    operationsSorter: "alpha",
+    tagsSorter: "alpha"
+  },
+  customCss: `
+    .scheme-container {display: none}
+    .operation-servers {display: none}
+  `
+};
+
+app.use("/docs", swaggerServe, swaggerSetup(apiDoc, swaggerUiOptions));
 
 // skip ui resources for local development
 if (SERVER_MODE !== MODES.ApiOnly) {

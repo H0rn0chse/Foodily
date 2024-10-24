@@ -1,0 +1,86 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Foodily API",
+    "description": "API description.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "paths": {},
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "username": { "type": "string" }
+        }
+      },
+      "UserBody": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string" }
+        }
+      },
+      "Dinner": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "int" },
+          "ownerId": { "type": "int" },
+          "username": { "type": "string" },
+          "title": { "type": "string" },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DinnerDetails": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "int" },
+          "ownerId": { "type": "int" },
+          "username": { "type": "string" },
+          "title": { "type": "string" },
+          "date": { "type": "string" },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Course"
+            }
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "int" },
+          "courseNumber": { "type": "int" },
+          "main": { "type": "boolean" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "type": { "type": "string" },
+          "vegetarian": { "type": "boolean" }
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Resource not found."
+      },
+      "BadRequest": {
+        "description": "Bad request."
+      }
+    }
+  }
+}

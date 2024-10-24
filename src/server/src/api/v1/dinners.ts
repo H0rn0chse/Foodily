@@ -16,6 +16,7 @@ router.get("/", async (req, res) => {
       id: number,
       owner_id: number,
       username: string,
+      title: string,
       date: string,
     };
     const queryResult = await db.query<DinnersRow>(
@@ -23,6 +24,7 @@ router.get("/", async (req, res) => {
         dinners.id,
         dinners.owner_id,
         dinner_owner.username,
+        title,
         date
       FROM dinners
         JOIN users dinner_owner
@@ -37,11 +39,12 @@ router.get("/", async (req, res) => {
           id: row.id,
           ownerId: row.owner_id,
           username: row.username,
+          title: row.title,
           date: row.date,
         };
       }),
-      count: queryResult.rowCount
-    } as ApiResponse<DinnerList>);
+      count: queryResult.rowCount || 0
+    } satisfies ApiResponse<DinnerList>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -57,6 +60,7 @@ router.get("/:dinnerId", async (req, res) => {
       id: number,
       owner_id: number,
       username: string,
+      title: string,
       date: string,
       participants: number[],
       courses: number[]
@@ -65,6 +69,8 @@ router.get("/:dinnerId", async (req, res) => {
       `SELECT
         dinners.id,
         dinners.owner_id,
+        dinner_owner.username,
+        title,
         date,
         ARRAY(
           SELECT user_id
@@ -135,6 +141,7 @@ router.get("/:dinnerId", async (req, res) => {
         id: dinner.id,
         ownerId: dinner.owner_id,
         username: dinner.username,
+        title: dinner.title,
         date: dinner.date,
         participants: participantResult.rows.map((row) => {
           return {
@@ -166,11 +173,13 @@ router.post("/", async (req, res) => {
   try {
     type RequestBody = {
       date?: string,
+      title?: string,
     };
     const { body }: { body: RequestBody } = req;
 
     const dinnerData = {
-      date: body.date ?? new Date().toUTCString()
+      date: body.date ?? new Date().toUTCString(),
+      title: body.title ?? "",
     };
     
     type DinnersRow = {
@@ -179,12 +188,14 @@ router.post("/", async (req, res) => {
     const result = await db.query<DinnersRow>(
       `INSERT INTO dinners(
         owner_id,
+        title,
         date
       )
       VALUES($1, $2)
       RETURNING id`,
       [
         (req.user as AuthenticatedUser).id,
+        dinnerData.title,
         dinnerData.date
       ]
     );
@@ -219,11 +230,13 @@ router.put("/:dinnerId", async (req, res) => {
 
     type RequestBody = {
       date?: string,
+      title?: string,
     };
     const { body }: { body: RequestBody } = req;
 
     const dinnerData = {
-      date: body.date
+      date: body.date,
+      title: body.title
     };
     const {
       setStatement,

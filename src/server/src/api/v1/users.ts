@@ -2,6 +2,8 @@ import express from "express";
 import db, { buildSetStatement } from "@/db";
 import { AuthenticatedUser } from "@/routes/auth";
 
+import type { ApiResponse, User } from "@t/api";
+
 const router = express.Router();
 
 // Read All
@@ -26,8 +28,9 @@ router.get("/", async (req, res) => {
           id: row.id,
           username: row.username,
         };
-      })
-    });
+      }),
+      count: result.rowCount || 0
+    } satisfies ApiResponse<User[]>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -66,7 +69,7 @@ router.get("/:userId", async (req, res) => {
         id: user.id,
         username: user.username,
       }
-    });
+    } satisfies ApiResponse<User>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -147,7 +150,7 @@ router.put("/:userId", async (req, res) => {
     );
 
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
@@ -175,7 +178,7 @@ router.delete("/:userId", async (req, res) => {
     );
 
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 

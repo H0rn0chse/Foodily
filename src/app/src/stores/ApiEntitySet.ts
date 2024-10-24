@@ -1,11 +1,11 @@
 import { type WritableComputedRef } from "vue";
-import type { ApiEntityState } from "@t/api";
+import type { ApiEntityState, EntityBase } from "@t/api";
 import { ApiEntity } from "./ApiEntity";
 
 /**
  * Wraps the EntitySet loads individual Entities only on request
  */
-export class ApiEntitySet<EntityType extends Record<string, unknown> | Array<unknown>> {
+export class ApiEntitySet<EntityType extends EntityBase | EntityBase[]> {
   #entityApiRequests: Record<string, ApiEntity<EntityType>> = {};
   #entityComputedRefs: Record<string, WritableComputedRef<ApiEntityState<EntityType>>> = {};
 
@@ -49,5 +49,9 @@ export class ApiEntitySet<EntityType extends Record<string, unknown> | Array<unk
    */
   getProxiedRefs () {
     return this.#proxy;
+  }
+
+  updateEntity (entityId: string) {
+    this.#entityApiRequests[entityId].update();
   }
 }

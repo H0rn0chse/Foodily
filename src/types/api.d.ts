@@ -1,5 +1,7 @@
-export type ApiResponse<Type extends Record<string, unknown> | Array<unknown>> = 
-Type extends Array<unknown> ? {
+export type EntityBase = NonNullable<Record<string, unknown>>;
+
+export type ApiResponse<Type extends EntityBase | EntityBase[]> = 
+Type extends EntityBase[] ? {
   result: Type,
   count: number,
 } : 
@@ -7,8 +9,8 @@ Type extends Array<unknown> ? {
   result: Type,
 };
 
-export type ApiEntityState<EntityType extends Record<string, unknown> | Array<unknown>> = 
-EntityType extends Array<unknown> ? {
+export type ApiEntityState<EntityType extends EntityBase | EntityBase[]> = 
+EntityType extends EntityBase[] ? {
   loaded: boolean,
   loading: boolean,
   success: boolean,
@@ -22,7 +24,7 @@ EntityType extends Array<unknown> ? {
   data: EntityType,
 };
 
-export type User = {
+export type User = NonNullable<{
   id: number,
   username: string,
-}
+}>;

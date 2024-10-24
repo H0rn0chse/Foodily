@@ -64,6 +64,7 @@ async function createTables (client: Client) {
   await client.query(`CREATE TABLE IF NOT EXISTS dinners (
     id SERIAL PRIMARY KEY,
     owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    title TEXT,
     date TIMESTAMP
   )`);
 
@@ -185,11 +186,13 @@ async function addTestData (client: Client) {
   await client.query( // dinner1
     `INSERT INTO dinners(
       owner_id,
+      title,
       date
     )
-    VALUES($1, $2)`,
+    VALUES($1, $2, $3)`,
     [
       1, // owner_id
+      "Dinner 1", // title
       new Date().toUTCString() // date
     ]
   );

@@ -1,0 +1,59 @@
+{
+  "/": {
+    "get": {
+      "tags": [ "dinner" ],
+      "summary": "Get all dinners",
+      "responses": {
+        "200": {
+          "description": "List of available dinners",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "result": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Dinner"
+                    }
+                  },
+                  "count": { "type": "number" }
+                }
+              },
+              "example": {
+                "result": [{
+                  "id": 0,
+                  "ownerId": 0,
+                  "username": "user123",
+                  "title": "my special dinner",
+                  "date": "2024-06-02T11:19:23.000Z"
+                }],
+                "count": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {}
+  },
+  "/{dinnerId}": {
+    "get": {},
+    "put": {},
+    "delete": {}
+  },
+  "/{dinnerId}/courses": {
+    "post": {}
+  },
+  "/{dinnerId}/courses/{courseId}": {
+    "get": {},
+    "put": {},
+    "delete": {}
+  },
+  "/{dinnerId}/participants": {
+    "post": {}
+  },
+  "/{dinnerId}/participants/{userId}": {
+    "delete": {}
+  }
+}

@@ -28,7 +28,7 @@ const extendedDinnerListData = computed(() => {
       date: d(new Date(dinner.date), "numeric"),
       navigation: {
         icon: feather.icons["chevron-right"].toSvg(), // todo: remove
-        text: t("dinner.more"),
+        text: t("dinner.table.more"),
         onClick: () => showDetails(dinner.id)
       }
     };
@@ -37,11 +37,15 @@ const extendedDinnerListData = computed(() => {
 
 const headers = [{
   key: "date",
-  title: t("dinner.date"),
+  title: t("dinner.table.date"),
+  sortable: false
+}, {
+  key: "title",
+  title: t("dinner.table.title"),
   sortable: false
 }, {
   key: "username",
-  title: t("dinner.owner"),
+  title: t("dinner.table.owner"),
   sortable: false
 }, {
   key: "navigation",
@@ -50,7 +54,7 @@ const headers = [{
 }];
 
 function createNewDinner() {
-
+  alert("Not implemented!");
 }
 
 </script>
@@ -82,8 +86,9 @@ function createNewDinner() {
     <footer>
       <v-btn size="large"
         :title="t('dinner.createDinner')"
-        @click="createNewDinner"
-        icon="mdi-plus"></v-btn>
+        color="primary"
+        icon="mdi-plus"
+        @click="createNewDinner"></v-btn>
     </footer>
   </div>
 </template>
@@ -114,7 +119,7 @@ h2 {
 #dinnerContent>footer {
   position: absolute;
   bottom: 2rem;
-  left: 2rem;
+  right: 2rem;
 }
 
 .toolbar {
