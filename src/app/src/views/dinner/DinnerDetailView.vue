@@ -55,7 +55,9 @@ function formatDate(date: Date) {
 }
 
 function deleteDinner() {
-  alert("Not implemented!");
+  dinnerStore.deleteDinner(dinnerId).then(() => {
+    router.push("/dinner");
+  });
 }
 
 function addParticipant() {
@@ -146,7 +148,8 @@ function updateDinnerDetails(focused: boolean) {
                             :title="t('dinnerDetail.participants.remove')"
                             @click="removeParticipant(item.id)"
                             icon>
-                            <v-icon color="error">mdi-trash-can-outline</v-icon>
+                            <v-icon color="error"
+                              size="large">mdi-close-circle</v-icon>
                           </v-btn>
                         </td>
                       </tr>
@@ -190,15 +193,17 @@ function updateDinnerDetails(focused: boolean) {
                             <v-btn size="small"
                               density="comfortable"
                               :title="t('dinnerDetail.courses.more')"
-                              icon="mdi-text-search"
+                              icon
                               @click="showCourseDetails(item.id)">
+                              <v-icon size=large>mdi-text-search</v-icon>
                             </v-btn>
                             <v-btn size="small"
                               density="comfortable"
                               :title="t('dinnerDetail.courses.remove')"
                               @click="removeCourse(item.id)"
                               icon>
-                              <v-icon color="error">mdi-trash-can-outline</v-icon>
+                              <v-icon color="error"
+                                size=large>mdi-trash-can-outline</v-icon>
                             </v-btn>
                           </div>
                         </td>
@@ -226,7 +231,9 @@ function updateDinnerDetails(focused: boolean) {
         color="error"
         :disabled="dinnerDetails.loading || !dinnerDetails.success"
         @click="deleteDinner"
-        icon="mdi-trash-can-outline"></v-btn>
+        icon>
+        <v-icon size=large>mdi-trash-can-outline</v-icon>
+      </v-btn>
     </footer>
   </div>
 </template>

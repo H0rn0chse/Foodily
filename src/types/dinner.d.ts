@@ -7,6 +7,10 @@ export type DinnerList = {
   title: string,
   date: string,
 }[]
+export type DinnerCreate = {
+  title: string,
+  date: string
+}
 
 export type DinnerDetails = {
   id: number,

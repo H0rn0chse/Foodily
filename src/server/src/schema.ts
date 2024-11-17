@@ -141,7 +141,7 @@ async function addTestData (client: Client) {
     VALUES ($1, $2, $3)`,
     [
       "admin", // username
-      crypto.pbkdf2Sync("1234", salt, 310000, 32, "sha256"), // hashed_password
+      crypto.pbkdf2Sync("1234", Uint8Array.from(salt), 310000, 32, "sha256"), // hashed_password
       salt // salt
     ]
   );

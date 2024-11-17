@@ -1,19 +1,29 @@
 import { type WritableComputedRef } from "vue";
 import type { ApiEntityState, EntityBase } from "@t/api";
-import { ApiEntity } from "./ApiEntity";
+import { ApiEntity, type CreatedEventData } from "./ApiEntity";
+import { CustomEventWrapper, type NetworkEvent } from "@/js/CustomEventWrapper";
 
 /**
  * Wraps the EntitySet loads individual Entities only on request
  */
 export class ApiEntitySet<EntityType extends EntityBase | EntityBase[]> {
-  #entityApiRequests: Record<string, ApiEntity<EntityType>> = {};
-  #entityComputedRefs: Record<string, WritableComputedRef<ApiEntityState<EntityType>>> = {};
+  #entityMap: Record<string, ApiEntity<EntityType>> = {};
+  #computedRefsTarget: Record<string, WritableComputedRef<ApiEntityState<EntityType>>> = {};
 
   #endpoint = "";
   #defaultValue = {} as EntityType;
 
-  // proxy every access to fetch each entity individually
-  #proxy = new Proxy(this.#entityComputedRefs , {
+  created = new CustomEventWrapper<NetworkEvent>("api-entity-set-created");
+  updated = new CustomEventWrapper<CreatedEventData<EntityType>>("api-entity-set-updated");
+  deleted = new CustomEventWrapper<NetworkEvent>("api-entity-set-deleted");
+  requestFailed = new CustomEventWrapper<NetworkEvent>("api-entity-set-requestFailed");
+
+  /**
+   * The proxy itself is not reactive!
+   * It forwards the computedRef read request to the individual ApiEntity instances
+   * The object
+   */
+  #entityProxy = new Proxy(this.#computedRefsTarget , {
     get: this.#handleProxyGet.bind(this)
   });
 
@@ -24,34 +34,42 @@ export class ApiEntitySet<EntityType extends EntityBase | EntityBase[]> {
 
   /**
    * Loads specific entities on demand
-   * @param target 
-   * @param entityId 
-   * @returns 
    */
   #handleProxyGet (target: Record<string, WritableComputedRef<ApiEntityState<EntityType>>>, entityId: string) {
-    if (!target[entityId]) { // is the ref already set?
-      if (!this.#entityApiRequests[entityId]) { // is the entityApi already set?
+    if (!target[entityId]) { // is the computedRef already set in the proxy target?
+      if (!this.#entityMap[entityId]) { // is the entityApi already set?
 
         // configure entityApi and store it
         const entityEndpoint = `${this.#endpoint}${entityId as string}`;
         const defaultValueCopy = JSON.parse(JSON.stringify(this.#defaultValue));
-        this.#entityApiRequests[entityId] = new ApiEntity<EntityType>(entityEndpoint, defaultValueCopy);
+        const entity = new ApiEntity<EntityType>(entityEndpoint, defaultValueCopy);
+
+        // forward events of individual entities to the set
+        entity.created.attach((event) => this.created.fire(event.detail));
+        entity.updated.attach((event) => this.updated.fire(event.detail));
+        entity.deleted.attach((event) => this.deleted.fire(event.detail));
+        entity.requestFailed.attach((event) => this.requestFailed.fire(event.detail));
+
+        this.#entityMap[entityId] = entity;
       }
 
-      // fetch computed ref
-      target[entityId] = this.#entityApiRequests[entityId].getComputedRef();
+      // fetch computed ref and store it in the proxy target
+      target[entityId] = this.#entityMap[entityId].getComputedRef();
     }
     return target[entityId];
   }
 
-  /**
-   * Note: The proxy itself is not reactive!
-   */
-  getProxiedRefs () {
-    return this.#proxy;
+  getComputedRefs () {
+    return this.#entityProxy;
   }
 
-  updateEntity (entityId: string) {
-    this.#entityApiRequests[entityId].update();
+  async updateEntity (entityId: string) {
+    await this.#entityMap[entityId].update();
+  }
+
+  async deleteEntity (entityId: string) {
+    await this.#entityMap[entityId].delete();
+    delete this.#computedRefsTarget[entityId];
+    delete this.#entityMap[entityId];
   }
 }

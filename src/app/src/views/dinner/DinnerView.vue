@@ -54,7 +54,11 @@ const headers = [{
 }];
 
 function createNewDinner() {
-  alert("Not implemented!");
+  dinnerStore.createDinner().then((dinnerId) => {
+    if (dinnerId) {
+      showDetails(dinnerId);
+    }
+  });
 }
 
 </script>

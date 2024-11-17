@@ -16,7 +16,8 @@ const props = defineProps({
 </script>
 
 <template>
-  <div id="LoadingScreenContent">
+  <div id="LoadingScreenContent"
+    class="rounded">
     <template v-if="props.success">
       <slot name="success">
 
