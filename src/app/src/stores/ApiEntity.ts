@@ -8,9 +8,13 @@ function sleep (seconds: number) {
   });
 }
 
-export type CreatedEventData<EntityType> = NetworkEvent & {
+export type UpdatedEventData<EntityType> = NetworkEvent & {
   data: EntityType | undefined,
   dataBefore: EntityType | undefined
+};
+
+export type CreatedEventData = NetworkEvent & {
+  entityId: number | string
 };
 
 /**
@@ -31,8 +35,8 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
   protected savedValue: EntityType | undefined;
   protected emptyValue = {} as EntityType;
 
-  created = new CustomEventWrapper<NetworkEvent>("api-entity-created");
-  updated = new CustomEventWrapper<CreatedEventData<EntityType>>("api-entity-updated");
+  created = new CustomEventWrapper<CreatedEventData>("api-entity-created");
+  updated = new CustomEventWrapper<UpdatedEventData<EntityType>>("api-entity-updated");
   deleted = new CustomEventWrapper<NetworkEvent>("api-entity-deleted");
   requestFailed = new CustomEventWrapper<NetworkEvent>("api-entity-requestFailed");
 
@@ -188,12 +192,15 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
       throw new Error("Error creating entity");
     }
 
+    const entityId = parseInt(response.headers.get("Location")?.split("/").pop() || "0", 10);
+
     this.created.fire({
       message: "Entity created",
       response: response,
+      entityId
     });
 
-    return parseInt(response.headers.get("Location")?.split("/").pop() || "0", 10);
+    return entityId;
   }
 
   async #loadData () {

@@ -1,6 +1,6 @@
 import { type WritableComputedRef } from "vue";
 import type { ApiEntityState, EntityBase } from "@t/api";
-import { ApiEntity, type CreatedEventData } from "./ApiEntity";
+import { ApiEntity, type UpdatedEventData } from "./ApiEntity";
 import { CustomEventWrapper, type NetworkEvent } from "@/js/CustomEventWrapper";
 
 /**
@@ -14,7 +14,7 @@ export class ApiEntitySet<EntityType extends EntityBase | EntityBase[]> {
   #defaultValue = {} as EntityType;
 
   created = new CustomEventWrapper<NetworkEvent>("api-entity-set-created");
-  updated = new CustomEventWrapper<CreatedEventData<EntityType>>("api-entity-set-updated");
+  updated = new CustomEventWrapper<UpdatedEventData<EntityType>>("api-entity-set-updated");
   deleted = new CustomEventWrapper<NetworkEvent>("api-entity-set-deleted");
   requestFailed = new CustomEventWrapper<NetworkEvent>("api-entity-set-requestFailed");
 
@@ -74,6 +74,6 @@ export class ApiEntitySet<EntityType extends EntityBase | EntityBase[]> {
   }
 
   async resetEntityState (entityId: string|number) {
-    this.#entityMap[entityId].resetState();
+    this.#entityMap[entityId]?.resetState?.();
   }
 }

@@ -25,6 +25,10 @@ export const useDinnerStore = defineStore("dinner", () => {
   dinnerDetails.updated.attach((event) => {
     const { data, dataBefore } = event.detail;
 
+    if (!data || !dataBefore) {
+      return;
+    }
+
     if (data.ownerId !== dataBefore.ownerId
       || data.username !== dataBefore.username
       || data.title !== dataBefore.title
@@ -38,6 +42,7 @@ export const useDinnerStore = defineStore("dinner", () => {
   });
   dinnerList.created.attach((event) => {
     dinnerList.resetState();
+    dinnerDetails.resetEntityState(event.detail.entityId);
   });
 
   async function updateDinnerDetails (id: DinnerId) {
@@ -115,7 +120,7 @@ export const useDinnerStore = defineStore("dinner", () => {
 
     addParticipants,
     removeParticipant,
-    
+
     // todo: check
     // reload: loadDinners,
   };

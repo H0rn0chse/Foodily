@@ -19,6 +19,10 @@ export const useUserStore = defineStore("user", () => {
   userDetails.updated.attach((event) => {
     const { data, dataBefore } = event.detail;
 
+    if (!data || !dataBefore) {
+      return;
+    }
+
     if (data.username !== dataBefore.username) {
       userList.resetState();
     }

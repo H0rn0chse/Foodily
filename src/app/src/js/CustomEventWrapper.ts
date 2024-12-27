@@ -1,5 +1,5 @@
-interface CustomEventListener {
-  (evt: CustomEvent): void;
+interface CustomEventListener<Target> {
+  (evt: CustomEvent<Target>): void;
 }
 
 export type NetworkEvent = {
@@ -16,13 +16,13 @@ export class CustomEventWrapper<EventData> extends EventTarget {
   }
 
   // eslint-disable-next-line no-undef
-  attach (listener: CustomEventListener, options?: AddEventListenerOptions | boolean): void {
+  attach (listener: CustomEventListener<EventData>, options?: AddEventListenerOptions | boolean): void {
     // eslint-disable-next-line no-undef
     this.addEventListener(this.#name, listener as EventListenerOrEventListenerObject , options);
   }
 
   // eslint-disable-next-line no-undef
-  detach (listener: CustomEventListener, options?: AddEventListenerOptions | boolean): void {
+  detach (listener: CustomEventListener<EventData>, options?: AddEventListenerOptions | boolean): void {
     // eslint-disable-next-line no-undef
     this.removeEventListener(this.#name, listener as EventListenerOrEventListenerObject, options);
   }
