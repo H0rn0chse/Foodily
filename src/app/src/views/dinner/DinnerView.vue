@@ -10,12 +10,20 @@ const router = useRouter();
 
 const search = ref("");
 
-function showDetails(dinnerId: number) {
+function showDetails(dinnerId: number, expandAllCategories = false) {
+  let query = {};
+  if (expandAllCategories) {
+    query = {
+      expandAllCategories: "true"
+    };
+  }
+
   router.push({
     name: "dinnerDetail",
     params: {
       dinnerId
-    }
+    },
+    query
   });
 }
 
@@ -25,7 +33,7 @@ const extendedDinnerListData = computed(() => {
   return dinnerList.data.map((dinner) => {
     return {
       ...dinner,
-      date: d(new Date(dinner.date), "numeric"),
+      date: d(new Date(dinner.date), "shortYear"),
       navigation: {
         icon: feather.icons["chevron-right"].toSvg(), // todo: remove
         text: t("dinner.table.more"),
@@ -56,7 +64,7 @@ const headers = [{
 function createNewDinner() {
   dinnerStore.createDinner().then((dinnerId) => {
     if (dinnerId) {
-      showDetails(dinnerId);
+      showDetails(dinnerId, true);
     }
   });
 }

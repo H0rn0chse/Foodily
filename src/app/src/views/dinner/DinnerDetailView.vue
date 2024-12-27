@@ -8,6 +8,7 @@ const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
+const expandAllCategories = route.query.expandAllCategories === "true";
 
 let dinnerId = "";
 let { dinnerId: dinnerIds } = route.params;
@@ -84,6 +85,9 @@ function showCourseDetails(courseId: number) {
 const expandedPanels = ref([
   "courses"
 ]);
+if (expandAllCategories) {
+  expandedPanels.value.push("metadata", "participants");
+}
 
 function updateDinnerDetails(focused: boolean) {
   if (!focused) {
@@ -226,13 +230,10 @@ function updateDinnerDetails(focused: boolean) {
       </template>
     </LoadingScreen>
     <footer>
-      <v-btn size="large"
-        :title="t('dinner.createDinner')"
+      <v-btn :text="t('dinnerDetail.deleteDinner')"
         color="error"
         :disabled="dinnerDetails.loading || !dinnerDetails.success"
-        @click="deleteDinner"
-        icon>
-        <v-icon size=large>mdi-trash-can-outline</v-icon>
+        @click="deleteDinner">
       </v-btn>
     </footer>
   </div>
@@ -255,10 +256,10 @@ function updateDinnerDetails(focused: boolean) {
 }
 
 #dinnerDetailContent>footer {
-  position: fixed;
-  bottom: 2rem;
-  left: 2rem;
-  z-index: 1;
+  align-self: start;
+  margin: 1rem;
+  /* align with card */
+  margin-left: 0;
 }
 
 h1,

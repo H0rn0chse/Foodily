@@ -33,11 +33,18 @@
         "dinnerDetail.courses.remove": "Remove Course",
         "dinnerDetail.courses": "Courses",
         "dinnerDetail.notFound": "Dinner not found",
+        "dinnerDetail.deleteDinner": "Delete Dinner",
 
         "settings.linkTitle": "Settings",
         "settings.title": "Settings",
         "settings.languageSelect": "Current Language"
     },
-    "dateTimeFormat": {},
+    "dateTimeFormat": {
+        "shortYear": {
+            "day": "numeric",
+            "month": "numeric",
+            "year": "2-digit"
+        }
+    },
     "numberFormat": {}
 }

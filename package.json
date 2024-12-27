@@ -16,8 +16,8 @@
     "build:app": "cd ./src/app && npm run build",
     "build:app-public": "cd ./src/app-public && npm run build",
     "build:server": "cd ./src/server && npm run build",
-    "start:db": "docker-compose up -d postgres",
-    "docker:start": "docker-compose up",
+    "start:db": "docker compose up -d postgres",
+    "docker:start": "docker compose up",
     "docker:build": "docker build -t foodily ."
   },
   "keywords": [],

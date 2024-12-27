@@ -12,6 +12,12 @@
         "settings.title": "Einstellungen",
         "settings.languageSelect": "Aktuelle Sprache"
     },
-    "dateTimeFormat": {},
+    "dateTimeFormat": {
+        "shortYear": {
+            "day": "numeric",
+            "month": "numeric",
+            "year": "2-digit"
+        }
+    },
     "numberFormat": {}
 }
