@@ -1,8 +1,8 @@
 import express from "express";
 import db, { buildSetStatement } from "@/db";
 import type { AuthenticatedUser } from "@/routes/auth";
-import type { Course, DinnerDetails, DinnerList } from "@t/dinner";
-import type { ApiResponse } from "@t/api";
+import type { Course, CourseId, DinnerDetails, DinnerId, DinnerList, DinnerListEntry } from "@t/dinner";
+import type { ApiResponse, User, UserId } from "@t/api";
 
 
 const router = express.Router();
@@ -12,13 +12,10 @@ const router = express.Router();
 // Read All
 router.get("/", async (req, res) => {
   try {
-    type DinnersRow = {
-      id: number,
-      owner_id: number,
-      username: string,
-      title: string,
-      date: string,
+    type DinnersRow = Omit<DinnerListEntry, "ownerId"> & {
+      owner_id: DinnerListEntry["ownerId"]
     };
+
     const queryResult = await db.query<DinnersRow>(
       `SELECT
         dinners.id,
@@ -56,14 +53,10 @@ router.get("/:dinnerId", async (req, res) => {
   try {
     const { dinnerId } = req.params;
 
-    type DinnersRow = {
-      id: number,
-      owner_id: number,
-      username: string,
-      title: string,
-      date: string,
-      participants: number[],
-      courses: number[]
+    type DinnersRow = Omit<DinnerDetails, "ownerId" | "participants" | "courses"> & {
+      owner_id: DinnerListEntry["ownerId"],
+      participants: UserId[],
+      courses: CourseId[],
     };
     const dinnerResult = await db.query<DinnersRow>(
       `SELECT
@@ -100,10 +93,7 @@ router.get("/:dinnerId", async (req, res) => {
 
     const [ dinner ] = dinnerResult.rows;
 
-    type ParticipantsRow = {
-      id: number,
-      username: string,
-    };
+    type ParticipantsRow = User;
     const participantResult = await db.query<ParticipantsRow>(
       `SELECT
         id,
@@ -113,14 +103,8 @@ router.get("/:dinnerId", async (req, res) => {
       [dinner.participants]
     );
 
-    type CoursesRow = {
-      id: number,
-      course_number: number,
-      main: boolean,
-      title: string,
-      description: string,
-      type: string,
-      vegetarian: boolean,
+    type CoursesRow = Omit<Course, "courseNumber"> & {
+      course_number: Course["courseNumber"]
     };
     const courseResults = await db.query<CoursesRow>(
       `SELECT
@@ -172,8 +156,8 @@ router.get("/:dinnerId", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     type RequestBody = {
-      date?: string,
-      title?: string,
+      date?: DinnerDetails["date"],
+      title?: DinnerDetails["title"],
     };
     const { body }: { body: RequestBody } = req;
 
@@ -183,7 +167,7 @@ router.post("/", async (req, res) => {
     };
     
     type DinnersRow = {
-      id: number,
+      id: DinnerId,
     };
     const result = await db.query<DinnersRow>(
       `INSERT INTO dinners(
@@ -229,8 +213,8 @@ router.put("/:dinnerId", async (req, res) => {
     const { dinnerId } = req.params;
 
     type RequestBody = {
-      date?: string,
-      title?: string,
+      date?: DinnerDetails["date"],
+      title?: DinnerDetails["title"],
     };
     const { body }: { body: RequestBody } = req;
 
@@ -301,14 +285,8 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
   try {
     const { dinnerId, courseId } = req.params;
 
-    type CoursesRow = {
-      id: number,
-      course_number: number,
-      main: boolean,
-      title: string,
-      description: string,
-      type: string,
-      vegetarian: boolean,
+    type CoursesRow = Omit<Course, "courseNumber"> & {
+      course_number: Course["courseNumber"]
     };
     const courseResult = await db.query<CoursesRow>(
       `SELECT
@@ -362,7 +340,7 @@ router.post("/:dinnerId/courses", async (req, res) => {
     const { dinnerId } = req.params;
 
     type DinnersRow = {
-      id: number,
+      id: DinnerId,
     };
     const dinnerResult = await db.query<DinnersRow>(
       `SELECT id
@@ -381,12 +359,12 @@ router.post("/:dinnerId/courses", async (req, res) => {
     }
 
     type RequestBody = {
-      courseNumber?: number,
-      main?: boolean,
-      title?: string,
-      description?: string,
-      type?: string,
-      vegetarian?: boolean,
+      courseNumber?: Course["courseNumber"],
+      main?: Course["main"],
+      title?: Course["title"],
+      description?: Course["description"],
+      type?: Course["type"],
+      vegetarian?: Course["vegetarian"],
     };
     const { body }: { body: RequestBody } = req;
 
@@ -400,7 +378,7 @@ router.post("/:dinnerId/courses", async (req, res) => {
     };
     
     type CoursesRow = {
-      id: number,
+      id: CourseId,
     };
     const result = await db.query<CoursesRow>(
       `INSERT INTO dinner_courses(
@@ -439,12 +417,12 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
     const { dinnerId, courseId } = req.params;
 
     type RequestBody = {
-      courseNumber?: number,
-      main?: boolean,
-      title?: string,
-      description?: string,
-      type?: string,
-      vegetarian?: boolean,
+      courseNumber?: Course["courseNumber"],
+      main?: Course["main"],
+      title?: Course["title"],
+      description?: Course["description"],
+      type?: Course["type"],
+      vegetarian?: Course["vegetarian"],
     };
     const { body }: { body: RequestBody } = req;
 
@@ -532,34 +510,31 @@ router.post("/:dinnerId/participants", async (req, res) => {
     const { dinnerId } = req.params;
 
     type RequestBody = {
-      userId?: number,
+      userIds?: UserId[],
     };
     const { body }: { body: RequestBody } = req;
 
-    if (!body.userId) {
+    if (!body.userIds || !Array.isArray(body.userIds) || !body.userIds.length) {
       res.status(400).json({
-        error: "Missing property 'userId'"
+        error: "Missing or empty property 'userIds'"
       });
       return;
     }
 
     type DinnersRow = {
-      id: number,
+      id: DinnerId,
+      participants: UserId[],
     };
     const dinnerResult = await db.query<DinnersRow>(
-      `SELECT id
+      `SELECT
+        id,
+        participants
       FROM dinners
       WHERE id=$1
-        AND owner_id=$2
-        AND id NOT IN (
-          SELECT dinner_id
-          FROM dinner_participants
-          WHERE user_id=$3
-        )`,
+        AND owner_id=$2`,
       [
         dinnerId,
-        (req.user as AuthenticatedUser).id,
-        body.userId
+        (req.user as AuthenticatedUser).id
       ]
     );
 
@@ -568,22 +543,33 @@ router.post("/:dinnerId/participants", async (req, res) => {
       return;
     }
 
-    const participantData = {
-      userId: body.userId,
-    };
+    const relevantUserIds = body.userIds.filter((userId) => {
+      return !dinnerResult.rows[0].participants.includes(userId);
+    });
     
-    await db.query(
-      `INSERT INTO dinner_participants(
-        dinner_id,
-        user_id
-      )
-      VALUES($1, $2)
-      RETURNING id`,
-      [
-        dinnerId,
-        participantData.userId,
-      ]
-    );
+    if (!relevantUserIds.length) {
+      res.sendStatus(200);
+      return;
+    }
+
+    await Promise.all(relevantUserIds.map(async (userId) => {
+      const participantData = {
+        userId
+      };
+      
+      await db.query(
+        `INSERT INTO dinner_participants(
+          dinner_id,
+          user_id
+        )
+        VALUES($1, $2)
+        RETURNING id`,
+        [
+          dinnerId,
+          participantData.userId,
+        ]
+      );
+    }));
 
     res.sendStatus(200);
   } catch (err) {
@@ -596,6 +582,13 @@ router.post("/:dinnerId/participants", async (req, res) => {
 router.delete("/:dinnerId/participants/:userId", async (req, res) => {
   try {
     const { dinnerId, userId } = req.params;
+
+    const ownerId = (req.user as AuthenticatedUser).id;
+
+    if (ownerId === userId) {
+      res.sendStatus(403);
+      return;
+    }
 
     const result = await db.query(
       `DELETE FROM dinner_participants

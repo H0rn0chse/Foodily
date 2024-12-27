@@ -63,13 +63,17 @@ export class ApiEntitySet<EntityType extends EntityBase | EntityBase[]> {
     return this.#entityProxy;
   }
 
-  async updateEntity (entityId: string) {
+  async updateEntity (entityId: string|number) {
     await this.#entityMap[entityId].update();
   }
 
-  async deleteEntity (entityId: string) {
+  async deleteEntity (entityId: string|number) {
     await this.#entityMap[entityId].delete();
     delete this.#computedRefsTarget[entityId];
     delete this.#entityMap[entityId];
+  }
+
+  async resetEntityState (entityId: string|number) {
+    this.#entityMap[entityId].resetState();
   }
 }

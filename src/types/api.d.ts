@@ -28,3 +28,5 @@ export type User = NonNullable<{
   id: number,
   username: string,
 }>;
+
+export type UserId = User["id"];

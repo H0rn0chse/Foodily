@@ -35,6 +35,11 @@
         "dinnerDetail.notFound": "Dinner not found",
         "dinnerDetail.deleteDinner": "Delete Dinner",
 
+        "userSelectionCard.title": "Select User",
+        "userSelectionCard.close": "Close",
+        "userSelectionCard.select": "Select",
+        "userSelectionCard.table.username": "Username",
+
         "settings.linkTitle": "Settings",
         "settings.title": "Settings",
         "settings.languageSelect": "Current Language"

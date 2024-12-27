@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { useDinnerStore } from "@/stores/dinner";
-import { computed, ref } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
+import UserSelectionCard from "@/components/UserSelectionCard.vue";
+import type { UserId } from "@t/api";
 const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
 const expandAllCategories = route.query.expandAllCategories === "true";
 
-let dinnerId = "";
+let dinnerId = 0;
 let { dinnerId: dinnerIds } = route.params;
 
 if (Array.isArray(dinnerIds)) {
-  [dinnerId] = dinnerIds;
+  const [firstDinnerId] = dinnerIds;
+  dinnerId = parseInt(firstDinnerId, 10);
 } else {
-  dinnerId = dinnerIds;
+  dinnerId = parseInt(dinnerIds, 10);
 }
+
+// activator cannot handle the ref pointing to null, which is the case before mounted. In reality, this is not a problem.
+const addParticipantButton = useTemplateRef("addParticipantButton") as any;
 
 const dinnerStore = useDinnerStore();
 const dinnerDetails = dinnerStore.dinnerDetails[dinnerId];
@@ -44,6 +50,15 @@ const dinnerDetailsCourseRating = computed({
   }
 });
 
+const dinnerDetailsParticipants = computed({
+  get: () => {
+    return dinnerDetails.value.data.participants.filter((participant) => participant.id !== dinnerDetails.value.data.ownerId);
+  },
+  set: (newParticipants) => {
+    throw new Error("Property is readonly!");
+  }
+});
+
 /**
  * Formats the date to be compatible with the input
  */
@@ -61,12 +76,12 @@ function deleteDinner() {
   });
 }
 
-function addParticipant() {
-  alert("Not implemented!");
+function addParticipants(participants: UserId[]) {
+  dinnerStore.addParticipants(dinnerId, participants);
 }
 
-function removeParticipant(participantId: number) {
-  alert("Not implemented!");
+function removeParticipant(participantId: UserId) {
+  dinnerStore.removeParticipant(dinnerId, participantId);
 }
 
 function addCourse() {
@@ -143,7 +158,7 @@ function updateDinnerDetails(focused: boolean) {
                 <v-card-text>
                   <v-table>
                     <tbody>
-                      <tr v-for="item in dinnerDetails.data.participants"
+                      <tr v-for="item in dinnerDetailsParticipants"
                         :key="item.id">
                         <td>{{ item.username }}</td>
                         <td>
@@ -162,12 +177,19 @@ function updateDinnerDetails(focused: boolean) {
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary"
-                    @click="addParticipant">{{ t('dinnerDetail.participants.add') }}</v-btn>
+                  <v-btn ref="addParticipantButton"
+                    color="primary">{{ t('dinnerDetail.participants.add') }}</v-btn>
                 </v-card-actions>
               </v-card>
             </v-expansion-panel-text>
           </v-expansion-panel>
+          <v-dialog :activator="addParticipantButton"
+            max-width="340">
+            <template v-slot:default="{ isActive }">
+              <UserSelectionCard @close="isActive.value = false"
+                @select="addParticipants" />
+            </template>
+          </v-dialog>
 
           <v-expansion-panel value="courses">
             <v-expansion-panel-title>
