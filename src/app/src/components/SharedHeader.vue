@@ -17,27 +17,37 @@ function toggleDrawer() {
 </script>
 
 <template>
-  <v-app-bar scroll-behavior="collapse"
-    :title="t('project.name')">
-    <template v-slot:prepend>
-      <a href="/"
-        class="reference">
-        <img alt="Vue logo"
+  <v-app-bar
+    scroll-behavior="collapse"
+    :title="t('project.name')"
+  >
+    <template #prepend>
+      <a
+        href="/"
+        class="reference"
+      >
+        <img
+          alt="Vue logo"
           class="logo"
-          src="@/assets/logo.svg" />
+          src="@/assets/logo.svg"
+        >
       </a>
     </template>
-    <template v-slot:append>
-      <div @click="toggleDrawer"
-        v-if="props.showDrawer">
+    <template #append>
+      <div
+        v-if="props.showDrawer"
+        @click="toggleDrawer"
+      >
         <v-app-bar-nav-icon />
       </div>
     </template>
   </v-app-bar>
-  <v-navigation-drawer location="right"
-    v-model="navigationDrawerVisible">
+  <v-navigation-drawer
+    v-model="navigationDrawerVisible"
+    location="right"
+  >
     <v-list>
-      <slot name="navigationList"></slot>
+      <slot name="navigationList" />
     </v-list>
   </v-navigation-drawer>
 </template>

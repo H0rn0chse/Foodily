@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 
     const [settings] = result.rows;
   
-    res.json({
+    res.status(200).json({
       result: {
         userId: settings.user_id,
         language: settings.language,

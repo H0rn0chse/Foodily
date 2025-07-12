@@ -6,10 +6,14 @@ const { t } = useI18n();
 <template>
   <div id="homeContent">
     <h1>{{ t("home.title") }}</h1>
-    <img src="@/assets/home.png"
-      style="max-width: 20rem;">
-    <v-btn color="primary"
-      href="/login">
+    <img
+      src="@/assets/home.png"
+      style="max-width: 20rem;"
+    >
+    <v-btn
+      color="primary"
+      href="/login"
+    >
       {{ t("home.signIn") }}
     </v-btn>
   </div>

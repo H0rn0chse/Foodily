@@ -100,24 +100,22 @@ if (SERVER_MODE !== MODES.ApiOnly) {
 if (SERVER_MODE !== MODES.ApiOnly) {
   // catch 404 and forward to error handler
   app.use((req, res) => {
-    res.status(404);
-
     // respond with html page
     if (req.accepts("html")) {
       // res.sendStatus(404);
-      res.redirect("/notFound");
+      res.status(404).redirect("/notFound");
       // res.render("404", { url: req.url });
       return;
     }
 
     // respond with json
     if (req.accepts("json")) {
-      res.json({ error: "Not found" });
+      res.status(404).json({ error: "Not found" });
       return;
     }
 
     // default to plain-text. send()
-    res.type("txt").send("Not found");
+    res.status(404).type("txt").send("Not found");
   });
 }
 

@@ -33,13 +33,15 @@ function storePreferences() {
 <template>
   <div id="settingsContent">
     <h1>{{ t("settings.title") }}</h1>
-    <v-select :label="t('settings.languageSelect')"
+    <v-select
+      v-model="localeModel"
+      :label="t('settings.languageSelect')"
       :items="langs"
       item-title="text"
       item-value="value"
-      v-model="localeModel"
       class="select"
-      @update:modelValue="storePreferences" />
+      @update:model-value="storePreferences"
+    />
   </div>
 </template>
 

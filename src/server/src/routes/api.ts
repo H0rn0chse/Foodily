@@ -5,9 +5,9 @@ import dinnersRouter from "@/api/v1/dinners";
 import foodPreferencesRouter from "@/api/v1/foodPreferences";
 import foodPreferenceFormsRouter from "@/api/v1/foodPreferenceForms";
 
-import baseApiDoc from "@/api/v1/api.json" assert { type: "json" };
-import usersApiDoc from "@/api/v1/users.json" assert { type: "json" };
-import dinnersApiDoc from "@/api/v1/dinners.json" assert { type: "json" };
+import baseApiDoc from "@/api/v1/api.json" with { type: "json" };
+import usersApiDoc from "@/api/v1/users.json" with { type: "json" };
+import dinnersApiDoc from "@/api/v1/dinners.json" with { type: "json" };
 
 const apiRouter = express.Router();
 const v1Router = express.Router();

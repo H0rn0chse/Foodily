@@ -16,7 +16,7 @@ const vite = await createViteServer({
 
 app.use(vite.middlewares);
 
-app.use("*", async (req, res, next) => {
+app.use("*rest", async (req, res, next) => {
   const url = req.originalUrl;
 
   try {

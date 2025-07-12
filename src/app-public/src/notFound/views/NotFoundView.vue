@@ -5,13 +5,17 @@ const { t } = useI18n();
 
 <template>
   <div id="notFoundContent">
-    <v-btn href="/"
-      color="primary">
+    <v-btn
+      href="/"
+      color="primary"
+    >
       {{ t("notFound.back") }}
     </v-btn>
     <div class="messageContainer">
-      <img src="@/assets/notFound.png"
-        style="max-width: 20rem;">
+      <img
+        src="@/assets/notFound.png"
+        style="max-width: 20rem;"
+      >
       <h1>{{ t("notFound.message") }}</h1>
     </div>
   </div>

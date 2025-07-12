@@ -13,40 +13,52 @@ function logout() {
 </script>
 
 <template>
-  <v-app id="app"
+  <v-app
+    id="app"
     full-height
-    theme="dark">
+    theme="dark"
+  >
     <v-layout>
       <SharedHeader>
         <template #navigationList>
-          <v-list-item link
+          <v-list-item
+            link
             to="/"
             class="headerLink"
-            active-class="activeLink">
+            active-class="activeLink"
+          >
             {{ t("home.linkTitle") }}
           </v-list-item>
-          <v-list-item link
+          <v-list-item
+            link
             to="/dinner"
             class="headerLink"
-            active-class="activeLink">
+            active-class="activeLink"
+          >
             {{ t("dinner.linkTitle") }}
           </v-list-item>
-          <v-list-item link
+          <v-list-item
+            link
             to="/profile"
             class="headerLink"
-            active-class="activeLink">
+            active-class="activeLink"
+          >
             {{ t("settings.linkTitle") }}
           </v-list-item>
-          <v-list-item link
+          <v-list-item
+            link
             to="/about"
             class="headerLink"
-            active-class="activeLink">
+            active-class="activeLink"
+          >
             {{ t("about.linkTitle") }}
           </v-list-item>
           <v-list-item link>
-            <v-btn type="submit"
+            <v-btn
+              type="submit"
               color="primary"
-              @click="logout">
+              @click="logout"
+            >
               {{ t("header.signOutBtn") }}
             </v-btn>
           </v-list-item>

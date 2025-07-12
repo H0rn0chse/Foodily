@@ -16,11 +16,12 @@ const props = defineProps({
 </script>
 
 <template>
-  <div id="LoadingScreenContent"
-    class="rounded">
+  <div
+    id="LoadingScreenContent"
+    class="rounded"
+  >
     <template v-if="props.success">
       <slot name="success">
-
       </slot>
     </template>
     <template v-else>
@@ -28,10 +29,12 @@ const props = defineProps({
         <h2>{{ t("loadingScreen.error") }}</h2>
       </slot>
     </template>
-    <v-overlay :model-value="props.busy"
+    <v-overlay
+      :model-value="props.busy"
       contained
       persistent
-      class="overlay">
+      class="overlay"
+    >
       <div class="loader"></div>
     </v-overlay>
   </div>

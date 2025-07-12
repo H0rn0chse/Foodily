@@ -33,30 +33,37 @@ function handleSelect() {
 
 <template>
   <v-card :title="t('userSelectionCard.title')">
-    <template v-slot:text>
-      <v-text-field v-model="search"
+    <template #text>
+      <v-text-field
+        v-model="search"
         label="Search"
         prepend-inner-icon="mdi-magnify"
         variant="outlined"
         hide-details
-        single-line></v-text-field>
+        single-line
+      />
     </template>
-    <v-data-table :headers="headers"
+    <v-data-table
+      v-model="selectedUsers"
+      :headers="headers"
       :items="userStore.userList.data"
       :loading="userStore.userList.loading"
       :search="search"
-      v-model="selectedUsers"
       show-select
       hide-default-header
       hide-default-footer
-      hover>
-    </v-data-table>
+      hover
+    />
     <template #actions>
-      <v-btn :text="t('userSelectionCard.close')"
-        @click="handleClose()" />
-      <v-btn color="primary"
+      <v-btn
+        :text="t('userSelectionCard.close')"
+        @click="handleClose()"
+      />
+      <v-btn
+        color="primary"
         :text="t('userSelectionCard.select')"
-        @click="handleSelect()" />
+        @click="handleSelect()"
+      />
     </template>
   </v-card>
 </template>

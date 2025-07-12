@@ -1,5 +1,4 @@
 /* eslint-env node */
-import { series } from "async";
 import { exec } from "child_process";
 import { existsSync } from "fs";
 import { rename, rmdir } from "fs/promises";
@@ -10,13 +9,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 console.log("📦 Started Building");
 
+function series(tasks) {
+  return tasks.reduce((promise, task) => {
+    return promise.then(() => task());
+  }, Promise.resolve());
+}
+
 /**
  * Utility function wrapping the exec in a promise and logging the output
- * @param {string} command 
- * @param {object} options 
+ * @param {string} command
+ * @param {object} options
  * @returns {Promise} Resolves once the exec is done
  */
-function execAsync (command, options = {}) {
+function execAsync(command, options = {}) {
   return new Promise((resolve, reject) => {
     exec(command, options, (error, stdout, stderr) => {
       if (error) {
@@ -32,11 +37,11 @@ function execAsync (command, options = {}) {
   });
 }
 
-async function buildTarget ({ project, indexTargetName }) {
+async function buildTarget({ project, indexTargetName }) {
   console.log(`================== 🟡 Started '${project}' ==================`);
 
   const targetDistPath = path.join(__dirname, "dist", project);
-  
+
   // Build
   const env = { BUILD_TARGET: project };
   await execAsync("vite build", { env });
@@ -72,7 +77,10 @@ try {
       await buildTarget({ project: "app", indexTargetName: "app.html" });
     },
     async () => {
-      await buildTarget({ project: "notFound", indexTargetName: "NotFound.html" });
+      await buildTarget({
+        project: "notFound",
+        indexTargetName: "NotFound.html",
+      });
     },
   ]);
 } catch (err) {

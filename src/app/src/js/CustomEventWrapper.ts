@@ -15,15 +15,11 @@ export class CustomEventWrapper<EventData> extends EventTarget {
     this.#name = name;
   }
 
-  // eslint-disable-next-line no-undef
   attach (listener: CustomEventListener<EventData>, options?: AddEventListenerOptions | boolean): void {
-    // eslint-disable-next-line no-undef
     this.addEventListener(this.#name, listener as EventListenerOrEventListenerObject , options);
   }
 
-  // eslint-disable-next-line no-undef
   detach (listener: CustomEventListener<EventData>, options?: AddEventListenerOptions | boolean): void {
-    // eslint-disable-next-line no-undef
     this.removeEventListener(this.#name, listener as EventListenerOrEventListenerObject, options);
   }
 

@@ -7,8 +7,10 @@ const { t } = useI18n();
   <div id="homeContent">
     <h1>{{ t("home.title") }}</h1>
     <div style="display: flex; align-items: center;">
-      <img src="@/assets/image.png"
-        style="max-width: 20rem;">
+      <img
+        src="@/assets/image.png"
+        style="max-width: 20rem;"
+      >
     </div>
   </div>
 </template>

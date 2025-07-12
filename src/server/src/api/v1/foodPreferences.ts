@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
       [(req.user as AuthenticatedUser).id]
     );
 
-    res.json({
+    res.status(200).json({
       result: result.rows.map((row) => {
         return {
           id: row.id,
@@ -125,7 +125,7 @@ router.get("/:prefId", async (req, res) => {
       [preference.id]
     );
 
-    res.json({
+    res.status(200).json({
       result: {
         id: preference.id,
         owner: {
@@ -342,7 +342,7 @@ router.get("/:prefId/allergies/:allergyId", async (req, res) => {
 
     const [allergy] = allergyResult.rows;
 
-    res.json({
+    res.status(200).json({
       result: {
         id: allergy.id,
         preferenceId: allergy.preference_id,
@@ -546,7 +546,7 @@ router.get("/:prefId/distaste/:distasteId", async (req, res) => {
 
     const [distaste] = distasteResult.rows;
 
-    res.json({
+    res.status(200).json({
       result: {
         id: distaste.id,
         preferenceId: distaste.preference_id,

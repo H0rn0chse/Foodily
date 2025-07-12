@@ -13,7 +13,7 @@ const route = useRoute();
 const expandAllCategories = route.query.expandAllCategories === "true";
 
 let dinnerId = 0;
-let { dinnerId: dinnerIds } = route.params;
+const { dinnerId: dinnerIds } = route.params;
 
 if (Array.isArray(dinnerIds)) {
   const [firstDinnerId] = dinnerIds;
@@ -23,6 +23,7 @@ if (Array.isArray(dinnerIds)) {
 }
 
 // activator cannot handle the ref pointing to null, which is the case before mounted. In reality, this is not a problem.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const addParticipantButton = useTemplateRef("addParticipantButton") as any;
 
 const dinnerStore = useDinnerStore();
@@ -114,35 +115,45 @@ function updateDinnerDetails(focused: boolean) {
 <template>
   <div id="dinnerDetailContent">
     <div class="flexRow">
-      <v-btn prepend-icon="mdi-chevron-left"
-        @click="router.push('/dinner')">
+      <v-btn
+        prepend-icon="mdi-chevron-left"
+        @click="router.push('/dinner')"
+      >
         {{ t("dinnerDetail.back") }}
       </v-btn>
       <h1>{{ t("dinnerDetail.title") }}</h1>
     </div>
-    <LoadingScreen :busy="dinnerDetails.loading"
+    <LoadingScreen
+      :busy="dinnerDetails.loading"
       :success="dinnerDetails.success"
-      class="category flexColumn">
+      class="category flexColumn"
+    >
       <template #success>
-        <v-expansion-panels multiple
-          v-model="expandedPanels">
+        <v-expansion-panels
+          v-model="expandedPanels"
+          multiple
+        >
           <v-expansion-panel value="metadata">
             <v-expansion-panel-title>
               <h2>{{ t("dinnerDetail.metadata") }}</h2>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <v-card class="category"
-                variant="text">
+              <v-card
+                class="category"
+                variant="text"
+              >
                 <v-card-text>
-                  <v-text-field v-model="dinnerDetailsDate"
+                  <v-text-field
+                    v-model="dinnerDetailsDate"
                     :label="t('dinnerDetail.metadata.date')"
                     type="date"
-                    @update:focused="updateDinnerDetails">
-                  </v-text-field>
-                  <v-text-field v-model="dinnerDetails.data.title"
+                    @update:focused="updateDinnerDetails"
+                  />
+                  <v-text-field
+                    v-model="dinnerDetails.data.title"
                     :label="t('dinnerDetail.metadata.title')"
-                    @update:focused="updateDinnerDetails">
-                  </v-text-field>
+                    @update:focused="updateDinnerDetails"
+                  />
                 </v-card-text>
               </v-card>
             </v-expansion-panel-text>
@@ -153,22 +164,32 @@ function updateDinnerDetails(focused: boolean) {
               <h2>{{ t("dinnerDetail.participants") }}</h2>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <v-card class="category"
-                variant="text">
+              <v-card
+                class="category"
+                variant="text"
+              >
                 <v-card-text>
                   <v-table>
                     <tbody>
-                      <tr v-for="item in dinnerDetailsParticipants"
-                        :key="item.id">
+                      <tr
+                        v-for="item in dinnerDetailsParticipants"
+                        :key="item.id"
+                      >
                         <td>{{ item.username }}</td>
                         <td>
-                          <v-btn size="small"
+                          <v-btn
+                            size="small"
                             density="comfortable"
                             :title="t('dinnerDetail.participants.remove')"
+                            icon
                             @click="removeParticipant(item.id)"
-                            icon>
-                            <v-icon color="error"
-                              size="large">mdi-close-circle</v-icon>
+                          >
+                            <v-icon
+                              color="error"
+                              size="large"
+                            >
+                              mdi-close-circle
+                            </v-icon>
                           </v-btn>
                         </td>
                       </tr>
@@ -176,18 +197,26 @@ function updateDinnerDetails(focused: boolean) {
                   </v-table>
                 </v-card-text>
                 <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn ref="addParticipantButton"
-                    color="primary">{{ t('dinnerDetail.participants.add') }}</v-btn>
+                  <v-spacer />
+                  <v-btn
+                    ref="addParticipantButton"
+                    color="primary"
+                  >
+                    {{ t('dinnerDetail.participants.add') }}
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-dialog :activator="addParticipantButton"
-            max-width="340">
-            <template v-slot:default="{ isActive }">
-              <UserSelectionCard @close="isActive.value = false"
-                @select="addParticipants" />
+          <v-dialog
+            :activator="addParticipantButton"
+            max-width="340"
+          >
+            <template #default="{ isActive }">
+              <UserSelectionCard
+                @close="isActive.value = false"
+                @select="addParticipants"
+              />
             </template>
           </v-dialog>
 
@@ -196,40 +225,57 @@ function updateDinnerDetails(focused: boolean) {
               <h2>{{ t("dinnerDetail.courses") }}</h2>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <v-card class="category"
-                variant="text">
+              <v-card
+                class="category"
+                variant="text"
+              >
                 <v-card-text>
                   <v-table>
                     <tbody>
-                      <tr v-for="item in dinnerDetails.data.courses"
+                      <tr
+                        v-for="item in dinnerDetails.data.courses"
                         :key="item.id"
-                        class="resetTableRowHeight flexRow">
+                        class="resetTableRowHeight flexRow"
+                      >
                         <td class="courseRow">
-                          <p class="courseTitle">{{ item.title }}</p>
-                          <v-rating class="courseRating"
+                          <p class="courseTitle">
+                            {{ item.title }}
+                          </p>
+                          <v-rating
                             v-model="dinnerDetailsCourseRating[item.id]"
+                            class="courseRating"
                             size="small"
                             active-color="orange-lighten-2"
                             color="orange"
                             dense
                             half-increments
-                            readonly>
-                          </v-rating>
+                            readonly
+                          />
                           <div class="courseActions flexRow">
-                            <v-btn size="small"
+                            <v-btn
+                              size="small"
                               density="comfortable"
                               :title="t('dinnerDetail.courses.more')"
                               icon
-                              @click="showCourseDetails(item.id)">
-                              <v-icon size=large>mdi-text-search</v-icon>
+                              @click="showCourseDetails(item.id)"
+                            >
+                              <v-icon size="large">
+                                mdi-text-search
+                              </v-icon>
                             </v-btn>
-                            <v-btn size="small"
+                            <v-btn
+                              size="small"
                               density="comfortable"
                               :title="t('dinnerDetail.courses.remove')"
+                              icon
                               @click="removeCourse(item.id)"
-                              icon>
-                              <v-icon color="error"
-                                size=large>mdi-trash-can-outline</v-icon>
+                            >
+                              <v-icon
+                                color="error"
+                                size="large"
+                              >
+                                mdi-trash-can-outline
+                              </v-icon>
                             </v-btn>
                           </div>
                         </td>
@@ -238,9 +284,13 @@ function updateDinnerDetails(focused: boolean) {
                   </v-table>
                 </v-card-text>
                 <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="primary"
-                    @click="addCourse">{{ t('dinnerDetail.courses.add') }}</v-btn>
+                  <v-spacer />
+                  <v-btn
+                    color="primary"
+                    @click="addCourse"
+                  >
+                    {{ t('dinnerDetail.courses.add') }}
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-expansion-panel-text>
@@ -252,11 +302,12 @@ function updateDinnerDetails(focused: boolean) {
       </template>
     </LoadingScreen>
     <footer>
-      <v-btn :text="t('dinnerDetail.deleteDinner')"
+      <v-btn
+        :text="t('dinnerDetail.deleteDinner')"
         color="error"
         :disabled="dinnerDetails.loading || !dinnerDetails.success"
-        @click="deleteDinner">
-      </v-btn>
+        @click="deleteDinner"
+      />
     </footer>
   </div>
 </template>

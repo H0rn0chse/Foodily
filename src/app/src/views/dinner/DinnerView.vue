@@ -75,32 +75,40 @@ function createNewDinner() {
   <div id="dinnerContent">
     <h1>{{ t("dinner.title") }}</h1>
     <div class="toolbar">
-      <v-text-field v-model="search"
+      <v-text-field
+        v-model="search"
         :label="t('dinner.search')"
         prepend-inner-icon="mdi-magnify"
         variant="outlined"
         hide-details
         single-line
-        disabled></v-text-field>
+        disabled
+      />
     </div>
-    <v-data-table-server :items="extendedDinnerListData"
+    <v-data-table-server
+      :items="extendedDinnerListData"
       :items-length="dinnerList.count"
       :headers="headers"
       :loading="dinnerList.loading"
-      hover>
+      hover
+    >
       <template #item.navigation="{ item }">
-        <v-btn density="comfortable"
+        <v-btn
+          density="comfortable"
           :title="t('dinner.more')"
+          icon="mdi-chevron-right"
           @click="item.navigation.onClick"
-          icon="mdi-chevron-right"></v-btn>
+        />
       </template>
     </v-data-table-server>
     <footer>
-      <v-btn size="large"
+      <v-btn
+        size="large"
         :title="t('dinner.createDinner')"
         color="primary"
         icon="mdi-plus"
-        @click="createNewDinner"></v-btn>
+        @click="createNewDinner"
+      />
     </footer>
   </div>
 </template>

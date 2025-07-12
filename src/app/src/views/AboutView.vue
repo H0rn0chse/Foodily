@@ -15,10 +15,14 @@ const version = inject("foodilyVersion");
       <p>{{ t("about.version", [version]) }}</p>
     </header>
     <h2>
-      <a href="https://github.com/H0rn0chse/Foodily"
-        class="reference">
-        <svg class="icon"
-          v-html="siGithub.svg"></svg>
+      <a
+        href="https://github.com/H0rn0chse/Foodily"
+        class="reference"
+      >
+        <svg
+          class="icon"
+          v-html="siGithub.svg"
+        ></svg>
         {{ t("about.viewOnGitHub") }}
       </a>
     </h2>

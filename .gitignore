@@ -15,6 +15,9 @@ coverage
 *.local
 .env
 
+# typescript
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

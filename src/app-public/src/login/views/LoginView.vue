@@ -54,36 +54,46 @@ async function submitLogin() {
 <template>
   <div id="loginContent">
     <h1>{{ t("login.title") }}</h1>
-    <p v-for="error in errorMessages"
+    <p
+      v-for="error in errorMessages"
+      :key="error.id"
       class="errorMessage"
-      :key="error.id">
+    >
       {{ error.message }}
     </p>
-    <v-form id="loginForm"
+    <v-form
+      id="loginForm"
       ref="loginForm"
       tag="form"
-      @submit.prevent="submitLogin">
-      <v-text-field v-model="formData.username"
+      @submit.prevent="submitLogin"
+    >
+      <v-text-field
         id="username"
+        v-model="formData.username"
         autocomplete="username"
         :label="t('login.username')"
         :rules="[
           (v) => Boolean(v) || t('login.username.empty'),
         ]"
-        :disabled="formData.loading" />
-      <v-text-field v-model="formData.password"
+        :disabled="formData.loading"
+      />
+      <v-text-field
         id="current-password"
+        v-model="formData.password"
         autocomplete="current-password"
         type="password"
         :label="t('login.password')"
         :rules="[
           (v) => Boolean(v) || t('login.password.empty'),
         ]"
-        :disabled="formData.loading" />
-      <v-btn type="submit"
+        :disabled="formData.loading"
+      />
+      <v-btn
+        type="submit"
         :loading="formData.loading"
         color="primary"
-        class="submitBtn">
+        class="submitBtn"
+      >
         {{ t("login.submit") }}
       </v-btn>
     </v-form>

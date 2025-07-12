@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
       ]
     );
 
-    res.json({
+    res.status(200).json({
       result: result.rows.map((row) => {
         return {
           id: row.id,
@@ -64,7 +64,7 @@ router.get("/:userId", async (req, res) => {
 
     const [user] = result.rows;
 
-    res.json({
+    res.status(200).json({
       result: {
         id: user.id,
         username: user.username,

@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
       [(req.user as AuthenticatedUser).id]
     );
 
-    res.json({
+    res.status(200).json({
       result: queryResult.rows.map((row) => {
         return {
           id: row.id,
@@ -120,7 +120,7 @@ router.get("/:dinnerId", async (req, res) => {
       [dinner.courses]
     );
 
-    res.json({
+    res.status(200).json({
       result: {
         id: dinner.id,
         ownerId: dinner.owner_id,
@@ -317,7 +317,7 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
 
     const [course] = courseResult.rows;
 
-    res.json({
+    res.status(200).json({
       result: {
         id: course.id,
         courseNumber: course.course_number,

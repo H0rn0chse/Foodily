@@ -81,7 +81,7 @@ const getLocale = () => {
   // }
   // fetch("/api/v1/userSettings")
   //   .then<UserSettings>((res) => {
-  //     return res.json();
+  //     return res.status(200).json();
   //   })
   //   .then((res) => {
   //     const { locale } = useI18n();
