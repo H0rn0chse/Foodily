@@ -1,8 +1,8 @@
 {
   "/": {
     "get": {
-      "tags": [ "dinner" ],
-      "summary": "Get all dinners",
+      "tags": ["dinner"],
+      "summary": "Get all dinners for the authenticated user",
       "responses": {
         "200": {
           "description": "List of available dinners",
@@ -13,17 +13,15 @@
                 "properties": {
                   "result": {
                     "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Dinner"
-                    }
+                    "items": { "$ref": "#/components/schemas/Dinner" }
                   },
                   "count": { "type": "number" }
                 }
               },
               "example": {
                 "result": [{
-                  "id": 0,
-                  "ownerId": 0,
+                  "id": "1",
+                  "ownerId": "1",
                   "username": "user123",
                   "title": "my special dinner",
                   "date": "2024-06-02T11:19:23.000Z"
@@ -35,25 +33,366 @@
         }
       }
     },
-    "post": {}
+    "post": {
+      "tags": ["dinner"],
+      "summary": "Create a new dinner",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "date": { "type": "string", "format": "date-time" }
+              }
+            },
+            "example": {
+              "title": "Birthday Dinner",
+              "date": "2024-07-13T18:00:00.000Z"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Dinner created",
+          "headers": {
+            "Location": {
+              "description": "Location of the new dinner",
+              "schema": { "type": "string" },
+              "example": "/api/v1/dinners/2"
+            }
+          }
+        }
+      }
+    }
   },
   "/{dinnerId}": {
-    "get": {},
-    "put": {},
-    "delete": {}
+    "get": {
+      "tags": ["dinner"],
+      "summary": "Get details of a specific dinner",
+      "parameters": [
+        {
+          "name": "dinnerId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Dinner details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "result": { "$ref": "#/components/schemas/DinnerDetails" }
+                }
+              },
+              "example": {
+                "result": {
+                  "id": "1",
+                  "ownerId": "1",
+                  "username": "user123",
+                  "title": "my special dinner",
+                  "date": "2024-06-02T11:19:23.000Z",
+                  "participants": [
+                    { "id": "2", "username": "guest1" },
+                    { "id": "3", "username": "guest2" }
+                  ],
+                  "courses": [
+                    {
+                      "id": "1",
+                      "courseNumber": 1,
+                      "main": true,
+                      "title": "Starter",
+                      "description": "Soup",
+                      "type": "starter",
+                      "vegetarian": true
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": ["dinner"],
+      "summary": "Update a dinner",
+      "parameters": [
+        {
+          "name": "dinnerId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "date": { "type": "string", "format": "date-time" }
+              }
+            },
+            "example": {
+              "title": "Updated Dinner Title",
+              "date": "2024-07-14T18:00:00.000Z"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Dinner updated"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["dinner"],
+      "summary": "Delete a dinner",
+      "parameters": [
+        {
+          "name": "dinnerId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Dinner deleted"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   },
   "/{dinnerId}/courses": {
-    "post": {}
+    "post": {
+      "tags": ["dinner"],
+      "summary": "Add a course to a dinner",
+      "parameters": [
+        {
+          "name": "dinnerId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "courseNumber": { "type": "number" },
+                "main": { "type": "boolean" },
+                "title": { "type": "string" },
+                "description": { "type": "string" },
+                "type": { "type": "string" },
+                "vegetarian": { "type": "boolean" }
+              }
+            },
+            "example": {
+              "courseNumber": 2,
+              "main": false,
+              "title": "Dessert",
+              "description": "Ice Cream",
+              "type": "dessert",
+              "vegetarian": true
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Course created",
+          "headers": {
+            "Location": {
+              "description": "Location of the new course",
+              "schema": { "type": "string" },
+              "example": "/api/v1/dinners/2/courses/2"
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   },
   "/{dinnerId}/courses/{courseId}": {
-    "get": {},
-    "put": {},
-    "delete": {}
+    "get": {
+      "tags": ["dinner"],
+      "summary": "Get details of a specific course",
+      "parameters": [
+        { "name": "dinnerId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "courseId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "Course details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "result": { "$ref": "#/components/schemas/Course" }
+                }
+              },
+              "example": {
+                "result": {
+                  "id": "1",
+                  "courseNumber": 1,
+                  "main": true,
+                  "title": "Starter",
+                  "description": "Soup",
+                  "type": "starter",
+                  "vegetarian": true
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": ["dinner"],
+      "summary": "Update a course",
+      "parameters": [
+        { "name": "dinnerId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "courseId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "courseNumber": { "type": "number" },
+                "main": { "type": "boolean" },
+                "title": { "type": "string" },
+                "description": { "type": "string" },
+                "type": { "type": "string" },
+                "vegetarian": { "type": "boolean" }
+              }
+            },
+            "example": {
+              "courseNumber": 1,
+              "main": true,
+              "title": "Starter",
+              "description": "Soup",
+              "type": "starter",
+              "vegetarian": true
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Course updated"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["dinner"],
+      "summary": "Delete a course",
+      "parameters": [
+        { "name": "dinnerId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "courseId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "Course deleted"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   },
   "/{dinnerId}/participants": {
-    "post": {}
+    "post": {
+      "tags": ["dinner"],
+      "summary": "Add participants to a dinner",
+      "parameters": [
+        { "name": "dinnerId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userIds": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "required": ["userIds"]
+            },
+            "example": {
+              "userIds": ["2", "3"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Participants added"
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   },
   "/{dinnerId}/participants/{userId}": {
-    "delete": {}
+    "delete": {
+      "tags": ["dinner"],
+      "summary": "Remove a participant from a dinner",
+      "parameters": [
+        { "name": "dinnerId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "userId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "Participant removed"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
 }

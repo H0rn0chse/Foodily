@@ -16,7 +16,7 @@
       "User": {
         "type": "object",
         "properties": {
-          "id": { "type": "number" },
+          "id": { "type": "string" },
           "username": { "type": "string" }
         }
       },
@@ -29,8 +29,8 @@
       "Dinner": {
         "type": "object",
         "properties": {
-          "id": { "type": "int" },
-          "ownerId": { "type": "int" },
+          "id": { "type": "string" },
+          "ownerId": { "type": "string" },
           "username": { "type": "string" },
           "title": { "type": "string" },
           "date": {
@@ -42,8 +42,8 @@
       "DinnerDetails": {
         "type": "object",
         "properties": {
-          "id": { "type": "int" },
-          "ownerId": { "type": "int" },
+          "id": { "type": "string" },
+          "ownerId": { "type": "string" },
           "username": { "type": "string" },
           "title": { "type": "string" },
           "date": { "type": "string" },
@@ -64,8 +64,8 @@
       "Course": {
         "type": "object",
         "properties": {
-          "id": { "type": "int" },
-          "courseNumber": { "type": "int" },
+          "id": { "type": "string" },
+          "courseNumber": { "type": "integer" },
           "main": { "type": "boolean" },
           "title": { "type": "string" },
           "description": { "type": "string" },
@@ -76,10 +76,13 @@
     },
     "responses": {
       "NotFound": {
-        "description": "Resource not found."
+        "description": "Requested Resource not found."
       },
       "BadRequest": {
-        "description": "Bad request."
+        "description": "Bad Request."
+      },
+      "Forbidden": {
+        "description": "Forbidden."
       }
     }
   }

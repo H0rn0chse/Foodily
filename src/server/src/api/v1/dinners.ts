@@ -241,7 +241,7 @@ router.put("/:dinnerId", async (req, res) => {
     );
 
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
@@ -269,7 +269,7 @@ router.delete("/:dinnerId", async (req, res) => {
     );
 
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
@@ -354,7 +354,7 @@ router.post("/:dinnerId/courses", async (req, res) => {
     );
 
     if (!dinnerResult.rowCount) {
-      res.sendStatus(403);
+      res.sendStatus(404);
       return;
     }
 
@@ -459,7 +459,7 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
     );
 
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
@@ -493,7 +493,7 @@ router.delete("/:dinnerId/courses/:courseId", async (req, res) => {
     );
     
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
@@ -543,7 +543,7 @@ router.post("/:dinnerId/participants", async (req, res) => {
     );
 
     if (!dinnerResult.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
@@ -613,7 +613,7 @@ router.delete("/:dinnerId/participants/:userId", async (req, res) => {
     );
     
     if (!result.rowCount) {
-      res.sendStatus(400);
+      res.sendStatus(404);
       return;
     }
 
