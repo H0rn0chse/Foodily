@@ -2,6 +2,7 @@
 import { RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
 import SharedHeader from "@/components/SharedHeader.vue";
+import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 const { t } = useI18n();
 
 function logout() {
@@ -64,6 +65,7 @@ function logout() {
           </v-list-item>
         </template>
       </SharedHeader>
+      <ConfirmationDialog />
       <v-main scrollable>
         <RouterView :key="$route.path" />
       </v-main>

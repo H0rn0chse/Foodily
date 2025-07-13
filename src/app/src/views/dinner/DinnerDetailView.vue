@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
 import UserSelectionCard from "@/components/UserSelectionCard.vue";
 import type { UserId } from "@t/api";
+import { useDialogStore } from "@/stores/dialog";
 const { t } = useI18n();
 
 const router = useRouter();
@@ -21,6 +22,8 @@ if (Array.isArray(dinnerIds)) {
 } else {
   dinnerId = dinnerIds;
 }
+
+const dialogStore = useDialogStore();
 
 // activator cannot handle the ref pointing to null, which is the case before mounted. In reality, this is not a problem.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,8 +75,10 @@ function formatDate(date: Date) {
 }
 
 function deleteDinner() {
-  dinnerStore.deleteDinner(dinnerId).then(() => {
-    router.push("/dinner");
+  dialogStore.open(() => {
+    dinnerStore.deleteDinner(dinnerId).then(() => {
+      router.push("/dinner");
+    });
   });
 }
 
@@ -89,8 +94,10 @@ function addCourse() {
   alert("Not implemented!");
 }
 
-function removeCourse(courseId: string) {
-  alert("Not implemented!");
+function deleteCourse(courseId: string) {
+  dialogStore.open(() => {
+    dinnerStore.deleteCourse(dinnerId, courseId);
+  });
 }
 
 function showCourseDetails(courseId: string) {
@@ -173,10 +180,8 @@ function updateDinnerDetails(focused: boolean) {
                     <v-list-item
                       v-for="participant in dinnerDetailsParticipants"
                       :key="participant.id"
+                      :title="participant.username"
                     >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ participant.username }}</v-list-item-title>
-                      </v-list-item-content>
                       <template #append>
                         <v-btn
                           density="comfortable"
@@ -245,37 +250,37 @@ function updateDinnerDetails(focused: boolean) {
                           >
                             {{ item.title }}
                           </p>
-                          <v-btn
-                            class="courseDetails"
-                            density="comfortable"
-                            :title="t('dinnerDetail.courses.more')"
-                            variant="flat"
-                            icon
-                            @click="showCourseDetails(item.id)"
-                          >
-                            <v-icon size="large">
-                              mdi-text-search
-                            </v-icon>
-                          </v-btn>
                           <div class="text-h5 courseRating">
                             {{ dinnerDetailsCourseRating[item.id] }}
                             <span class="text-subtitle-1 ml-n1">/5</span>
                           </div>
-                          <v-btn
-                            class="courseDelete"
-                            density="comfortable"
-                            :title="t('dinnerDetail.courses.remove')"
-                            variant="flat"
-                            icon
-                            @click="removeCourse(item.id)"
-                          >
-                            <v-icon
-                              color="error"
-                              size="large"
+                          <div class="courseActions flexRow">
+                            <v-btn
+                              density="comfortable"
+                              :title="t('dinnerDetail.courses.more')"
+                              variant="flat"
+                              icon
+                              @click="showCourseDetails(item.id)"
                             >
-                              mdi-trash-can-outline
-                            </v-icon>
-                          </v-btn>
+                              <v-icon size="large">
+                                mdi-text-search
+                              </v-icon>
+                            </v-btn>
+                            <v-btn
+                              density="comfortable"
+                              :title="t('dinnerDetail.courses.delete')"
+                              variant="flat"
+                              icon
+                              @click="deleteCourse(item.id)"
+                            >
+                              <v-icon
+                                color="error"
+                                size="large"
+                              >
+                                mdi-trash-can-outline
+                              </v-icon>
+                            </v-btn>
+                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -348,8 +353,8 @@ h2 {
   grid-template-columns: 1fr auto;
   grid-template-rows: 1fr auto;
   grid-template-areas:
-    "title details"
-    "rating delete";
+    "title actions"
+    "rating actions";
   align-items: center;
   margin-top: 0.2rem;
   width: 100%;
@@ -359,16 +364,11 @@ h2 {
   grid-area: title;
 }
 
-.courseDetails {
-  grid-area: details;
+.courseActions {
+  grid-area: actions;
+  align-self: center;
   justify-self: end;
 }
-
-.courseDelete {
-  grid-area: delete;
-  justify-self: end;
-}
-
 .courseRating {
   grid-area: rating;
 }

@@ -30,7 +30,7 @@
         "dinnerDetail.courses.title": "Title",
         "dinnerDetail.courses.add": "Add Course",
         "dinnerDetail.courses.more": "Show Course Details",
-        "dinnerDetail.courses.remove": "Remove Course",
+        "dinnerDetail.courses.delete": "Delete Course",
         "dinnerDetail.courses": "Courses",
         "dinnerDetail.notFound": "Dinner not found",
         "dinnerDetail.deleteDinner": "Delete Dinner",
@@ -42,7 +42,12 @@
 
         "settings.linkTitle": "Settings",
         "settings.title": "Settings",
-        "settings.languageSelect": "Current Language"
+        "settings.languageSelect": "Current Language",
+
+        "dialog.defaultTitle": "Are you sure?",
+        "dialog.defaultMessage": "This action cannot be undone.",
+        "dialog.confirm": "Yes, continue",
+        "dialog.cancel": "Cancel"
     },
     "dateTimeFormat": {
         "shortYear": {

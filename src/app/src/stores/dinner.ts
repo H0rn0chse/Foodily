@@ -110,6 +110,17 @@ export const useDinnerStore = defineStore("dinner", () => {
       console.error(error);
     }
   }
+
+  async function deleteCourse (dinnerId: DinnerId, courseId: string) {
+    try {
+      await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
+        method: "DELETE",
+      });
+      dinnerDetails.resetEntityState(dinnerId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
     
   return {
     dinnerList: dinnerListRef,
@@ -120,6 +131,8 @@ export const useDinnerStore = defineStore("dinner", () => {
 
     addParticipants,
     removeParticipant,
+
+    deleteCourse,
 
     // todo: check
     // reload: loadDinners,
