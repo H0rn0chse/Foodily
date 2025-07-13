@@ -10,8 +10,8 @@ export const useDinnerStore = defineStore("dinner", () => {
   const dinnerListRef = dinnerList.getComputedRef();
   
   const dinnerDetailsDefaults = {
-    id: 0,
-    ownerId: 0,
+    id: "0",
+    ownerId: "0",
     username: "",
     title: "",
     date: new Date().toUTCString(),

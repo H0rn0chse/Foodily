@@ -25,7 +25,7 @@ EntityType extends EntityBase[] ? {
 };
 
 export type User = NonNullable<{
-  id: number,
+  id: string,
   username: string,
 }>;
 

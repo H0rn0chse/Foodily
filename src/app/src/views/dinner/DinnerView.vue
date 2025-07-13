@@ -10,7 +10,7 @@ const router = useRouter();
 
 const search = ref("");
 
-function showDetails(dinnerId: number, expandAllCategories = false) {
+function showDetails(dinnerId: string, expandAllCategories = false) {
   let query = {};
   if (expandAllCategories) {
     query = {
@@ -97,8 +97,13 @@ function createNewDinner() {
           density="comfortable"
           :title="t('dinner.more')"
           icon="mdi-chevron-right"
+          variant="flat"
           @click="item.navigation.onClick"
         />
+      </template>
+
+      <template #loading>
+        <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
       </template>
     </v-data-table-server>
     <footer>

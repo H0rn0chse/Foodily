@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     type UsersRow = {
-      id: number,
+      id: string,
       username: string,
     };
     const result = await db.query<UsersRow>(
@@ -43,7 +43,7 @@ router.get("/:userId", async (req, res) => {
     const { userId } = req.params;
 
     type UsersRow = {
-      id: number,
+      id: string,
       username: string,
     };
     const result = await db.query<UsersRow>(

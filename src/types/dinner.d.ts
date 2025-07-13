@@ -1,8 +1,8 @@
 import { User } from "./api";
 
 export type DinnerDetails = {
-  id: number,
-  ownerId: number,
+  id: string,
+  ownerId: string,
   username: string,
   title: string,
   date: string,
@@ -19,7 +19,7 @@ export type DinnerCreate = {
 }
 
 export type Course = {
-  id: number,
+  id: string,
   courseNumber: number,
   main: boolean,
   title: string,

@@ -192,7 +192,7 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
       throw new Error("Error creating entity");
     }
 
-    const entityId = parseInt(response.headers.get("Location")?.split("/").pop() || "0", 10);
+    const entityId = response.headers.get("Location")?.split("/").pop() || "0";
 
     this.created.fire({
       message: "Entity created",

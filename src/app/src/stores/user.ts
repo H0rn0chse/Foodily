@@ -9,7 +9,7 @@ export const useUserStore = defineStore("user", () => {
   const userListRef = userList.getComputedRef();
   
   const userDetailsDefaults = {
-    id: 0,
+    id: "0",
     username: ""
   };
   const userDetails = new ApiEntitySet<UserDetails>("/api/v1/users/", userDetailsDefaults);

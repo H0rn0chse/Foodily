@@ -528,7 +528,11 @@ router.post("/:dinnerId/participants", async (req, res) => {
     const dinnerResult = await db.query<DinnersRow>(
       `SELECT
         id,
-        participants
+        ARRAY(
+          SELECT user_id
+          FROM dinner_participants
+          WHERE dinner_id=$1
+        ) participants
       FROM dinners
       WHERE id=$1
         AND owner_id=$2`,

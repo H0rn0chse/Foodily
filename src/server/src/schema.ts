@@ -39,8 +39,8 @@ async function dropAllTables (client: Client) {
 
 async function createTables (client: Client) {
   await client.query(`CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    owner_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
     username TEXT NOT NULL,
     hashed_password BYTEA,
     salt BYTEA,
@@ -48,29 +48,29 @@ async function createTables (client: Client) {
   )`); // todo: check cascade
 
   await client.query(`CREATE TABLE IF NOT EXISTS user_settings (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     language TEXT,
     UNIQUE (user_id)
   )`);
 
   // await client.query(`CREATE TABLE IF NOT EXISTS recipe (
-  //   id SERIAL PRIMARY KEY,
-  //   owner_id INT REFERENCES users(id),
+  //   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  //   owner_id BIGINT REFERENCES users(id),
   //   link TEXT,
   //   comment TEXT
   // )`);
 
   await client.query(`CREATE TABLE IF NOT EXISTS dinners (
-    id SERIAL PRIMARY KEY,
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    owner_id BIGINT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     title TEXT,
     date TIMESTAMP
   )`);
 
   await client.query(`CREATE TABLE IF NOT EXISTS dinner_courses (
-    id SERIAL PRIMARY KEY,
-    dinner_id INT REFERENCES dinners(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dinner_id BIGINT REFERENCES dinners(id) ON DELETE CASCADE NOT NULL,
     course_number INT,
     main BOOLEAN,
     title TEXT,
@@ -80,32 +80,32 @@ async function createTables (client: Client) {
   )`); // todo 'type' to enum
 
   await client.query(`CREATE TABLE IF NOT EXISTS dinner_participants (
-    id SERIAL PRIMARY KEY,
-    dinner_id INT REFERENCES dinners(id) ON DELETE CASCADE NOT NULL,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dinner_id BIGINT REFERENCES dinners(id) ON DELETE CASCADE NOT NULL,
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     UNIQUE (dinner_id, user_id)
   )`);
 
   await client.query(`CREATE TABLE IF NOT EXISTS dinner_ratings (
-    id SERIAL PRIMARY KEY,
-    course_id INT REFERENCES dinner_courses(id) ON DELETE CASCADE NOT NULL,
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    course_id BIGINT REFERENCES dinner_courses(id) ON DELETE CASCADE NOT NULL,
+    owner_id BIGINT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     rating INT,
     comment TEXT,
     UNIQUE (course_id, owner_id)
   )`); // todo 'rating' to enum
 
   await client.query(`CREATE TABLE IF NOT EXISTS food_preference_forms (
-    id SERIAL PRIMARY KEY,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     status TEXT
   )`); // todo 'status' to enum
 
   // todo: check owner_id
   await client.query(`CREATE TABLE IF NOT EXISTS food_preferences (
-    id SERIAL PRIMARY KEY,
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
-    form_id INT REFERENCES food_preference_forms(id) ON DELETE CASCADE,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    owner_id BIGINT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    form_id BIGINT REFERENCES food_preference_forms(id) ON DELETE CASCADE,
     preferred_vegetarian BOOLEAN,
     coriander BOOLEAN,
     coffee BOOLEAN,
@@ -114,16 +114,16 @@ async function createTables (client: Client) {
   )`);
 
   await client.query(`CREATE TABLE IF NOT EXISTS food_distaste (
-    id SERIAL PRIMARY KEY,
-    preference_id INT REFERENCES food_preferences(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    preference_id BIGINT REFERENCES food_preferences(id) ON DELETE CASCADE NOT NULL,
     type TEXT,
     description TEXT,
     UNIQUE (preference_id, type)
   )`); // todo 'type' to enum
 
   await client.query(`CREATE TABLE IF NOT EXISTS food_allergies (
-    id SERIAL PRIMARY KEY,
-    preference_id INT REFERENCES food_preferences(id) ON DELETE CASCADE NOT NULL,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    preference_id BIGINT REFERENCES food_preferences(id) ON DELETE CASCADE NOT NULL,
     name TEXT,
     description TEXT,
     exceptions TEXT
@@ -155,7 +155,7 @@ async function addTestData (client: Client) {
     VALUES ($1, $2)`,
     [
       "guest1", // username
-      1 // owner_id
+      "1" // owner_id
     ]
   );
 
@@ -167,7 +167,7 @@ async function addTestData (client: Client) {
     VALUES ($1, $2)`,
     [
       "guest2", // username
-      1 // owner_id
+      "1" // owner_id
     ]
   );
 
@@ -178,7 +178,7 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2)`,
     [
-      1, // user_id
+      "1", // user_id
       "en" // language
     ]
   );
@@ -191,7 +191,7 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2, $3)`,
     [
-      1, // owner_id
+      "1", // owner_id
       "Dinner 1", // title
       new Date().toUTCString() // date
     ]
@@ -209,7 +209,7 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
-      1, // dinner_id
+      "1", // dinner_id
       1, // course_number
       false, // main
       "Kartoffelsuppe", // title
@@ -231,7 +231,7 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
-      1, // dinner_id
+      "1", // dinner_id
       2, // course_number
       true, // main
       "Pekingente", // title
@@ -253,7 +253,7 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
-      1, // dinner_id
+      "1", // dinner_id
       3, // course_number
       false, // main
       "Tiramisu", // title
@@ -270,8 +270,8 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2)`,
     [
-      1, // dinner_id
-      1 // user_id
+      "1", // dinner_id
+      "1" // user_id
     ]
   );
 
@@ -282,8 +282,8 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2)`,
     [
-      1, // dinner_id
-      2 // user_id
+      "1", // dinner_id
+      "2" // user_id
     ]
   );
 
@@ -294,8 +294,8 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2)`,
     [
-      1, // dinner_id
-      3 // user_id
+      "1", // dinner_id
+      "3" // user_id
     ]
   );
 
@@ -310,8 +310,8 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2, $3, $4, $5, $6)`,
     [
-      1, // owner_id
-      1, // user_id
+      "1", // owner_id
+      "1", // user_id
       false, // preferred_vegetarian
       true, // coriander
       true, // coffee
@@ -328,7 +328,7 @@ async function addTestData (client: Client) {
     )
     VALUES($1, $2, $3, $4)`,
     [
-      1, // preference_id
+      "1", // preference_id
       "Laktose", // name
       "Milch macht Boom", // description
       "Laktosefreie Milch", // exceptions
@@ -343,7 +343,7 @@ async function addTestData (client: Client) {
       )
     VALUES($1, $2, $3)`,
     [
-      1, // preference_id
+      "1", // preference_id
       "vegetables", // type
       "Rosenkohl", // description
     ]
