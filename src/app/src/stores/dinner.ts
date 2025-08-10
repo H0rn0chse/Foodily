@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { DinnerDetails, DinnerList, DinnerCreate, DinnerId } from "@t/dinner";
+import type { DinnerDetails, DinnerList, DinnerCreate, DinnerId, Course } from "@t/dinner";
 import { ApiEntitySet } from "./ApiEntitySet";
 import { ApiEntityList } from "./ApiEntityList";
 import type { UserId } from "@t/api";
@@ -111,6 +111,38 @@ export const useDinnerStore = defineStore("dinner", () => {
     }
   }
 
+  async function createCourse (dinnerId: DinnerId, courseData: Partial<Course>) {
+    try {
+      const response = await fetch(`/api/v1/dinners/${dinnerId}/courses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(courseData)
+      });
+      dinnerDetails.resetEntityState(dinnerId);
+      const entityId = response.headers.get("Location")?.split("/").pop() || "0";
+      return entityId;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function updateCourse (dinnerId: DinnerId, courseId: string, updatedData: Partial<Course>) {
+    try {
+      await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedData)
+      });
+      dinnerDetails.resetEntityState(dinnerId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function deleteCourse (dinnerId: DinnerId, courseId: string) {
     try {
       await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
@@ -121,7 +153,7 @@ export const useDinnerStore = defineStore("dinner", () => {
       console.error(error);
     }
   }
-    
+
   return {
     dinnerList: dinnerListRef,
     dinnerDetails: dinnerDetailRefs,
@@ -132,7 +164,9 @@ export const useDinnerStore = defineStore("dinner", () => {
     addParticipants,
     removeParticipant,
 
-    deleteCourse,
+    createCourse,
+    updateCourse,
+    deleteCourse
 
     // todo: check
     // reload: loadDinners,

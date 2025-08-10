@@ -128,4 +128,8 @@ a {
 .flexRow.center {
   justify-content: center;
 }
+
+.flexRow.compact, .flexColumn.compact {
+  gap: 0.25rem;
+}
 </style>

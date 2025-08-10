@@ -106,11 +106,11 @@
                     {
                       "id": "1",
                       "courseNumber": 1,
-                      "main": true,
                       "title": "Starter",
                       "description": "Soup",
                       "type": "starter",
-                      "vegetarian": true
+                      "vegetarian": true,
+                      "vegan": false
                     }
                   ]
                 }
@@ -202,20 +202,20 @@
               "type": "object",
               "properties": {
                 "courseNumber": { "type": "number" },
-                "main": { "type": "boolean" },
                 "title": { "type": "string" },
                 "description": { "type": "string" },
                 "type": { "type": "string" },
-                "vegetarian": { "type": "boolean" }
+                "vegetarian": { "type": "boolean" },
+                "vegan": { "type": "boolean" }
               }
             },
             "example": {
               "courseNumber": 2,
-              "main": false,
               "title": "Dessert",
               "description": "Ice Cream",
               "type": "dessert",
-              "vegetarian": true
+              "vegetarian": true,
+              "vegan": false
             }
           }
         }
@@ -260,11 +260,11 @@
                 "result": {
                   "id": "1",
                   "courseNumber": 1,
-                  "main": true,
                   "title": "Starter",
                   "description": "Soup",
                   "type": "starter",
-                  "vegetarian": true
+                  "vegetarian": true,
+                  "vegan": false
                 }
               }
             }
@@ -290,20 +290,20 @@
               "type": "object",
               "properties": {
                 "courseNumber": { "type": "number" },
-                "main": { "type": "boolean" },
                 "title": { "type": "string" },
                 "description": { "type": "string" },
                 "type": { "type": "string" },
-                "vegetarian": { "type": "boolean" }
+                "vegetarian": { "type": "boolean" },
+                "vegan": { "type": "boolean" }
               }
             },
             "example": {
               "courseNumber": 1,
-              "main": true,
               "title": "Starter",
               "description": "Soup",
               "type": "starter",
-              "vegetarian": true
+              "vegetarian": true,
+              "vegan": false
             }
           }
         }

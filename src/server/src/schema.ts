@@ -72,11 +72,11 @@ async function createTables (client: Client) {
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     dinner_id BIGINT REFERENCES dinners(id) ON DELETE CASCADE NOT NULL,
     course_number INT,
-    main BOOLEAN,
     title TEXT,
     description TEXT,
     type TEXT,
-    vegetarian BOOLEAN
+    vegetarian BOOLEAN,
+    vegan BOOLEAN
   )`); // todo 'type' to enum
 
   await client.query(`CREATE TABLE IF NOT EXISTS dinner_participants (
@@ -201,21 +201,21 @@ async function addTestData (client: Client) {
     `INSERT INTO dinner_courses(
       dinner_id,
       course_number,
-      main,
       title,
       description,
       type,
-      vegetarian
+      vegetarian,
+      vegan
     )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
       "1", // dinner_id
       1, // course_number
-      false, // main
       "Kartoffelsuppe", // title
       "", // description
-      "soup", // type
+      "starter", // type
       true, // vegetarian
+      false, // vegan
     ]
   );
 
@@ -223,21 +223,21 @@ async function addTestData (client: Client) {
     `INSERT INTO dinner_courses(
       dinner_id,
       course_number,
-      main,
       title,
       description,
       type,
-      vegetarian
+      vegetarian,
+      vegan
     )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
       "1", // dinner_id
       2, // course_number
-      true, // main
       "Pekingente", // title
       "", // description
-      "main_dish", // type
+      "main", // type
       false, // vegetarian
+      false // vegan
     ]
   );
 
@@ -245,21 +245,21 @@ async function addTestData (client: Client) {
     `INSERT INTO dinner_courses(
       dinner_id,
       course_number,
-      main,
       title,
       description,
       type,
-      vegetarian
+      vegetarian,
+      vegan
     )
     VALUES($1, $2, $3, $4, $5, $6, $7)`,
     [
       "1", // dinner_id
       3, // course_number
-      false, // main
       "Tiramisu", // title
       "", // description
       "dessert", // type
       false, // vegetarian
+      true // vegan
     ]
   );
 

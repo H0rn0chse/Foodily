@@ -110,11 +110,11 @@ router.get("/:dinnerId", async (req, res) => {
       `SELECT
         id,
         course_number,
-        main,
         title,
         description,
         type,
-        vegetarian
+        vegetarian,
+        vegan
       FROM dinner_courses
       WHERE id=ANY($1::int[])`,
       [dinner.courses]
@@ -137,13 +137,13 @@ router.get("/:dinnerId", async (req, res) => {
           return {
             id: row.id,
             courseNumber: row.course_number,
-            main: row.main,
             title: row.title,
             description: row.description,
             type: row.type,
             vegetarian: row.vegetarian,
+            vegan: row.vegan,
           };
-        })
+        }).sort((a, b) => a.courseNumber - b.courseNumber)
       }
     } as ApiResponse<DinnerDetails>);
   } catch (err) {
@@ -292,11 +292,11 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
       `SELECT
         course.id,
         course.course_number,
-        course.main,
         course.title,
         course.description,
         course.type,
-        course.vegetarian
+        course.vegetarian,
+        course.vegan
       FROM dinner_courses course
         JOIN dinners
         ON dinners.id=course.dinner_id
@@ -321,11 +321,11 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
       result: {
         id: course.id,
         courseNumber: course.course_number,
-        main: course.main,
         title: course.title,
         description: course.description,
         type: course.type,
         vegetarian: course.vegetarian,
+        vegan: course.vegan,
       }
     } as ApiResponse<Course>);
   } catch (err) {
@@ -358,48 +358,61 @@ router.post("/:dinnerId/courses", async (req, res) => {
       return;
     }
 
+    type CoursesRow = {
+      id: CourseId,
+    };
+    const courseResult = await db.query<CoursesRow>(
+      `SELECT id
+      FROM dinner_courses
+      WHERE dinner_id=$1`,
+      [
+        dinnerId
+      ]
+    );
+
+    let courseNumber = 0;
+    if (courseResult.rowCount) {
+      courseNumber = courseResult.rowCount + 1;
+    }
+
     type RequestBody = {
-      courseNumber?: Course["courseNumber"],
-      main?: Course["main"],
       title?: Course["title"],
       description?: Course["description"],
       type?: Course["type"],
       vegetarian?: Course["vegetarian"],
+      vegan?: Course["vegan"],
     };
     const { body }: { body: RequestBody } = req;
 
     const courseData = {
-      courseNumber: body.courseNumber ?? 1,
-      main: body.main ?? true,
+      courseNumber: courseNumber,
       title: body.title ?? "",
       description: body.description ?? "",
-      type: body.type ?? "main_dish",
+      type: body.type ?? "main",
       vegetarian: body.vegetarian ?? false,
+      vegan: body.vegan ?? false,
     };
     
-    type CoursesRow = {
-      id: CourseId,
-    };
     const result = await db.query<CoursesRow>(
       `INSERT INTO dinner_courses(
         dinner_id,
         course_number,
-        main,
         title,
         description,
         type,
-        vegetarian
+        vegetarian,
+        vegan
       )
       VALUES($1, $2, $3, $4, $5, $6, $7)
       RETURNING id`,
       [
         dinnerId,
         courseData.courseNumber,
-        courseData.main,
         courseData.title,
         courseData.description,
         courseData.type,
         courseData.vegetarian,
+        courseData.vegan
       ]
     );
 
@@ -418,21 +431,21 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
 
     type RequestBody = {
       courseNumber?: Course["courseNumber"],
-      main?: Course["main"],
       title?: Course["title"],
       description?: Course["description"],
       type?: Course["type"],
       vegetarian?: Course["vegetarian"],
+      vegan?: Course["vegan"],
     };
     const { body }: { body: RequestBody } = req;
 
     const courseData = {
       course_number: body.courseNumber,
-      main: body.main,
       title: body.title,
       description: body.description,
       type: body.type,
       vegetarian: body.vegetarian,
+      vegan: body.vegan,
     };
     const {
       setStatement,

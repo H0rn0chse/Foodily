@@ -21,11 +21,11 @@ export type DinnerCreate = {
 export type Course = {
   id: string,
   courseNumber: number,
-  main: boolean,
   title: string,
   description: string,
-  type: string,
+  type: string, // ['starter', 'main', 'dessert']
   vegetarian: boolean,
+  vegan: boolean,
 }
 
 // shortcuts

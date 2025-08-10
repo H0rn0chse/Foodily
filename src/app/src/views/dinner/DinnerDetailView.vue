@@ -7,21 +7,14 @@ import LoadingScreen from "@/components/LoadingScreen.vue";
 import UserSelectionCard from "@/components/UserSelectionCard.vue";
 import type { UserId } from "@t/api";
 import { useDialogStore } from "@/stores/dialog";
+import { parseParams } from "@/router";
 const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
 const expandAllCategories = route.query.expandAllCategories === "true";
 
-let dinnerId = "0";
-const { dinnerId: dinnerIds } = route.params;
-
-if (Array.isArray(dinnerIds)) {
-  const [firstDinnerId] = dinnerIds;
-  dinnerId = firstDinnerId;
-} else {
-  dinnerId = dinnerIds;
-}
+const dinnerId = parseParams(route, "dinnerId");
 
 const dialogStore = useDialogStore();
 
@@ -75,10 +68,9 @@ function formatDate(date: Date) {
 }
 
 function deleteDinner() {
-  dialogStore.open(() => {
-    dinnerStore.deleteDinner(dinnerId).then(() => {
-      router.push("/dinner");
-    });
+  dialogStore.open(async () => {
+    await dinnerStore.deleteDinner(dinnerId);
+    router.push("/dinner");
   });
 }
 
@@ -90,8 +82,13 @@ function removeParticipant(participantId: UserId) {
   dinnerStore.removeParticipant(dinnerId, participantId);
 }
 
-function addCourse() {
-  alert("Not implemented!");
+async function addCourse() {
+  const courseId = await dinnerStore.createCourse(dinnerId, {
+    title: "<New Course>",
+    description: "",
+    type: "starter",
+  });
+  router.push(`/dinner/${dinnerId}/course/${courseId}`);
 }
 
 function deleteCourse(courseId: string) {
@@ -101,7 +98,7 @@ function deleteCourse(courseId: string) {
 }
 
 function showCourseDetails(courseId: string) {
-  alert("Not implemented!");
+  router.push(`/dinner/${dinnerId}/course/${courseId}`);
 }
 
 // initialize the expanded panels
@@ -116,6 +113,46 @@ function updateDinnerDetails(focused: boolean) {
   if (!focused) {
     dinnerStore.updateDinnerDetails(dinnerId);
   }
+}
+
+function moveUpEnabled(courseId: string) {
+  const courseIndex = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  return courseIndex > 0;
+}
+
+function moveCourseUp (courseId: string) {
+  if (!moveUpEnabled(courseId)) {
+    return;
+  }
+
+  const index = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  const prevCourseId = dinnerDetails.value.data.courses[index - 1]?.id;
+  dinnerStore.updateCourse(dinnerId, courseId, {
+    courseNumber: index - 1
+  });
+  dinnerStore.updateCourse(dinnerId, prevCourseId, {
+    courseNumber: index
+  });
+}
+
+function moveDownEnabled(courseId: string) {
+  const courseIndex = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  return courseIndex < dinnerDetails.value.data.courses.length - 1;
+}
+
+function moveCourseDown (courseId: string) {
+  if (!moveDownEnabled(courseId)) {
+    return;
+  }
+
+  const index = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  const nextCourseId = dinnerDetails.value.data.courses[index + 1]?.id;
+  dinnerStore.updateCourse(dinnerId, courseId, {
+    courseNumber: index + 1
+  });
+  dinnerStore.updateCourse(dinnerId, nextCourseId, {
+    courseNumber: index
+  });
 }
 
 </script>
@@ -254,9 +291,37 @@ function updateDinnerDetails(focused: boolean) {
                             {{ dinnerDetailsCourseRating[item.id] }}
                             <span class="text-subtitle-1 ml-n1">/5</span>
                           </div>
-                          <div class="courseActions flexRow">
+                          <div class="courseActions flexRow compact">
                             <v-btn
-                              density="comfortable"
+                              density="compact"
+                              :title="t('dinnerDetail.courses.delete')"
+                              variant="flat"
+                              icon
+                              :disabled="!moveUpEnabled(item.id)"
+                              @click="moveCourseUp(item.id)"
+                            >
+                              <v-icon
+                                size="large"
+                              >
+                                mdi-chevron-up
+                              </v-icon>
+                            </v-btn>
+                            <v-btn
+                              density="compact"
+                              :title="t('dinnerDetail.courses.delete')"
+                              variant="flat"
+                              icon
+                              :disabled="!moveDownEnabled(item.id)"
+                              @click="moveCourseDown(item.id)"
+                            >
+                              <v-icon
+                                size="large"
+                              >
+                                mdi-chevron-down
+                              </v-icon>
+                            </v-btn>
+                            <v-btn
+                              density="compact"
                               :title="t('dinnerDetail.courses.more')"
                               variant="flat"
                               icon
@@ -267,7 +332,7 @@ function updateDinnerDetails(focused: boolean) {
                               </v-icon>
                             </v-btn>
                             <v-btn
-                              density="comfortable"
+                              density="compact"
                               :title="t('dinnerDetail.courses.delete')"
                               variant="flat"
                               icon
