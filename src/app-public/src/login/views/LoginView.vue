@@ -1,24 +1,39 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { reactive } from "vue";
+import { reactive, ref, onMounted } from "vue";
 const { t } = useI18n();
 
 type ErrorMessage = {
-  id: string,
-  message: string
-}
+  id: string;
+  message: string;
+};
 
 const formData = reactive({
   username: "",
   password: "",
-  loading: false
+  loading: false,
 });
 
+const csrfToken = ref("");
 const errorMessages: ErrorMessage[] = reactive([]);
 
 function clearErrorMessages() {
   errorMessages.splice(0, errorMessages.length);
 }
+
+async function fetchCsrfToken() {
+  try {
+    const response = await fetch("/csrf-token");
+    const data = await response.json();
+    csrfToken.value = data.csrfToken;
+  } catch (err) {
+    console.error("Failed to fetch CSRF token", err);
+  }
+}
+
+onMounted(() => {
+  fetchCsrfToken();
+});
 
 async function submitLogin() {
   formData.loading = true;
@@ -28,11 +43,14 @@ async function submitLogin() {
   body.append("username", formData.username);
   body.append("password", formData.password);
 
-  const headers = new Headers({ "Content-Type": "application/x-www-form-urlencoded" });
+  const headers = new Headers({
+    "Content-Type": "application/x-www-form-urlencoded",
+    "x-csrf-token": csrfToken.value,
+  });
   const response = await fetch("/login/password", {
     method: "POST",
     body,
-    headers
+    headers,
   });
 
   if (response.ok) {
@@ -44,21 +62,20 @@ async function submitLogin() {
   // Error case
   errorMessages.push({
     id: clearErrorMessages.length.toString(),
-    message: t("login.authFailed")
+    message: t("login.authFailed"),
   });
   formData.password = "";
   formData.loading = false;
+
+  // Refresh CSRF token after failed attempt
+  await fetchCsrfToken();
 }
 </script>
 
 <template>
   <div id="loginContent">
     <h1>{{ t("login.title") }}</h1>
-    <p
-      v-for="error in errorMessages"
-      :key="error.id"
-      class="errorMessage"
-    >
+    <p v-for="error in errorMessages" :key="error.id" class="errorMessage">
       {{ error.message }}
     </p>
     <v-form
@@ -72,9 +89,7 @@ async function submitLogin() {
         v-model="formData.username"
         autocomplete="username"
         :label="t('login.username')"
-        :rules="[
-          (v) => Boolean(v) || t('login.username.empty'),
-        ]"
+        :rules="[(v) => Boolean(v) || t('login.username.empty')]"
         :disabled="formData.loading"
       />
       <v-text-field
@@ -83,9 +98,7 @@ async function submitLogin() {
         autocomplete="current-password"
         type="password"
         :label="t('login.password')"
-        :rules="[
-          (v) => Boolean(v) || t('login.password.empty'),
-        ]"
+        :rules="[(v) => Boolean(v) || t('login.password.empty')]"
         :disabled="formData.loading"
       />
       <v-btn

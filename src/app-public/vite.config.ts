@@ -43,6 +43,21 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
+      "/csrf-token": {
+        target: `http://localhost:${SERVER_PORT}`,
+        changeOrigin: true,
+        secure: false,
+      },
+      "/login": {
+        target: `http://localhost:${SERVER_PORT}`,
+        changeOrigin: true,
+        secure: false,
+      },
+      "/logout": {
+        target: `http://localhost:${SERVER_PORT}`,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   }
 });

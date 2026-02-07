@@ -13,6 +13,7 @@ import indexRouter from "@/routes/index";
 import authRouter, { MODES, ensureSession } from "@/routes/auth";
 import apiRouter, { apiDoc } from "@/routes/api";
 import { serve as swaggerServe, setup as swaggerSetup, type SwaggerUiOptions } from "swagger-ui-express";
+import { doubleCsrf } from "csrf-csrf";
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const usedUnusedImports = {
@@ -24,7 +25,8 @@ const app = express();
 const {
   SERVER_PORT,
   SERVER_MODE,
-  NODE_ENV 
+  NODE_ENV,
+  CSRF_SECRET
 } = process.env;
 
 const port = SERVER_PORT || 3000;
@@ -41,8 +43,8 @@ app.use(helmet({
     }
   }
 }));
+
 if (NODE_ENV === "production") {
-  console.log("hi");
   app.use(helmet.strictTransportSecurity());
 }
 // logger
@@ -50,6 +52,23 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser("cookieSecret"));
+
+// --- CSRF protection ---
+const {
+  generateCsrfToken,
+  doubleCsrfProtection
+} = doubleCsrf({
+  getSecret: () => CSRF_SECRET || "csrf-secret-change-in-production",
+  cookieName: "x-csrf-token",
+  cookieOptions: {
+    sameSite: "lax",
+    secure: NODE_ENV === "production",
+    httpOnly: true
+  },
+  size: 64,
+  ignoredMethods: ["GET", "HEAD", "OPTIONS"],
+  getSessionIdentifier: (req) => req.session?.id || ""
+});
 
 // skip session management for local development
 if (SERVER_MODE !== MODES.ApiOnly) {
@@ -62,6 +81,16 @@ if (SERVER_MODE !== MODES.ApiOnly) {
   }));
 
   app.use(passport.authenticate("session"));
+
+  // CSRF token endpoint (must be before CSRF protection middleware)
+  app.get("/csrf-token", (req, res) => {
+    const csrfToken = generateCsrfToken(req, res);
+    res.json({ csrfToken });
+  });
+
+  // Apply CSRF protection to all mutating requests
+  app.use(doubleCsrfProtection);
+
   app.use("/", authRouter);
 } else {
   // set static test user for authentication
@@ -71,6 +100,11 @@ if (SERVER_MODE !== MODES.ApiOnly) {
       username: "admin"
     };
     next();
+  });
+
+  // No-op CSRF token endpoint for api-only mode
+  app.get("/csrf-token", (req, res) => {
+    res.json({ csrfToken: "api-only-no-csrf" });
   });
 }
 

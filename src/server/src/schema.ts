@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import argon2 from "argon2";
 import { Client } from "pg";
 
 /*
@@ -42,8 +42,7 @@ async function createTables (client: Client) {
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     owner_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
     username TEXT NOT NULL,
-    hashed_password BYTEA,
-    salt BYTEA,
+    hashed_password TEXT,
     UNIQUE NULLS NOT DISTINCT (username, owner_id)
   )`); // todo: check cascade
 
@@ -131,18 +130,16 @@ async function createTables (client: Client) {
 }
 
 async function addTestData (client: Client) {
-  const salt = crypto.randomBytes(16);
+  const hashedPassword = await argon2.hash("1234", { type: argon2.argon2id });
   await client.query( // initial user
     `INSERT INTO users (
       username,
-      hashed_password,
-      salt
+      hashed_password
     )
-    VALUES ($1, $2, $3)`,
+    VALUES ($1, $2)`,
     [
       "admin", // username
-      crypto.pbkdf2Sync("1234", Uint8Array.from(salt), 310000, 32, "sha256"), // hashed_password
-      salt // salt
+      hashedPassword // hashed_password (argon2 includes salt in the hash)
     ]
   );
   console.log("✅ Initial User created");

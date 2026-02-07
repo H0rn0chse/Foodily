@@ -8,9 +8,13 @@ import "@mdi/font/css/materialdesignicons.css";
 
 import i18nConfig, { vuetifyLocaleConfig } from "@/lang";
 import packageJson from "@project/package.json";
+import { fetchCsrfToken } from "@/js/csrf";
 
 import App from "@/App.vue";
 import router from "@/router";
+
+// Fetch CSRF token before mounting app
+await fetchCsrfToken();
 
 const app = createApp(App);
 

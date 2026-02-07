@@ -3,31 +3,23 @@ import { RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
 import SharedHeader from "@/components/SharedHeader.vue";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
+import { csrfHeaders } from "@/js/csrf";
 const { t } = useI18n();
 
 function logout() {
   fetch("/logout", {
-    method: "POST"
+    method: "POST",
+    headers: csrfHeaders(),
   });
 }
-
 </script>
 
 <template>
-  <v-app
-    id="app"
-    full-height
-    theme="dark"
-  >
+  <v-app id="app" full-height theme="dark">
     <v-layout>
       <SharedHeader>
         <template #navigationList>
-          <v-list-item
-            link
-            to="/"
-            class="headerLink"
-            active-class="activeLink"
-          >
+          <v-list-item link to="/" class="headerLink" active-class="activeLink">
             {{ t("home.linkTitle") }}
           </v-list-item>
           <v-list-item
@@ -55,11 +47,7 @@ function logout() {
             {{ t("about.linkTitle") }}
           </v-list-item>
           <v-list-item link>
-            <v-btn
-              type="submit"
-              color="primary"
-              @click="logout"
-            >
+            <v-btn type="submit" color="primary" @click="logout">
               {{ t("header.signOutBtn") }}
             </v-btn>
           </v-list-item>
@@ -129,7 +117,8 @@ a {
   justify-content: center;
 }
 
-.flexRow.compact, .flexColumn.compact {
+.flexRow.compact,
+.flexColumn.compact {
   gap: 0.25rem;
 }
 </style>

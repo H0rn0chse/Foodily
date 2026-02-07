@@ -81,7 +81,7 @@ app.use(["*rest", "/*rest"], async (req, res, next) => {
       __dirname,
       "src/app-public",
       req.baseUrl,
-      "index.html"
+      "index.html",
     );
     console.log(`indexPath: ${indexPath}`);
     const template = readFileSync(indexPath, "utf-8");
@@ -89,7 +89,7 @@ app.use(["*rest", "/*rest"], async (req, res, next) => {
     // build html
     const html = await vitePublicApp.transformIndexHtml(
       req.originalUrl,
-      template
+      template,
     );
     // console.log(indexPath);
     // console.log(req.originalUrl);

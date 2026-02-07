@@ -1,6 +1,7 @@
 import { computed, reactive } from "vue";
 import type { ApiEntityState, ApiResponse, EntityBase } from "@t/api";
 import { CustomEventWrapper, type NetworkEvent } from "@/js/CustomEventWrapper";
+import { csrfHeaders } from "@/js/csrf";
 
 function sleep (seconds: number) {
   return new Promise((resolve, reject) => {
@@ -119,9 +120,9 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
       const payloadData = JSON.parse(JSON.stringify(this.reactiveEntityState.data));
       const response = await fetch(this.#endpoint, {
         method: "PUT",
-        headers: {
+        headers: csrfHeaders({
           "Content-Type": "application/json"
-        },
+        }),
         body: JSON.stringify(payloadData)
       });
 
@@ -150,7 +151,8 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
     }
 
     const response = await fetch(this.#endpoint, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: csrfHeaders()
     });
 
     if (!response.ok) {
@@ -177,9 +179,9 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
     const payloadData = JSON.parse(JSON.stringify(data));
     const response = await fetch(this.#endpoint, {
       method: "POST",
-      headers: {
+      headers: csrfHeaders({
         "Content-Type": "application/json"
-      },
+      }),
       body: JSON.stringify(payloadData)
     });
 

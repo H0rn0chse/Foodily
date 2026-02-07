@@ -3,6 +3,7 @@ import type { DinnerDetails, DinnerList, DinnerCreate, DinnerId, Course } from "
 import { ApiEntitySet } from "./ApiEntitySet";
 import { ApiEntityList } from "./ApiEntityList";
 import type { UserId } from "@t/api";
+import { csrfHeaders } from "@/js/csrf";
 
 
 export const useDinnerStore = defineStore("dinner", () => {
@@ -87,9 +88,9 @@ export const useDinnerStore = defineStore("dinner", () => {
     try {
       await fetch(`/api/v1/dinners/${dinnerId}/participants`, {
         method: "POST",
-        headers: {
+        headers: csrfHeaders({
           "Content-Type": "application/json"
-        },
+        }),
         body: JSON.stringify({
           userIds
         })
@@ -104,6 +105,7 @@ export const useDinnerStore = defineStore("dinner", () => {
     try {
       await fetch(`/api/v1/dinners/${dinnerId}/participants/${userId}`, {
         method: "DELETE",
+        headers: csrfHeaders()
       });
       dinnerDetails.resetEntityState(dinnerId);
     } catch (error) {
@@ -115,9 +117,9 @@ export const useDinnerStore = defineStore("dinner", () => {
     try {
       const response = await fetch(`/api/v1/dinners/${dinnerId}/courses`, {
         method: "POST",
-        headers: {
+        headers: csrfHeaders({
           "Content-Type": "application/json"
-        },
+        }),
         body: JSON.stringify(courseData)
       });
       dinnerDetails.resetEntityState(dinnerId);
@@ -132,9 +134,9 @@ export const useDinnerStore = defineStore("dinner", () => {
     try {
       await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
         method: "PUT",
-        headers: {
+        headers: csrfHeaders({
           "Content-Type": "application/json"
-        },
+        }),
         body: JSON.stringify(updatedData)
       });
       dinnerDetails.resetEntityState(dinnerId);
@@ -147,6 +149,7 @@ export const useDinnerStore = defineStore("dinner", () => {
     try {
       await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
         method: "DELETE",
+        headers: csrfHeaders()
       });
       dinnerDetails.resetEntityState(dinnerId);
     } catch (error) {
