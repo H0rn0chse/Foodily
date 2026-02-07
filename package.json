@@ -4,10 +4,10 @@
   "type": "module",
   "scripts": {
     "postinstall": "cd ./src/app && npm install && cd ../app-public && npm install && cd ../server && npm install",
-    "dev": "concurrently \"node server.js\" \"npm run dev:server-api-only\"",
+    "dev": "concurrently \"node server.js\" \"npm run dev:server-no-auth\"",
     "dev:server-client": "npm run build:app && npm run build:app-public && cd ./src/server && npm run dev",
-    "dev:server-local": "cd ./src/server && npm run dev:local",
-    "dev:server-api-only": "cd ./src/server && npm run dev:api-only",
+    "dev:server-pages": "cd ./src/server && npm run dev:server-pages",
+    "dev:server-no-auth": "cd ./src/server && npm run dev:no-auth",
     "lint": "npm run lint:app && npm run lint:app-public && npm run lint:server",
     "lint:app": "cd ./src/app && npm run lint",
     "lint:app-public": "cd ./src/app-public && npm run lint",

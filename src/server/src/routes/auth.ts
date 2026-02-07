@@ -5,23 +5,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import argon2 from "argon2";
 import { default as db } from "@/db";
 import { rateLimit } from "express-rate-limit";
-
-const {
-  SERVER_MODE
-} = process.env;
-
-export const MODES = {
-  /**
-   * Use local resources and authentication.
-   * This is the default mode and should be used for production deployments.
-   */
-  Local: "local",
-  /**
-   * Use local resources but skip authentication.
-   * This is useful for development and testing when you want to bypass login.
-   */
-  ApiOnly: "api-only",
-};
+import { authEnabled } from "@/serverConfig";
 
 function emptyMiddleware (): RequestHandler {
   return (req, res, next) => {
@@ -39,9 +23,9 @@ function ensureAuthentication (): RequestHandler {
   };
 }
 
-export const ensureSessionAndRedirect = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureLoggedIn();
-export const ensureSession = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureAuthentication();
-export const preventSession = SERVER_MODE === MODES.ApiOnly ? emptyMiddleware() : ensureLoggedOut({ redirectTo: "/app" });
+export const ensureSessionAndRedirect = authEnabled ? ensureLoggedIn() : emptyMiddleware();
+export const ensureSession = authEnabled ? ensureAuthentication() : emptyMiddleware();
+export const preventSession = authEnabled ? ensureLoggedOut({ redirectTo: "/app" }) : emptyMiddleware();
 
 const router = express.Router();
 

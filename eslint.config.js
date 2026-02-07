@@ -16,7 +16,7 @@ export default [
     },
     rules: {
       semi: ["error", "always"],
-      indent: ["error", 2],
+      indent: ["error", 2, { SwitchCase: 1 }],
       "eol-last": ["error", "always"],
       quotes: ["error", "double"],
       "linebreak-style": ["error", "windows"],

@@ -10,10 +10,11 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import indexRouter from "@/routes/index";
-import authRouter, { MODES, ensureSession } from "@/routes/auth";
+import authRouter, { ensureSession } from "@/routes/auth";
 import apiRouter, { apiDoc } from "@/routes/api";
 import { serve as swaggerServe, setup as swaggerSetup, type SwaggerUiOptions } from "swagger-ui-express";
 import { doubleCsrf } from "csrf-csrf";
+import { authEnabled, uiEnabled } from "@/serverConfig";
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const usedUnusedImports = {
@@ -24,7 +25,6 @@ const app = express();
 
 const {
   SERVER_PORT,
-  SERVER_MODE,
   NODE_ENV,
   CSRF_SECRET
 } = process.env;
@@ -53,26 +53,25 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser("cookieSecret"));
 
-// --- CSRF protection ---
-const {
-  generateCsrfToken,
-  doubleCsrfProtection
-} = doubleCsrf({
-  getSecret: () => CSRF_SECRET || "csrf-secret-change-in-production",
-  cookieName: "x-csrf-token",
-  cookieOptions: {
-    sameSite: "lax",
-    secure: NODE_ENV === "production",
-    httpOnly: true
-  },
-  size: 64,
-  ignoredMethods: ["GET", "HEAD", "OPTIONS"],
-  getSessionIdentifier: (req) => req.session?.id || ""
-});
-
-// skip session management for local development
-if (SERVER_MODE !== MODES.ApiOnly) {
+// Authentication & CSRF
+if (authEnabled) {
   console.log("Session enabled");
+  const {
+    generateCsrfToken,
+    doubleCsrfProtection
+  } = doubleCsrf({
+    getSecret: () => CSRF_SECRET || "csrf-secret-change-in-production",
+    cookieName: "x-csrf-token",
+    cookieOptions: {
+      sameSite: "lax",
+      secure: NODE_ENV === "production",
+      httpOnly: true
+    },
+    size: 64,
+    ignoredMethods: ["GET", "HEAD", "OPTIONS"],
+    getSessionIdentifier: (req) => req.session?.id || ""
+  });
+
   app.use(session({
     secret: "sessionSecret",
     resave: false,
@@ -102,9 +101,9 @@ if (SERVER_MODE !== MODES.ApiOnly) {
     next();
   });
 
-  // No-op CSRF token endpoint for api-only mode
+  // No-op CSRF token endpoint when auth is disabled
   app.get("/csrf-token", (req, res) => {
-    res.json({ csrfToken: "api-only-no-csrf" });
+    res.json({ csrfToken: "no-auth-no-csrf" });
   });
 }
 
@@ -125,13 +124,13 @@ const swaggerUiOptions: SwaggerUiOptions = {
 
 app.use("/docs", swaggerServe, swaggerSetup(apiDoc, swaggerUiOptions));
 
-// skip ui resources for local development
-if (SERVER_MODE !== MODES.ApiOnly) {
+// UI assets
+if (uiEnabled) {
   app.use("/", indexRouter);
 }
 
-// skip 404 for local development
-if (SERVER_MODE !== MODES.ApiOnly) {
+// 404 handler
+if (uiEnabled) {
   // catch 404 and forward to error handler
   app.use((req, res) => {
     // respond with html page

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --ext ts --exec \"npm run build && node dist/app.js\"",
-    "dev:local": "cross-env SERVER_MODE=local npm run dev",
-    "dev:api-only": "cross-env SERVER_MODE=api-only nodemon --ext ts --exec \"npm run build:api-only && node dist/app.js\"",
+    "dev:server-pages": "cross-env SERVER_UI=server-pages npm run dev",
+    "dev:no-auth": "cross-env SERVER_AUTH=false SERVER_UI=none nodemon --ext ts --exec \"npm run build:api-only && node dist/app.js\"",
     "build": "npm run clean && tsc --build && tsc-alias && npm run copy-files",
     "build:api-only": "tsc --build && tsc-alias",
     "clean": "npx rimraf dist",
