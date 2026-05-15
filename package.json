@@ -16,6 +16,9 @@
     "build:app": "cd ./src/app && npm run build",
     "build:app-public": "cd ./src/app-public && npm run build",
     "build:server": "cd ./src/server && npm run build",
+    "migrate:create": "cd ./src/server && npm run migrate:create",
+    "migrate:up": "cd ./src/server && npm run migrate:up",
+    "migrate:down": "cd ./src/server && npm run migrate:down",
     "start:db": "docker compose up -d postgres",
     "docker:start": "docker compose up",
     "docker:build": "docker build -t foodily ."

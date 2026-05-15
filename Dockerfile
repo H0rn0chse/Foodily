@@ -36,6 +36,7 @@ WORKDIR /app
 WORKDIR /
 RUN cp -r tmp/server/dist/. app
 RUN cp -r tmp/server/package.json app
+RUN cp -r tmp/server/migrations app/migrations
 RUN cp -r tmp/app-public/dist/. app/public
 RUN cp -r tmp/app/dist/. app/public/app
 
@@ -58,4 +59,4 @@ RUN rm -rf tmp
 WORKDIR /app
 EXPOSE 3000
 ENV NODE_ENV="production"
-CMD [ "node", "app.js" ]
+CMD [ "sh", "-c", "npm run migrate:up && node app.js" ]

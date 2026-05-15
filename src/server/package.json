@@ -9,6 +9,11 @@
     "dev:no-auth": "cross-env SERVER_AUTH=false SERVER_UI=none nodemon --ext ts --exec \"npm run build:api-only && node dist/app.js\"",
     "build": "npm run clean && tsc --build && tsc-alias && npm run copy-files",
     "build:api-only": "tsc --build && tsc-alias",
+    "migrate": "node-pg-migrate --database-url-var DB_CONNECTION_STRING --envPath ../../.env -m migrations",
+    "migrate:create": "npm run migrate -- create",
+    "migrate:up": "npm run migrate -- up",
+    "migrate:down": "npm run migrate -- down",
+    "migrate:redo": "npm run migrate -- redo",
     "clean": "npx rimraf dist",
     "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css dist/",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path ../../.gitignore"
@@ -29,7 +34,8 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pg": "^8.20.0",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "node-pg-migrate": "^8.0.3"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.6",

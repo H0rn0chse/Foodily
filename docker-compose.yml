@@ -1,6 +1,5 @@
 services:
   app:
-
     restart: on-failure
     build: .
     depends_on:
@@ -14,8 +13,7 @@ services:
       - ${SERVER_HOST_PORT}:${SERVER_PORT}
 
   postgres:
-
-    image: postgres:16
+    image: postgres:18
     env_file:
       - .env
     environment:
