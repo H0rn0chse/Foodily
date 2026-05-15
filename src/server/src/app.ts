@@ -69,7 +69,7 @@ if (authEnabled) {
     },
     size: 64,
     ignoredMethods: ["GET", "HEAD", "OPTIONS"],
-    getSessionIdentifier: (req) => req.session?.id || ""
+    getSessionIdentifier: (req) => req.sessionID || ""
   });
 
   app.use(session({
@@ -83,6 +83,8 @@ if (authEnabled) {
 
   // CSRF token endpoint (must be before CSRF protection middleware)
   app.get("/csrf-token", (req, res) => {
+    // Force session persistence so token/session binding remains stable between requests.
+    (req.session as session.Session & Partial<session.SessionData> & { csrfIssuedAt?: number }).csrfIssuedAt = Date.now();
     const csrfToken = generateCsrfToken(req, res);
     res.json({ csrfToken });
   });

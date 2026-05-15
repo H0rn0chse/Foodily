@@ -23,7 +23,9 @@ function clearErrorMessages() {
 
 async function fetchCsrfToken() {
   try {
-    const response = await fetch("/csrf-token");
+    const response = await fetch("/csrf-token", {
+      credentials: "same-origin",
+    });
     const data = await response.json();
     csrfToken.value = data.csrfToken;
   } catch (err) {
@@ -39,6 +41,11 @@ async function submitLogin() {
   formData.loading = true;
   clearErrorMessages();
 
+  // Ensure we always submit with a fresh CSRF token/cookie pair.
+  if (!csrfToken.value) {
+    await fetchCsrfToken();
+  }
+
   const body = new URLSearchParams();
   body.append("username", formData.username);
   body.append("password", formData.password);
@@ -51,6 +58,7 @@ async function submitLogin() {
     method: "POST",
     body,
     headers,
+    credentials: "same-origin",
   });
 
   if (response.ok) {
