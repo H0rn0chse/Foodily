@@ -28,32 +28,34 @@ const dinnerDetailsDate = computed({
   get: () => {
     return formatDate(new Date(dinnerDetails.value.data.date));
   },
-  set: (newDateString) => {
+  set: (newDateString: string) => {
     dinnerDetails.value.data.date = new Date(newDateString).toISOString();
-  }
+  },
 });
 
 const dinnerDetailsCourseRating = computed({
   get: () => {
     const courseRating: Record<string, number> = {};
     for (const course of dinnerDetails.value.data.courses) {
-      // todo: do proper rating calculation
+      // Placeholder until a proper rating calculation is implemented.
       courseRating[course.id] = 2.5;
     }
     return courseRating;
   },
-  set: (newRating) => {
+  set: (_newRating: Record<string, number>) => {
     throw new Error("Property is readonly!");
-  }
+  },
 });
 
 const dinnerDetailsParticipants = computed({
   get: () => {
-    return dinnerDetails.value.data.participants.filter((participant) => participant.id !== dinnerDetails.value.data.ownerId);
+    return dinnerDetails.value.data.participants.filter(
+      (participant) => participant.id !== dinnerDetails.value.data.ownerId,
+    );
   },
-  set: (newParticipants) => {
+  set: (_newParticipants: Array<{ id: UserId }>) => {
     throw new Error("Property is readonly!");
-  }
+  },
 });
 
 /**
@@ -102,9 +104,7 @@ function showCourseDetails(courseId: string) {
 }
 
 // initialize the expanded panels
-const expandedPanels = ref([
-  "courses"
-]);
+const expandedPanels = ref(["courses"]);
 if (expandAllCategories) {
   expandedPanels.value.push("metadata", "participants");
 }
@@ -116,45 +116,52 @@ function updateDinnerDetails(focused: boolean) {
 }
 
 function moveUpEnabled(courseId: string) {
-  const courseIndex = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  const courseIndex = dinnerDetails.value.data.courses.findIndex(
+    (course) => course.id === courseId,
+  );
   return courseIndex > 0;
 }
 
-function moveCourseUp (courseId: string) {
+function moveCourseUp(courseId: string) {
   if (!moveUpEnabled(courseId)) {
     return;
   }
 
-  const index = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  const index = dinnerDetails.value.data.courses.findIndex(
+    (course) => course.id === courseId,
+  );
   const prevCourseId = dinnerDetails.value.data.courses[index - 1]?.id;
   dinnerStore.updateCourse(dinnerId, courseId, {
-    courseNumber: index - 1
+    courseNumber: index - 1,
   });
   dinnerStore.updateCourse(dinnerId, prevCourseId, {
-    courseNumber: index
+    courseNumber: index,
   });
 }
 
 function moveDownEnabled(courseId: string) {
-  const courseIndex = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  const courseIndex = dinnerDetails.value.data.courses.findIndex(
+    (course) => course.id === courseId,
+  );
   return courseIndex < dinnerDetails.value.data.courses.length - 1;
 }
 
-function moveCourseDown (courseId: string) {
+function moveCourseDown(courseId: string) {
   if (!moveDownEnabled(courseId)) {
     return;
   }
 
-  const index = dinnerDetails.value.data.courses.findIndex(course => course.id === courseId);
+  const index = dinnerDetails.value.data.courses.findIndex(
+    (course) => course.id === courseId,
+  );
   const nextCourseId = dinnerDetails.value.data.courses[index + 1]?.id;
   dinnerStore.updateCourse(dinnerId, courseId, {
-    courseNumber: index + 1
+    courseNumber: index + 1,
   });
   dinnerStore.updateCourse(dinnerId, nextCourseId, {
-    courseNumber: index
+    courseNumber: index,
   });
 }
-
 </script>
 <template>
   <div id="dinnerDetailContent">
@@ -244,7 +251,7 @@ function moveCourseDown (courseId: string) {
                     ref="addParticipantButton"
                     color="primary"
                   >
-                    {{ t('dinnerDetail.participants.add') }}
+                    {{ t("dinnerDetail.participants.add") }}
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -256,7 +263,9 @@ function moveCourseDown (courseId: string) {
           >
             <template #default="{ isActive }">
               <UserSelectionCard
-                :ignore-users="dinnerDetailsParticipants.map(p => p.id)"
+                :ignore-users="
+                  dinnerDetailsParticipants.map((p: { id: UserId }) => p.id)
+                "
                 @close="isActive.value = false"
                 @select="addParticipants"
               />
@@ -300,9 +309,7 @@ function moveCourseDown (courseId: string) {
                               :disabled="!moveUpEnabled(item.id)"
                               @click="moveCourseUp(item.id)"
                             >
-                              <v-icon
-                                size="large"
-                              >
+                              <v-icon size="large">
                                 mdi-chevron-up
                               </v-icon>
                             </v-btn>
@@ -314,9 +321,7 @@ function moveCourseDown (courseId: string) {
                               :disabled="!moveDownEnabled(item.id)"
                               @click="moveCourseDown(item.id)"
                             >
-                              <v-icon
-                                size="large"
-                              >
+                              <v-icon size="large">
                                 mdi-chevron-down
                               </v-icon>
                             </v-btn>
@@ -357,7 +362,7 @@ function moveCourseDown (courseId: string) {
                     color="primary"
                     @click="addCourse"
                   >
-                    {{ t('dinnerDetail.courses.add') }}
+                    {{ t("dinnerDetail.courses.add") }}
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -391,12 +396,12 @@ function moveCourseDown (courseId: string) {
   padding-right: 1rem;
 }
 
-#dinnerDetailContent>*:first-child,
-#dinnerDetailContent>h1 {
+#dinnerDetailContent > *:first-child,
+#dinnerDetailContent > h1 {
   align-self: start;
 }
 
-#dinnerDetailContent>footer {
+#dinnerDetailContent > footer {
   align-self: start;
   margin: 1rem;
   /* align with card */
@@ -438,7 +443,7 @@ h2 {
   grid-area: rating;
 }
 
-#dinnerDetailContent .resetTableRowHeight>td {
+#dinnerDetailContent .resetTableRowHeight > td {
   height: unset;
 }
 </style>
