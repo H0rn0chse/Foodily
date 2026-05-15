@@ -21,7 +21,7 @@
     "migrate:down": "cd ./src/server && npm run migrate:down",
     "start:db": "docker compose up -d postgres",
     "docker:start": "docker compose up",
-    "docker:build": "docker build -t foodily ."
+    "docker:build": "docker build -t foodily-app ."
   },
   "keywords": [],
   "author": {

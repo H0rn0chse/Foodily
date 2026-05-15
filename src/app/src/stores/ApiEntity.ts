@@ -3,11 +3,11 @@ import type { ApiEntityState, ApiResponse, EntityBase } from "@t/api";
 import { CustomEventWrapper, type NetworkEvent } from "@/js/CustomEventWrapper";
 import { csrfHeaders } from "@/js/csrf";
 
-function sleep (seconds: number) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, seconds * 1000);
-  });
-}
+// function sleep (seconds: number) {
+//   return new Promise((resolve, reject) => {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// }
 
 export type UpdatedEventData<EntityType> = NetworkEvent & {
   data: EntityType | undefined,
@@ -219,7 +219,7 @@ export class ApiEntity<EntityType extends EntityBase | EntityBase[], EntityCreat
     const response = await fetch(this.#endpoint, {
       method: "GET"
     });
-    await sleep(2); // todo: remove delay
+    // await sleep(2); // todo: remove delay
 
     this.reactiveEntityState.success = response.ok;
 

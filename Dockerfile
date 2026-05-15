@@ -2,6 +2,11 @@
 # FROM node:latest
 FROM node:24-slim
 
+# Provide workspace package.json for @project alias resolution during TS builds.
+COPY /package.json /package.json
+# provide common types for all builds
+COPY /src/types /tmp/types
+
 #debug
 # RUN echo $(ls -1 /tmp/dir)
 
