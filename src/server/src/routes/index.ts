@@ -1,7 +1,7 @@
 import express from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { ensureSessionAndRedirect, preventSession } from "./auth";
+import { ensureSessionAndRedirect, preventSession } from "./auth.js";
 import { uiMode, UI_MODES } from "@/serverConfig";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

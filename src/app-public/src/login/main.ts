@@ -2,7 +2,7 @@ import { createApp } from "vue";
 
 // vuetify
 import { createVuetify } from "vuetify";
-import "vuetify/styles";
+import "vuetify/styles/main.css";
 import "@mdi/font/css/materialdesignicons.css";
 
 import i18nConfig, { vuetifyLocaleConfig } from "@/lang";

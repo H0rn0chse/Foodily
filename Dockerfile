@@ -1,6 +1,6 @@
 
 # FROM node:latest
-FROM node:22
+FROM node:24-slim
 
 #debug
 # RUN echo $(ls -1 /tmp/dir)

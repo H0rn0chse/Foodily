@@ -1,6 +1,6 @@
 // import crypto from "crypto";
 import pg from "pg";
-import { init } from "./schema";
+import { init } from "./schema.js";
 const { Client } = pg;
 
 const {
