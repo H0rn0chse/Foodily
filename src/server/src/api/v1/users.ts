@@ -2,13 +2,27 @@ import express from "express";
 import db, { buildSetStatement } from "@/db";
 import { AuthenticatedUser } from "@/routes/auth";
 
-import type { ApiResponse, User } from "@t/api";
+import type { ItemResponse, ListResponse, User } from "@t/api";
 
 const router = express.Router();
 
 // Read All
 router.get("/", async (req, res) => {
   try {
+    const ownerId = (req.user as AuthenticatedUser).id;
+
+    type TokenRow = { token: string | null };
+    const tokenResult = await db.query<TokenRow>(
+      "SELECT MAX(updated_at)::text AS token FROM users WHERE owner_id=$1",
+      [ownerId]
+    );
+    const cacheToken = tokenResult.rows[0].token ?? "";
+
+    if (req.headers["if-none-match"] === cacheToken) {
+      res.sendStatus(304);
+      return;
+    }
+
     type UsersRow = {
       id: string,
       username: string,
@@ -17,9 +31,7 @@ router.get("/", async (req, res) => {
       `SELECT id, username
       FROM users
       WHERE owner_id=$1`,
-      [
-        (req.user as AuthenticatedUser).id
-      ]
+      [ownerId]
     );
 
     res.status(200).json({
@@ -29,8 +41,9 @@ router.get("/", async (req, res) => {
           username: row.username,
         };
       }),
-      count: result.rowCount || 0
-    } satisfies ApiResponse<User[]>);
+      count: result.rowCount || 0,
+      cacheToken,
+    } satisfies ListResponse<User>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -68,8 +81,9 @@ router.get("/:userId", async (req, res) => {
       result: {
         id: user.id,
         username: user.username,
-      }
-    } satisfies ApiResponse<User>);
+      },
+      cacheToken: user.id,
+    } satisfies ItemResponse<User>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);

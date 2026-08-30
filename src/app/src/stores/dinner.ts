@@ -1,16 +1,24 @@
 import { defineStore } from "pinia";
 import type { DinnerDetails, DinnerList, DinnerCreate, DinnerId, Course } from "@t/dinner";
-import { ApiEntitySet } from "./ApiEntitySet";
-import { ApiEntityList } from "./ApiEntityList";
+import { ApiList } from "./ApiList";
+import { ApiItemMap } from "./ApiItemMap";
 import type { UserId } from "@t/api";
 import { csrfHeaders } from "@/js/csrf";
 
+const courseDefaults: Course = {
+  id: "0",
+  courseNumber: 0,
+  title: "",
+  description: "",
+  type: "main",
+  vegetarian: false,
+  vegan: false,
+};
 
 export const useDinnerStore = defineStore("dinner", () => {
-  const dinnerList = new ApiEntityList<DinnerList, DinnerCreate>("/api/v1/dinners", []);
-  const dinnerListRef = dinnerList.getComputedRef();
-  
-  const dinnerDetailsDefaults = {
+  const dinnerList = new ApiList<DinnerList[number], DinnerCreate>("/api/v1/dinners");
+
+  const dinnerDetailsDefaults: DinnerDetails = {
     id: "0",
     ownerId: "0",
     username: "",
@@ -19,36 +27,34 @@ export const useDinnerStore = defineStore("dinner", () => {
     participants: [],
     courses: []
   };
-  const dinnerDetails = new ApiEntitySet<DinnerDetails>("/api/v1/dinners/", dinnerDetailsDefaults);
-  const dinnerDetailRefs = dinnerDetails.getComputedRefs();
+  const dinnerDetails = new ApiItemMap<DinnerDetails>("/api/v1/dinners/", dinnerDetailsDefaults);
 
-  // invalidate dinner list on relevant changes
-  dinnerDetails.updated.attach((event) => {
-    const { data, dataBefore } = event.detail;
+  // Per-dinner course wrappers — kept outside the returned store object so they
+  // are never wrapped in Pinia's reactive proxy.
+  const courseLists = new Map<DinnerId, ApiList<Course, Partial<Course>>>();
+  const courseItemMaps = new Map<DinnerId, ApiItemMap<Course>>();
 
-    if (!data || !dataBefore) {
-      return;
+  function getCourseList(dinnerId: DinnerId): ApiList<Course, Partial<Course>> {
+    if (!courseLists.has(dinnerId)) {
+      courseLists.set(dinnerId, new ApiList<Course, Partial<Course>>(`/api/v1/dinners/${dinnerId}/courses`));
     }
+    return courseLists.get(dinnerId)!;
+  }
 
-    if (data.ownerId !== dataBefore.ownerId
-      || data.username !== dataBefore.username
-      || data.title !== dataBefore.title
-      || data.date !== dataBefore.date
-    ) {
-      dinnerList.resetState();
+  function getCourseItemMap(dinnerId: DinnerId): ApiItemMap<Course> {
+    if (!courseItemMaps.has(dinnerId)) {
+      courseItemMaps.set(dinnerId, new ApiItemMap<Course>(`/api/v1/dinners/${dinnerId}/courses/`, courseDefaults));
     }
-  });
-  dinnerDetails.deleted.attach((event) => {
-    dinnerList.resetState();
-  });
-  dinnerList.created.attach((event) => {
-    dinnerList.resetState();
-    dinnerDetails.resetEntityState(event.detail.entityId);
-  });
+    return courseItemMaps.get(dinnerId)!;
+  }
 
   async function updateDinnerDetails (id: DinnerId) {
     try {
-      await dinnerDetails.updateEntity(id);
+      const item = dinnerDetails.get(id);
+      await item.save({
+        title: item.data.title,
+        date: item.data.date,
+      });
     } catch (error) {
       // todo: use message handler
       alert("Error updating dinner details");
@@ -58,32 +64,33 @@ export const useDinnerStore = defineStore("dinner", () => {
 
   async function deleteDinner (id: DinnerId) {
     try {
-      await dinnerDetails.deleteEntity(id);
+      await dinnerDetails.get(id).delete();
+      dinnerDetails.remove(id);
     } catch (error) {
       // todo: use message handler
-      alert("Error updating dinner details");
+      alert("Error deleting dinner");
       console.error(error);
     }
   }
-    
 
   async function createDinner () {
-    const newDinnerData = {
+    const newDinnerData: DinnerCreate = {
       // todo: use i18n for default title
       title: "<New Dinner>",
       date: new Date().toUTCString()
     };
     try {
       const newId = await dinnerList.create(newDinnerData);
-
       return newId;
     } catch (error) {
       // todo: use message handler
-      alert("Error updating dinner details");
+      alert("Error creating dinner");
       console.error(error);
     }
   }
 
+  // Participants use non-standard POST body ({ userIds }) and return 200 (no
+  // Location header), so they don't fit ApiList.create() — kept as raw fetch.
   async function addParticipants (dinnerId: DinnerId, userIds: UserId[]) {
     try {
       await fetch(`/api/v1/dinners/${dinnerId}/participants`, {
@@ -91,11 +98,8 @@ export const useDinnerStore = defineStore("dinner", () => {
         headers: csrfHeaders({
           "Content-Type": "application/json"
         }),
-        body: JSON.stringify({
-          userIds
-        })
+        body: JSON.stringify({ userIds })
       });
-      dinnerDetails.resetEntityState(dinnerId);
     } catch (error) {
       console.error(error);
     }
@@ -107,7 +111,6 @@ export const useDinnerStore = defineStore("dinner", () => {
         method: "DELETE",
         headers: csrfHeaders()
       });
-      dinnerDetails.resetEntityState(dinnerId);
     } catch (error) {
       console.error(error);
     }
@@ -115,16 +118,7 @@ export const useDinnerStore = defineStore("dinner", () => {
 
   async function createCourse (dinnerId: DinnerId, courseData: Partial<Course>) {
     try {
-      const response = await fetch(`/api/v1/dinners/${dinnerId}/courses`, {
-        method: "POST",
-        headers: csrfHeaders({
-          "Content-Type": "application/json"
-        }),
-        body: JSON.stringify(courseData)
-      });
-      dinnerDetails.resetEntityState(dinnerId);
-      const entityId = response.headers.get("Location")?.split("/").pop() || "0";
-      return entityId;
+      return await getCourseList(dinnerId).create(courseData);
     } catch (error) {
       console.error(error);
     }
@@ -132,14 +126,7 @@ export const useDinnerStore = defineStore("dinner", () => {
 
   async function updateCourse (dinnerId: DinnerId, courseId: string, updatedData: Partial<Course>) {
     try {
-      await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
-        method: "PUT",
-        headers: csrfHeaders({
-          "Content-Type": "application/json"
-        }),
-        body: JSON.stringify(updatedData)
-      });
-      dinnerDetails.resetEntityState(dinnerId);
+      await getCourseItemMap(dinnerId).get(courseId).save(updatedData);
     } catch (error) {
       console.error(error);
     }
@@ -147,19 +134,17 @@ export const useDinnerStore = defineStore("dinner", () => {
 
   async function deleteCourse (dinnerId: DinnerId, courseId: string) {
     try {
-      await fetch(`/api/v1/dinners/${dinnerId}/courses/${courseId}`, {
-        method: "DELETE",
-        headers: csrfHeaders()
-      });
-      dinnerDetails.resetEntityState(dinnerId);
+      const map = getCourseItemMap(dinnerId);
+      await map.get(courseId).delete();
+      map.remove(courseId);
     } catch (error) {
       console.error(error);
     }
   }
 
   return {
-    dinnerList: dinnerListRef,
-    dinnerDetails: dinnerDetailRefs,
+    dinnerList,
+    dinnerDetails,
     updateDinnerDetails,
     createDinner,
     deleteDinner,
@@ -169,9 +154,6 @@ export const useDinnerStore = defineStore("dinner", () => {
 
     createCourse,
     updateCourse,
-    deleteCourse
-
-    // todo: check
-    // reload: loadDinners,
+    deleteCourse,
   };
 });

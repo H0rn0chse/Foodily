@@ -1,27 +1,14 @@
 export type EntityBase = NonNullable<Record<string, unknown>>;
 
-export type ApiResponse<Type extends EntityBase | EntityBase[]> = 
-Type extends EntityBase[] ? {
-  result: Type,
+export type ListResponse<T extends EntityBase> = {
+  result: T[],
   count: number,
-} : 
-{
-  result: Type,
+  cacheToken: string,
 };
 
-export type ApiEntityState<EntityType extends EntityBase | EntityBase[]> = 
-EntityType extends EntityBase[] ? {
-  loaded: boolean,
-  loading: boolean,
-  success: boolean,
-  data: EntityType,
-  count: number,
-} :
-{
-  loaded: boolean,
-  loading: boolean,
-  success: boolean,
-  data: EntityType,
+export type ItemResponse<T extends EntityBase> = {
+  result: T,
+  cacheToken: string,
 };
 
 export type User = NonNullable<{

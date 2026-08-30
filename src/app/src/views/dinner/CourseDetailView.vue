@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDinnerStore } from "@/stores/dinner";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
@@ -17,15 +17,21 @@ const courseId = parseParams(route, "courseId");
 const dialogStore = useDialogStore();
 
 const dinnerStore = useDinnerStore();
-const dinnerDetails = dinnerStore.dinnerDetails[dinnerId];
+const dinnerDetails = dinnerStore.dinnerDetails.get(dinnerId);
+
+onMounted(() => {
+  dinnerDetails.load();
+});
 
 const courseFound = computed(() => {
-  return !!dinnerDetails.value.data.courses.find(course => course.id === courseId);
+  return !!dinnerDetails.data.courses.find((course) => course.id === courseId);
 });
 
 const courseModel = computed({
   get: () => {
-    const details = dinnerDetails.value.data.courses.find(course => course.id === courseId);
+    const details = dinnerDetails.data.courses.find(
+      (course) => course.id === courseId,
+    );
 
     return {
       title: details?.title,
@@ -37,24 +43,38 @@ const courseModel = computed({
   },
   set: (newCourse) => {
     courseModel.value = newCourse;
-  }
+  },
 });
 
 const rating = ref(0);
 
-function updateCourseDetails (focused: boolean) {
-  if (!focused) {
-    dinnerStore.updateCourse(dinnerId, courseId, {
-      title: courseModel.value.title,
-      description: courseModel.value.description,
-      type: courseModel.value.type,
-      vegetarian: courseModel.value.vegetarian,
-      vegan: courseModel.value.vegan,
-    });
+async function updateCourseDetailsOnFocusOut(focused: boolean | string | null) {
+  if (focused) {
+    return;
   }
+
+  await dinnerStore.updateCourse(dinnerId, courseId, {
+    title: courseModel.value.title,
+    description: courseModel.value.description,
+    type: courseModel.value.type,
+    vegetarian: courseModel.value.vegetarian,
+    vegan: courseModel.value.vegan,
+  });
+  await dinnerDetails.load();
 }
 
-function deleteCourse () {
+async function updateCourseDetails() {
+  await dinnerStore.updateCourse(dinnerId, courseId, {
+    title: courseModel.value.title,
+    description: courseModel.value.description,
+    type: courseModel.value.type,
+    vegetarian: courseModel.value.vegetarian,
+    vegan: courseModel.value.vegan,
+  });
+  await dinnerDetails.load();
+}
+
+function deleteCourse() {
   dialogStore.open(async () => {
     await dinnerStore.deleteCourse(dinnerId, courseId);
     router.push(`/dinner/${dinnerId}`);
@@ -64,9 +84,8 @@ function deleteCourse () {
 const typeItems = [
   { title: t("courseDetail.metadata.type.starter"), value: "starter" },
   { title: t("courseDetail.metadata.type.main"), value: "main" },
-  { title: t("courseDetail.metadata.type.dessert"), value: "dessert" }
+  { title: t("courseDetail.metadata.type.dessert"), value: "dessert" },
 ];
-
 </script>
 <template>
   <div id="courseDetailContent">
@@ -81,7 +100,7 @@ const typeItems = [
     </div>
     <LoadingScreen
       :busy="dinnerDetails.loading"
-      :success="dinnerDetails.success && courseFound"
+      :success="!dinnerDetails.error && courseFound"
       class="flexColumn w-100"
     >
       <template #success>
@@ -91,30 +110,30 @@ const typeItems = [
               <v-text-field
                 v-model="courseModel.title"
                 :label="t('courseDetail.metadata.title')"
-                @update:focused="updateCourseDetails"
+                @update:focused="updateCourseDetailsOnFocusOut"
               />
               <v-text-field
                 v-model="courseModel.description"
                 :label="t('courseDetail.metadata.description')"
-                @update:focused="updateCourseDetails"
+                @update:focused="updateCourseDetailsOnFocusOut"
               />
               <v-select
                 v-model="courseModel.type"
                 :items="typeItems"
                 :label="t('courseDetail.metadata.type')"
-                @update:focused="updateCourseDetails"
+                @update:model-value="updateCourseDetails"
               />
               <v-switch
                 v-model="courseModel.vegetarian"
                 :label="t('courseDetail.metadata.vegetarian')"
                 color="primary"
-                @update:focused="updateCourseDetails"
+                @update:model-value="updateCourseDetails"
               />
               <v-switch
                 v-model="courseModel.vegan"
                 :label="t('courseDetail.metadata.vegan')"
                 color="primary"
-                @update:focused="updateCourseDetails"
+                @update:model-value="updateCourseDetails"
               />
               <div class="flexRow">
                 <div class="text-h5 courseRating">
@@ -140,7 +159,7 @@ const typeItems = [
       <v-btn
         :text="t('courseDetail.deleteCourse')"
         color="error"
-        :disabled="dinnerDetails.loading || !dinnerDetails.success"
+        :disabled="dinnerDetails.loading || dinnerDetails.error"
         @click="deleteCourse"
       />
     </footer>
@@ -158,12 +177,12 @@ const typeItems = [
   padding-right: 1rem;
 }
 
-#courseDetailContent>*:first-child,
-#courseDetailContent>h1 {
+#courseDetailContent > *:first-child,
+#courseDetailContent > h1 {
   align-self: start;
 }
 
-#courseDetailContent>footer {
+#courseDetailContent > footer {
   align-self: start;
   margin: 1rem;
   /* align with card */

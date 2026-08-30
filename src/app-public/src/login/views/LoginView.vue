@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { reactive, ref, onMounted } from "vue";
+import { reactive, onMounted } from "vue";
 const { t } = useI18n();
 
 type ErrorMessage = {
@@ -14,7 +14,7 @@ const formData = reactive({
   loading: false,
 });
 
-const csrfToken = ref("");
+let csrfToken = "";
 const errorMessages: ErrorMessage[] = reactive([]);
 
 function clearErrorMessages() {
@@ -27,7 +27,7 @@ async function fetchCsrfToken() {
       credentials: "same-origin",
     });
     const data = await response.json();
-    csrfToken.value = data.csrfToken;
+    csrfToken = data.csrfToken;
   } catch (err) {
     console.error("Failed to fetch CSRF token", err);
   }
@@ -42,7 +42,7 @@ async function submitLogin() {
   clearErrorMessages();
 
   // Ensure we always submit with a fresh CSRF token/cookie pair.
-  if (!csrfToken.value) {
+  if (!csrfToken) {
     await fetchCsrfToken();
   }
 
@@ -52,7 +52,7 @@ async function submitLogin() {
 
   const headers = new Headers({
     "Content-Type": "application/x-www-form-urlencoded",
-    "x-csrf-token": csrfToken.value,
+    "x-csrf-token": csrfToken,
   });
   const response = await fetch("/login/password", {
     method: "POST",
@@ -83,7 +83,11 @@ async function submitLogin() {
 <template>
   <div id="loginContent">
     <h1>{{ t("login.title") }}</h1>
-    <p v-for="error in errorMessages" :key="error.id" class="errorMessage">
+    <p
+      v-for="error in errorMessages"
+      :key="error.id"
+      class="errorMessage"
+    >
       {{ error.message }}
     </p>
     <v-form

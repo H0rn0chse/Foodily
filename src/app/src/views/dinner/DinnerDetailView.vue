@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDinnerStore } from "@/stores/dinner";
-import { computed, ref, useTemplateRef } from "vue";
+import { computed, onMounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
@@ -23,20 +23,25 @@ const dialogStore = useDialogStore();
 const addParticipantButton = useTemplateRef("addParticipantButton") as any;
 
 const dinnerStore = useDinnerStore();
-const dinnerDetails = dinnerStore.dinnerDetails[dinnerId];
+const dinnerDetails = dinnerStore.dinnerDetails.get(dinnerId);
+
+onMounted(() => {
+  dinnerDetails.load();
+});
+
 const dinnerDetailsDate = computed({
   get: () => {
-    return formatDate(new Date(dinnerDetails.value.data.date));
+    return formatDate(new Date(dinnerDetails.data.date));
   },
   set: (newDateString: string) => {
-    dinnerDetails.value.data.date = new Date(newDateString).toISOString();
+    dinnerDetails.data.date = new Date(newDateString).toISOString();
   },
 });
 
 const dinnerDetailsCourseRating = computed({
   get: () => {
     const courseRating: Record<string, number> = {};
-    for (const course of dinnerDetails.value.data.courses) {
+    for (const course of dinnerDetails.data.courses) {
       // Placeholder until a proper rating calculation is implemented.
       courseRating[course.id] = 2.5;
     }
@@ -49,8 +54,8 @@ const dinnerDetailsCourseRating = computed({
 
 const dinnerDetailsParticipants = computed({
   get: () => {
-    return dinnerDetails.value.data.participants.filter(
-      (participant) => participant.id !== dinnerDetails.value.data.ownerId,
+    return dinnerDetails.data.participants.filter(
+      (participant) => participant.id !== dinnerDetails.data.ownerId,
     );
   },
   set: (_newParticipants: Array<{ id: UserId }>) => {
@@ -76,12 +81,14 @@ function deleteDinner() {
   });
 }
 
-function addParticipants(participants: UserId[]) {
-  dinnerStore.addParticipants(dinnerId, participants);
+async function addParticipants(participants: UserId[]) {
+  await dinnerStore.addParticipants(dinnerId, participants);
+  await dinnerDetails.load();
 }
 
-function removeParticipant(participantId: UserId) {
-  dinnerStore.removeParticipant(dinnerId, participantId);
+async function removeParticipant(participantId: UserId) {
+  await dinnerStore.removeParticipant(dinnerId, participantId);
+  await dinnerDetails.load();
 }
 
 async function addCourse() {
@@ -90,12 +97,14 @@ async function addCourse() {
     description: "",
     type: "starter",
   });
+  await dinnerDetails.load();
   router.push(`/dinner/${dinnerId}/course/${courseId}`);
 }
 
 function deleteCourse(courseId: string) {
-  dialogStore.open(() => {
-    dinnerStore.deleteCourse(dinnerId, courseId);
+  dialogStore.open(async () => {
+    await dinnerStore.deleteCourse(dinnerId, courseId);
+    await dinnerDetails.load();
   });
 }
 
@@ -109,58 +118,61 @@ if (expandAllCategories) {
   expandedPanels.value.push("metadata", "participants");
 }
 
-function updateDinnerDetails(focused: boolean) {
+async function updateDinnerDetails(focused: boolean) {
   if (!focused) {
-    dinnerStore.updateDinnerDetails(dinnerId);
+    await dinnerStore.updateDinnerDetails(dinnerId);
+    await dinnerDetails.load();
   }
 }
 
 function moveUpEnabled(courseId: string) {
-  const courseIndex = dinnerDetails.value.data.courses.findIndex(
+  const courseIndex = dinnerDetails.data.courses.findIndex(
     (course) => course.id === courseId,
   );
   return courseIndex > 0;
 }
 
-function moveCourseUp(courseId: string) {
+async function moveCourseUp(courseId: string) {
   if (!moveUpEnabled(courseId)) {
     return;
   }
 
-  const index = dinnerDetails.value.data.courses.findIndex(
+  const index = dinnerDetails.data.courses.findIndex(
     (course) => course.id === courseId,
   );
-  const prevCourseId = dinnerDetails.value.data.courses[index - 1]?.id;
-  dinnerStore.updateCourse(dinnerId, courseId, {
+  const prevCourseId = dinnerDetails.data.courses[index - 1]?.id;
+  await dinnerStore.updateCourse(dinnerId, courseId, {
     courseNumber: index - 1,
   });
-  dinnerStore.updateCourse(dinnerId, prevCourseId, {
+  await dinnerStore.updateCourse(dinnerId, prevCourseId, {
     courseNumber: index,
   });
+  await dinnerDetails.load();
 }
 
 function moveDownEnabled(courseId: string) {
-  const courseIndex = dinnerDetails.value.data.courses.findIndex(
+  const courseIndex = dinnerDetails.data.courses.findIndex(
     (course) => course.id === courseId,
   );
-  return courseIndex < dinnerDetails.value.data.courses.length - 1;
+  return courseIndex < dinnerDetails.data.courses.length - 1;
 }
 
-function moveCourseDown(courseId: string) {
+async function moveCourseDown(courseId: string) {
   if (!moveDownEnabled(courseId)) {
     return;
   }
 
-  const index = dinnerDetails.value.data.courses.findIndex(
+  const index = dinnerDetails.data.courses.findIndex(
     (course) => course.id === courseId,
   );
-  const nextCourseId = dinnerDetails.value.data.courses[index + 1]?.id;
-  dinnerStore.updateCourse(dinnerId, courseId, {
+  const nextCourseId = dinnerDetails.data.courses[index + 1]?.id;
+  await dinnerStore.updateCourse(dinnerId, courseId, {
     courseNumber: index + 1,
   });
-  dinnerStore.updateCourse(dinnerId, nextCourseId, {
+  await dinnerStore.updateCourse(dinnerId, nextCourseId, {
     courseNumber: index,
   });
+  await dinnerDetails.load();
 }
 </script>
 <template>
@@ -176,7 +188,7 @@ function moveCourseDown(courseId: string) {
     </div>
     <LoadingScreen
       :busy="dinnerDetails.loading"
-      :success="dinnerDetails.success"
+      :success="!dinnerDetails.error"
       class="category flexColumn"
     >
       <template #success>
@@ -378,7 +390,7 @@ function moveCourseDown(courseId: string) {
       <v-btn
         :text="t('dinnerDetail.deleteDinner')"
         color="error"
-        :disabled="dinnerDetails.loading || !dinnerDetails.success"
+        :disabled="dinnerDetails.loading || dinnerDetails.error"
         @click="deleteDinner"
       />
     </footer>

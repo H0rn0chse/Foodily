@@ -1,42 +1,22 @@
 import { defineStore } from "pinia";
 import type { UserList, UserCreate, UserDetails } from "@t/user";
-import { ApiEntitySet } from "./ApiEntitySet";
-import { ApiEntityList } from "./ApiEntityList";
+import { ApiList } from "./ApiList";
+import { ApiItemMap } from "./ApiItemMap";
 
 
 export const useUserStore = defineStore("user", () => {
-  const userList = new ApiEntityList<UserList, UserCreate>("/api/v1/users", []);
-  const userListRef = userList.getComputedRef();
-  
-  const userDetailsDefaults = {
+  const userList = new ApiList<UserList[number], UserCreate>("/api/v1/users");
+
+  const userDetailsDefaults: UserDetails = {
     id: "0",
     username: ""
   };
-  const userDetails = new ApiEntitySet<UserDetails>("/api/v1/users/", userDetailsDefaults);
-  const userDetailRefs = userDetails.getComputedRefs();
-
-  // invalidate user list on relevant changes
-  userDetails.updated.attach((event) => {
-    const { data, dataBefore } = event.detail;
-
-    if (!data || !dataBefore) {
-      return;
-    }
-
-    if (data.username !== dataBefore.username) {
-      userList.resetState();
-    }
-  });
-  userDetails.deleted.attach((event) => {
-    userList.resetState();
-  });
-  userList.created.attach((event) => {
-    userList.resetState();
-  });
+  const userDetails = new ApiItemMap<UserDetails>("/api/v1/users/", userDetailsDefaults);
 
   async function updateUserDetails (id: string) {
     try {
-      await userDetails.updateEntity(id);
+      const item = userDetails.get(id);
+      await item.save({ username: item.data.username });
     } catch (error) {
       // todo: use message handler
       alert("Error updating user details");
@@ -46,34 +26,33 @@ export const useUserStore = defineStore("user", () => {
 
   async function deleteUser (id: string) {
     try {
-      await userDetails.deleteEntity(id);
+      await userDetails.get(id).delete();
+      userDetails.remove(id);
     } catch (error) {
       // todo: use message handler
-      alert("Error updating user details");
+      alert("Error deleting user");
       console.error(error);
     }
   }
-    
 
   async function createUser () {
-    const newUserData = {
+    const newUserData: UserCreate = {
       // todo: use i18n for default username
       username: "<New User>"
     };
     try {
       const newId = await userList.create(newUserData);
-
       return newId;
     } catch (error) {
       // todo: use message handler
-      alert("Error updating user details");
+      alert("Error creating user");
       console.error(error);
     }
   }
 
   return {
-    userList: userListRef,
-    userDetails: userDetailRefs,
+    userList,
+    userDetails,
     updateUserDetails,
     createUser,
     deleteUser

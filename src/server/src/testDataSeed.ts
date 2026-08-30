@@ -68,19 +68,21 @@ async function insertTestData (client: Client) {
     ]
   );
 
-  await client.query(
-    `INSERT INTO dinners(
-      owner_id,
-      title,
-      date
-    )
-    VALUES($1, $2, $3)`,
-    [
-      "1",
-      "Dinner 1",
-      new Date().toUTCString()
-    ]
-  );
+  for (let i = 0; i < 20; i++) {
+    await client.query(
+      `INSERT INTO dinners(
+        owner_id,
+        title,
+        date
+      )
+      VALUES($1, $2, $3)`,
+      [
+        "1",
+        `Dinner ${i + 1}`,
+        new Date().toUTCString()
+      ]
+    );
+  }
 
   await client.query(
     `INSERT INTO dinner_courses(

@@ -1,8 +1,8 @@
 import express from "express";
 import db, { buildSetStatement } from "@/db";
 import type { AuthenticatedUser } from "@/routes/auth";
-import type { Course, CourseId, DinnerDetails, DinnerId, DinnerList, DinnerListEntry } from "@t/dinner";
-import type { ApiResponse, User, UserId } from "@t/api";
+import type { Course, CourseId, DinnerDetails, DinnerId, DinnerListEntry } from "@t/dinner";
+import type { ItemResponse, ListResponse, User, UserId } from "@t/api";
 
 
 const router = express.Router();
@@ -12,23 +12,80 @@ const router = express.Router();
 // Read All
 router.get("/", async (req, res) => {
   try {
+    const ownerId = (req.user as AuthenticatedUser).id;
+    const page = Math.max(1, parseInt(String(req.query.page ?? "1"), 10) || 1);
+    // min 1, max 100, default 10
+    const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit ?? "10"), 10) || 10));
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+    const offset = (page - 1) * limit;
+
+    type TokenRow = { token: string | null };
+    const tokenResult = await db.query<TokenRow>(
+      "SELECT MAX(updated_at)::text AS token FROM dinners WHERE owner_id=$1",
+      [ownerId]
+    );
+    const cacheToken = tokenResult.rows[0].token ?? "";
+
+    if (req.headers["if-none-match"] === cacheToken) {
+      res.sendStatus(304);
+      return;
+    }
+
     type DinnersRow = Omit<DinnerListEntry, "ownerId"> & {
-      owner_id: DinnerListEntry["ownerId"]
+      owner_id: DinnerListEntry["ownerId"],
+      total_count: string,
     };
 
-    const queryResult = await db.query<DinnersRow>(
-      `SELECT
-        dinners.id,
-        dinners.owner_id,
-        dinner_owner.username,
-        title,
-        date
-      FROM dinners
-        JOIN users dinner_owner
-        ON dinners.owner_id=dinner_owner.id
-      WHERE dinners.owner_id=$1`,
-      [(req.user as AuthenticatedUser).id]
-    );
+    let queryResult;
+    if (!search) {
+      queryResult = await db.query<DinnersRow>(
+        `SELECT
+          dinners.id,
+          dinners.owner_id,
+          dinner_owner.username,
+          title,
+          date,
+          COUNT(*) OVER() AS total_count
+        FROM dinners
+          JOIN users dinner_owner
+          ON dinners.owner_id=dinner_owner.id
+        WHERE dinners.owner_id=$1
+        ORDER BY dinners.date DESC
+        LIMIT $2 OFFSET $3`,
+        [ownerId, limit, offset]
+      );
+    } else {
+      queryResult = await db.query<DinnersRow>(
+        `SELECT
+          dinners.id,
+          dinners.owner_id,
+          dinner_owner.username,
+          title,
+          date,
+          COUNT(*) OVER() AS total_count
+        FROM dinners
+          JOIN users dinner_owner
+          ON dinners.owner_id=dinner_owner.id
+        WHERE dinners.owner_id=$1
+          AND (
+            dinners.title ILIKE $4
+            OR EXISTS (
+              SELECT 1 FROM dinner_participants dp
+                JOIN users u ON u.id=dp.user_id
+              WHERE dp.dinner_id=dinners.id
+                AND u.username ILIKE $4
+            )
+            OR EXISTS (
+              SELECT 1 FROM dinner_courses dc
+              WHERE dc.dinner_id=dinners.id
+                AND (dc.title ILIKE $4 OR dc.description ILIKE $4)
+            )
+          )
+        ORDER BY dinners.date DESC
+        LIMIT $2 OFFSET $3`,
+        [ownerId, limit, offset, `%${search}%`]
+      );
+    }
 
     res.status(200).json({
       result: queryResult.rows.map((row) => {
@@ -40,8 +97,9 @@ router.get("/", async (req, res) => {
           date: row.date,
         };
       }),
-      count: queryResult.rowCount || 0
-    } satisfies ApiResponse<DinnerList>);
+      count: queryResult.rows.length > 0 ? parseInt(queryResult.rows[0].total_count, 10) : 0,
+      cacheToken,
+    } satisfies ListResponse<DinnerListEntry>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -57,6 +115,7 @@ router.get("/:dinnerId", async (req, res) => {
       owner_id: DinnerListEntry["ownerId"],
       participants: UserId[],
       courses: CourseId[],
+      updated_at: string,
     };
     const dinnerResult = await db.query<DinnersRow>(
       `SELECT
@@ -65,6 +124,7 @@ router.get("/:dinnerId", async (req, res) => {
         dinner_owner.username,
         title,
         date,
+        dinners.updated_at,
         ARRAY(
           SELECT user_id
           FROM dinner_participants
@@ -92,6 +152,12 @@ router.get("/:dinnerId", async (req, res) => {
     }
 
     const [ dinner ] = dinnerResult.rows;
+    const cacheToken = dinner.updated_at ?? "";
+
+    if (req.headers["if-none-match"] === cacheToken) {
+      res.sendStatus(304);
+      return;
+    }
 
     type ParticipantsRow = User;
     const participantResult = await db.query<ParticipantsRow>(
@@ -144,8 +210,9 @@ router.get("/:dinnerId", async (req, res) => {
             vegan: row.vegan,
           };
         }).sort((a, b) => a.courseNumber - b.courseNumber)
-      }
-    } as ApiResponse<DinnerDetails>);
+      },
+      cacheToken,
+    } satisfies ItemResponse<DinnerDetails>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -326,8 +393,9 @@ router.get("/:dinnerId/courses/:courseId", async (req, res) => {
         type: course.type,
         vegetarian: course.vegetarian,
         vegan: course.vegan,
-      }
-    } as ApiResponse<Course>);
+      },
+      cacheToken: course.id,
+    } satisfies ItemResponse<Course>);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -416,6 +484,11 @@ router.post("/:dinnerId/courses", async (req, res) => {
       ]
     );
 
+    await db.query(
+      "UPDATE dinners SET updated_at = NOW() WHERE id = $1",
+      [dinnerId]
+    );
+
     res.setHeader("Location", `/api/v1/dinners/${dinnerId}/courses/${result.rows[0].id}`);
     res.sendStatus(201);
   } catch (err) {
@@ -476,6 +549,11 @@ router.put("/:dinnerId/courses/:courseId", async (req, res) => {
       return;
     }
 
+    await db.query(
+      "UPDATE dinners SET updated_at = NOW() WHERE id = $1",
+      [dinnerId]
+    );
+
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
@@ -509,6 +587,11 @@ router.delete("/:dinnerId/courses/:courseId", async (req, res) => {
       res.sendStatus(404);
       return;
     }
+
+    await db.query(
+      "UPDATE dinners SET updated_at = NOW() WHERE id = $1",
+      [dinnerId]
+    );
 
     res.sendStatus(200);
   } catch (err) {
@@ -588,6 +671,11 @@ router.post("/:dinnerId/participants", async (req, res) => {
       );
     }));
 
+    await db.query(
+      "UPDATE dinners SET updated_at = NOW() WHERE id = $1",
+      [dinnerId]
+    );
+
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
@@ -629,6 +717,11 @@ router.delete("/:dinnerId/participants/:userId", async (req, res) => {
       res.sendStatus(404);
       return;
     }
+
+    await db.query(
+      "UPDATE dinners SET updated_at = NOW() WHERE id = $1",
+      [dinnerId]
+    );
 
     res.sendStatus(200);
   } catch (err) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
@@ -8,26 +8,32 @@ const emit = defineEmits(["close", "select"]);
 
 // Array of user IDs or usernames to ignore. e.g. already selected users.
 const props = defineProps<{
-  ignoreUsers?: string[]
+  ignoreUsers?: string[];
 }>();
 
 const userStore = useUserStore();
 
-const headers = [{
-  key: "username",
-  title: t("userSelectionCard.table.username"),
-  sortable: false
-}];
+onMounted(() => {
+  userStore.userList.load();
+});
+
+const headers = [
+  {
+    key: "username",
+    title: t("userSelectionCard.table.username"),
+    sortable: false,
+  },
+];
 
 const search = ref("");
 const selectedUsers = ref([]);
 
 const filteredUsers = computed(() => {
   if (!props.ignoreUsers || props.ignoreUsers.length === 0) {
-    return userStore.userList.data;
+    return userStore.userList.items;
   }
-  return userStore.userList.data.filter((user) =>
-    !props.ignoreUsers?.includes(user.id.toString())
+  return userStore.userList.items.filter(
+    (user) => !props.ignoreUsers?.includes(user.id.toString()),
   );
 });
 
@@ -41,8 +47,6 @@ function handleSelect() {
   emit("select", selectedUsers.value);
   handleClose();
 }
-
-
 </script>
 
 <template>
