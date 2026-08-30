@@ -19,7 +19,7 @@ export default [
       indent: ["error", 2, { SwitchCase: 1 }],
       "eol-last": ["error", "always"],
       quotes: ["error", "double"],
-      "linebreak-style": ["error", "windows"],
+      "linebreak-style": ["error", "unix"],
       "no-unused-vars": ["error", { args: "none" }],
       "object-curly-spacing": ["error", "always"],
       "key-spacing": ["error", { beforeColon: false }],
